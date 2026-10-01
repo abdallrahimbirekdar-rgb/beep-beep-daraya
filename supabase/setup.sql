@@ -85,3 +85,5 @@ create policy images_read on storage.objects for select using(bucket_id='store-i
 -- After creating YOUR user in Authentication > Users, run separately:
 -- insert into public.platform_admins(user_id) select id from auth.users where email='YOUR_ADMIN_EMAIL';
 -- Add merchant accounts using Authentication > Users > Add user. No secret admin API key belongs in browser code.
+
+-- Run the migrations in supabase/migrations after this base setup.
