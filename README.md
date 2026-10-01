@@ -79,3 +79,11 @@ window.BEEP_CONFIG = {
 - الصور تُعاين محلياً قبل حفظها، وتُرفع إلى التخزين عند الضغط على الحفظ.
 - التحديث يتطلب `supabase/migrations/20261001_merchant_setup.sql`. اختبار التحديث مع rollback في `validate_merchant_setup.sql`؛ شغّله قبل تطبيق التحديث، وليس بعده.
 - API القديمة `place_order` محفوظة كواجهة توصيل متوافقة، والواجهة الجديدة تستخدم `place_order_v2`.
+
+### Merchant help, stock and safe retries
+
+The `#merchant-help/<store-id>` guide is available from each merchant dashboard, with Arabic, Turkish and German instructions and direct links to its sections. Apply `supabase/migrations/20261001_market_reliability.sql` before deploying this client version. `validate_market_reliability.sql` creates isolated fixtures and rolls them back; it checks duplicate request identity, stock reservation, rejected overselling, cancellation restoration, stale edits and privacy request isolation.
+
+Existing products retain availability behavior until the owner enables **stock tracking**, creates the size/color combinations, and enters their actual quantities. Stock groups must be required single selections; products with no options have one general stock quantity. Up to 150 combinations are supported. Orders reserve stock in the transaction; cancellation restores it once. Product/stock revisions reject edits based on obsolete values. Order price snapshots remain immutable.
+
+The checkout uses `place_order_v4` with one identity retained across uncertain retries in the browser session. The server stores only a payload hash and receipt for idempotency, scoped to the authenticated customer. Reopening the checkout restores an uncertain attempt; checking purchase history confirms its receipt. Profile addresses are optional; delivery orders require an address. Customer correction/deletion requests are reviewed by platform administrators; submitting a request never deletes an account automatically. WhatsApp authentication is not enabled.
