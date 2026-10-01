@@ -2,6 +2,21 @@
 // UI translations only. Merchant text and submitted values stay exactly as entered.
 (() => {
 const rows = [
+["تثبيت على آيفون", "iPhone’a yükle", "Auf iPhone installieren"],
+["السوق على شاشة هاتفك", "Pazar telefonunuzun ekranında", "Der Markt auf Ihrem Startbildschirm"],
+["سوق داريا على آيفون", "Daraya Pazarı iPhone’da", "Daraya Markt auf dem iPhone"],
+["أضف السوق إلى الشاشة الرئيسية وافتحه مثل تطبيق.", "Pazarı ana ekrana ekleyin ve uygulama gibi açın.", "Fügen Sie den Markt zum Home-Bildschirm hinzu und öffnen Sie ihn wie eine App."],
+["خطوات بسيطة", "Basit adımlar", "Einfache Schritte"],
+["تثبيت سوق داريا على آيفون", "Daraya Pazarı’nı iPhone’a yükleme", "Daraya Markt auf dem iPhone installieren"],
+["افتح هذا الموقع في Safari على آيفون، ثم اتبع الخطوات:", "Bu siteyi iPhone’da Safari ile açın ve adımları izleyin:", "Öffnen Sie diese Website auf dem iPhone in Safari und folgen Sie den Schritten:"],
+["افتح قائمة المشاركة", "Paylaşım menüsünü açın", "Öffnen Sie das Teilen-Menü"],
+["اضغط رمز المشاركة، أو افتح قائمة المتصفح ثم اختر مشاركة.", "Paylaş simgesine dokunun veya tarayıcı menüsünden Paylaş’ı seçin.", "Tippen Sie auf das Teilen-Symbol oder wählen Sie Teilen im Browsermenü."],
+["اختر إضافة إلى الشاشة الرئيسية", "Ana Ekrana Ekle’yi seçin", "Wählen Sie Zum Home-Bildschirm"],
+["إذا لم يظهر الخيار، افتح تعديل الإجراءات وأضفه للقائمة.", "Seçenek görünmezse Eylemleri Düzenle’yi açıp listeye ekleyin.", "Falls die Option fehlt, öffnen Sie Aktionen bearbeiten und fügen Sie sie hinzu."],
+["اضغط إضافة", "Ekle’ye dokunun", "Tippen Sie auf Hinzufügen"],
+["إذا ظهر خيار فتح كتطبيق ويب، اتركه مفعلاً.", "Web uygulaması olarak aç seçeneği görünürse açık bırakın.", "Falls Als Web-App öffnen angezeigt wird, lassen Sie es aktiviert."],
+["ستجد أيقونة سوق داريا بين تطبيقاتك. يحتاج السوق اتصالاً بالإنترنت للتصفح وإرسال الطلبات.", "Daraya Pazarı simgesini uygulamalarınız arasında bulacaksınız. Gezinmek ve sipariş vermek için internet gerekir.", "Das Symbol von Daraya Markt erscheint bei Ihren Apps. Zum Stöbern und Bestellen brauchen Sie Internet."],
+["فهمت", "Anladım", "Verstanden"],
 ["تحديث العرض","Görünümü yenile","Ansicht aktualisieren"],
 ["تحديث متاح","Güncelleme mevcut","Update verfügbar"],
 ["احفظ تعديلاتك قبل تحديث الصفحة. هل تريد المتابعة؟","Sayfayı yenilemeden önce değişikliklerinizi kaydedin. Devam etmek istiyor musunuz?","Speichern Sie Ihre Änderungen vor dem Aktualisieren. Möchten Sie fortfahren?"],

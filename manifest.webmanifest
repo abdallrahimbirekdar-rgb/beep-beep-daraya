@@ -1,0 +1,26 @@
+{
+  "id": "./",
+  "name": "سوق داريا الإلكتروني",
+  "short_name": "سوق داريا",
+  "lang": "ar",
+  "dir": "rtl",
+  "start_url": "./#home",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#fff6eb",
+  "theme_color": "#ef5425",
+  "icons": [
+    {
+      "src": "app-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "app-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
