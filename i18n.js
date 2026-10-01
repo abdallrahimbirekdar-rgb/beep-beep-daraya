@@ -2,6 +2,7 @@
 // UI translations only. Merchant text and submitted values stay exactly as entered.
 (() => {
 const rows = [
+["إنشاء الحسابات الجديدة غير متاح مؤقتاً. يمكنك تسجيل الدخول بحسابك الحالي.","Yeni hesap oluşturma geçici olarak kullanılamıyor. Mevcut hesabınızla giriş yapabilirsiniz.","Neue Konten können vorübergehend nicht erstellt werden. Sie können sich mit Ihrem bestehenden Konto anmelden."],
 ["دخول / إنشاء حساب", "Giriş / Hesap oluştur", "Anmelden / Konto erstellen"],
 ["حسابي", "Hesabım", "Mein Konto"],
 ["إنشاء حساب زبون", "Müşteri hesabı oluştur", "Kundenkonto erstellen"],
