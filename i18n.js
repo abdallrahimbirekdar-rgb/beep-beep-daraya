@@ -2,6 +2,9 @@
 // UI translations only. Merchant text and submitted values stay exactly as entered.
 (() => {
 const rows = [
+["اضغط لعرض عنوان المحل","Mağaza adresini görmek için dokunun","Tippen, um die Geschäftsadresse anzuzeigen"],
+["لم يحدد صاحب المحل العنوان بعد.","Mağaza sahibi henüz adres belirtmedi.","Der Geschäftsinhaber hat noch keine Adresse angegeben."],
+
 ["البيع عبر الموقع", "İnternet üzerinden satış", "Online-Verkauf"],
 ["خدمة التوصيل", "Teslimat hizmeti", "Lieferdienst"],
 ["عرض البضائع والعروض فقط", "Yalnızca ürün ve teklif gösterimi", "Nur Produkte und Angebote anzeigen"],
