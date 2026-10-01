@@ -2,6 +2,11 @@
 // UI translations only. Merchant text and submitted values stay exactly as entered.
 (() => {
 const rows = [
+["تطبيق أندرويد", "Android uygulaması", "Android-App"],
+["شاهين صار أقرب إليك", "Şahin artık daha yakın", "Shahin jetzt auf Ihrem Handy"],
+["حمّل تطبيق شاهين واطلب من محلات داريا، وتابع مشترياتك من هاتفك.", "Şahin uygulamasını indirin, Daraya'daki işletmelerden sipariş verin ve alışverişlerinizi telefonunuzdan takip edin.", "Laden Sie die Shahin-App herunter, bestellen Sie in Daraya und verfolgen Sie Ihre Einkäufe auf dem Handy."],
+["تحميل تطبيق أندرويد", "Android uygulamasını indir", "Android-App herunterladen"],
+["بعد التحميل، افتح ملف APK واتبع تعليمات التثبيت على هاتفك. التطبيق يحتاج اتصالاً بالإنترنت.", "İndirdikten sonra APK dosyasını açın ve telefonunuzdaki kurulum adımlarını izleyin. İnternet bağlantısı gereklidir.", "Öffnen Sie nach dem Download die APK-Datei und folgen Sie den Installationsschritten auf Ihrem Handy. Eine Internetverbindung ist erforderlich."],
 ["إنشاء الحسابات الجديدة غير متاح مؤقتاً. يمكنك تسجيل الدخول بحسابك الحالي.","Yeni hesap oluşturma geçici olarak kullanılamıyor. Mevcut hesabınızla giriş yapabilirsiniz.","Neue Konten können vorübergehend nicht erstellt werden. Sie können sich mit Ihrem bestehenden Konto anmelden."],
 ["دخول / إنشاء حساب", "Giriş / Hesap oluştur", "Anmelden / Konto erstellen"],
 ["حسابي", "Hesabım", "Mein Konto"],
