@@ -73,6 +73,8 @@ revoke all on function public.set_order_status(uuid,text) from public,anon;
 grant execute on function public.set_order_status(uuid,text) to authenticated;
 grant select on public.stores,public.products to anon,authenticated;
 grant select on public.orders,public.platform_admins to authenticated;
+-- Edge Function needs explicit read grants when automatic table grants are disabled.
+grant select on public.platform_admins,public.stores to service_role;
 grant insert,update on public.stores to authenticated;
 grant insert,update,delete on public.products to authenticated;
 revoke insert,update,delete on public.orders from anon,authenticated;
