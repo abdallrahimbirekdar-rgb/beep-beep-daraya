@@ -2,6 +2,13 @@
 // UI translations only. Merchant text and submitted values stay exactly as entered.
 (() => {
 const rows = [
+["موقع المحل والعنوان", "Mağaza konumu ve adresi", "Standort und Adresse des Geschäfts"],
+["موقع المحل على الخريطة", "Mağazanın haritadaki konumu", "Geschäft auf der Karte"],
+["تحديد موقع المحل", "Mağaza konumunu seç", "Geschäftsstandort wählen"],
+["حذف موقع الخريطة", "Harita konumunu sil", "Kartenstandort entfernen"],
+["تم تحديد موقع المحل", "Mağaza konumu seçildi", "Geschäftsstandort ausgewählt"],
+["لم يُحدد موقع المحل على الخريطة بعد.", "Mağazanın harita konumu henüz belirtilmedi.", "Der Kartenstandort des Geschäfts wurde noch nicht angegeben."],
+["اضغط على الخريطة لتحديد المحل، واسحب العلامة لتصحيح الموقع. اكتب العنوان التفصيلي في خانة العنوان أيضاً.", "Mağazayı seçmek için haritaya dokunun ve işareti sürükleyin. Ayrıntılı adresi de yazın.", "Tippe auf die Karte und verschiebe die Markierung zum Geschäft. Trage auch die genaue Adresse ein."],
 ["اضغط لعرض عنوان المحل","Mağaza adresini görmek için dokunun","Tippen, um die Geschäftsadresse anzuzeigen"],
 ["لم يحدد صاحب المحل العنوان بعد.","Mağaza sahibi henüz adres belirtmedi.","Der Geschäftsinhaber hat noch keine Adresse angegeben."],
 

@@ -12,3 +12,5 @@
 .address-pin{display:inline-grid;place-items:center;width:64px;height:64px;border-radius:20px;background:#fff0e9;color:#d74717;font-size:42px}
 .store-address-text{padding:22px;border:1px solid #eeded3;border-radius:16px;background:#fff8f3;font-size:1.15rem;line-height:1.9;overflow-wrap:anywhere;white-space:pre-line}
 @media(max-width:600px){.store-banner .visit-store-button{max-width:none}}
+
+.store-map{height:320px;width:100%;border-radius:16px;isolation:isolate;margin:15px 0}.store-location-editor{padding:18px;border:1px solid #e2e6e8;border-radius:16px;margin:18px 0}.store-location-editor p{line-height:1.8}.store-address-dialog .store-map{text-align:start}
