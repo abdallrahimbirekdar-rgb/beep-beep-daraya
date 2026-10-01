@@ -2,6 +2,7 @@
 // UI translations only. Merchant text and submitted values stay exactly as entered.
 (() => {
 const rows = [
+["عرض السلة","Sepeti göster","Warenkorb anzeigen"],
 ["دروس المساعدة", "Yardım dersleri", "Hilfethemen"],
 ["لديك تغييرات غير محفوظة. هل تريد مغادرة الصفحة؟", "Kaydedilmemiş değişiklikler var. Sayfadan ayrılmak istiyor musunuz?", "Sie haben ungespeicherte Änderungen. Möchten Sie die Seite verlassen?"],
 ["المبلغ كبير. هل تقصد هذه القيمة بالليرة السورية؟", "Tutar yüksek. Suriye lirası olarak bu değeri mi istiyorsunuz?", "Der Betrag ist hoch. Ist dieser Wert in syrischen Pfund richtig?"],
