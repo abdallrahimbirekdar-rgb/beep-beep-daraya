@@ -2,6 +2,22 @@
 // UI translations only. Merchant text and submitted values stay exactly as entered.
 (() => {
 const rows = [
+["البيع عبر الموقع", "İnternet üzerinden satış", "Online-Verkauf"],
+["خدمة التوصيل", "Teslimat hizmeti", "Lieferdienst"],
+["عرض البضائع والعروض فقط", "Yalnızca ürün ve teklif gösterimi", "Nur Produkte und Angebote anzeigen"],
+["الشراء بزيارة المحل", "Mağazayı ziyaret ederek satın alın", "Kauf vor Ort im Geschäft"],
+["هذا المحل لا يستقبل طلبات عبر الموقع. يمكنك زيارة المحل للشراء.", "Bu mağaza internetten sipariş kabul etmez. Satın almak için mağazayı ziyaret edebilirsiniz.", "Dieses Geschäft nimmt keine Online-Bestellungen an. Sie können vor Ort einkaufen."],
+["هذا المحل لا يستقبل طلبات عبر الموقع", "Bu mağaza internetten sipariş kabul etmez", "Dieses Geschäft nimmt keine Online-Bestellungen an"],
+["أوقات الدوام غير محددة", "Çalışma saatleri belirtilmemiş", "Öffnungszeiten nicht angegeben"],
+["المحل مغلق أو استقبال الطلبات متوقف", "Mağaza kapalı veya sipariş kabulü durduruldu", "Das Geschäft ist geschlossen oder nimmt keine Bestellungen an"],
+["السماح باستقبال الطلبات أثناء الدوام", "Çalışma saatlerinde sipariş kabul et", "Bestellungen während der Öffnungszeiten erlauben"],
+["طلب عبر الموقع واستلام من المحل", "İnternetten sipariş ve mağazadan teslim", "Online bestellen und im Geschäft abholen"],
+["عند إيقافه، تظهر البضائع والعروض دون سلة أو طلبات.", "Kapalıyken ürünler ve teklifler sepetsiz gösterilir.", "Wenn deaktiviert, werden Produkte und Angebote ohne Warenkorb angezeigt."],
+["يمكن توفير التوصيل أو إيقافه بشكل مستقل.", "Teslimatı bağımsız olarak açabilir veya kapatabilirsiniz.", "Lieferung kann unabhängig aktiviert oder deaktiviert werden."],
+["اختر طريقة استلام للطلبات أو أوقف البيع عبر الموقع", "Teslim alma yöntemini seçin veya internet satışını kapatın", "Wählen Sie eine Empfangsart oder deaktivieren Sie den Online-Verkauf"],
+["عند تفعيل البيع عبر الموقع اختر طريقة استلام. للعرض فقط أوقف البيع عبر الموقع.", "İnternet satışı için teslim alma yöntemi seçin. Yalnızca gösterim için internet satışını kapatın.", "Wählen Sie beim Online-Verkauf eine Empfangsart. Für reine Präsentation deaktivieren Sie den Online-Verkauf."],
+["حالة المحل والطلبات تتبع الدوام بتوقيت سوريا. يمكنك إيقاف استقبال الطلبات يدوياً أثناء الدوام.", "Mağaza ve sipariş durumu Suriye saatine göre çalışma saatlerini izler. Siparişleri elle durdurabilirsiniz.", "Status und Bestellungen richten sich nach den Öffnungszeiten in syrischer Zeit. Sie können Bestellungen manuell pausieren."],
+["حالة المحل تتبع هذا الجدول تلقائياً بتوقيت سوريا. يمكن إيقاف الطلبات مؤقتاً أثناء الدوام.", "Mağaza durumu bu takvimi Suriye saatine göre izler. Siparişleri geçici durdurabilirsiniz.", "Der Geschäftsstatus folgt diesem Zeitplan in syrischer Zeit. Bestellungen können vorübergehend pausiert werden."],
 ["تثبيت على آيفون", "iPhone’a yükle", "Auf iPhone installieren"],
 ["السوق على شاشة هاتفك", "Pazar telefonunuzun ekranında", "Der Markt auf Ihrem Startbildschirm"],
 ["سوق داريا على آيفون", "Daraya Pazarı iPhone’da", "Daraya Markt auf dem iPhone"],
