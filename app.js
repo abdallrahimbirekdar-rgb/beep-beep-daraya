@@ -1,6 +1,6 @@
 'use strict';
 const $=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const money=n=>Number(n).toLocaleString('ar-SY')+' ل.س';
+const money=n=>window.ShahinI18n?window.ShahinI18n.money(n):Number(n).toLocaleString('ar-SY')+' ل.س';
 const cfg=window.BEEP_CONFIG||{},live=!!(cfg.supabaseUrl&&cfg.supabaseAnonKey);
 const fulfillmentChoices={};
 let passwordRecovery=false;
