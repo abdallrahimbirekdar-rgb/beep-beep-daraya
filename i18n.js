@@ -2,6 +2,33 @@
 // UI translations only. Merchant text and submitted values stay exactly as entered.
 (() => {
 const rows = [
+["دروس المساعدة", "Yardım dersleri", "Hilfethemen"],
+["لديك تغييرات غير محفوظة. هل تريد مغادرة الصفحة؟", "Kaydedilmemiş değişiklikler var. Sayfadan ayrılmak istiyor musunuz?", "Sie haben ungespeicherte Änderungen. Möchten Sie die Seite verlassen?"],
+["المبلغ كبير. هل تقصد هذه القيمة بالليرة السورية؟", "Tutar yüksek. Suriye lirası olarak bu değeri mi istiyorsunuz?", "Der Betrag ist hoch. Ist dieser Wert in syrischen Pfund richtig?"],
+["انتظر اكتمال الحفظ", "Kaydın tamamlanmasını bekleyin", "Warten Sie, bis das Speichern abgeschlossen ist"],
+["أدخل رقماً صحيحاً: 09xxxxxxxx أو رقماً دولياً يبدأ بـ +", "Geçerli bir numara girin: 09xxxxxxxx veya + ile başlayan uluslararası numara", "Geben Sie eine gültige Nummer ein: 09xxxxxxxx oder eine internationale Nummer mit +"],
+["الكمية أو المقاس المختار لم يعد متوفراً. عدّل السلة وحاول مجدداً.", "Seçilen miktar veya beden artık mevcut değil. Sepeti düzenleyip yeniden deneyin.", "Die gewählte Menge oder Größe ist nicht mehr verfügbar. Passen Sie den Warenkorb an."],
+["بعض الكميات لم تعد متوفرة. قلّل الكمية أو احذف المنتج.", "Bazı miktarlar artık mevcut değil. Miktarı azaltın veya ürünü kaldırın.", "Einige Mengen sind nicht mehr verfügbar. Verringern Sie die Menge oder entfernen Sie das Produkt."],
+["تغيّر المخزون أثناء التعديل. انسخ بياناتك وحدّث الصفحة قبل الحفظ.", "Düzenleme sırasında stok değişti. Verilerinizi kopyalayın ve kaydetmeden önce sayfayı yenileyin.", "Der Bestand wurde während Ihrer Bearbeitung geändert. Kopieren Sie Ihre Daten und laden Sie vor dem Speichern neu."],
+["تغيّرت البيانات منذ فتح الصفحة. انسخ تعديلاتك ثم حدّث البيانات وأعد المحاولة.", "Sayfa açıldıktan sonra bilgiler değişti. Değişikliklerinizi kopyalayın, bilgileri yenileyin ve yeniden deneyin.", "Die Daten wurden seit dem Öffnen geändert. Kopieren Sie Ihre Änderungen, aktualisieren Sie die Daten und versuchen Sie es erneut."],
+["أعد إنشاء جدول المخزون بعد تعديل الخيارات", "Seçenekleri değiştirdikten sonra stok tablosunu yeniden oluşturun", "Erstellen Sie nach Änderungen an Optionen die Bestandstabelle neu"],
+["أدخل كمية صحيحة للمخزون", "Geçerli bir stok miktarı girin", "Geben Sie eine gültige Bestandsmenge ein"],
+["الحد الأقصى 150 تركيبة للمقاسات والألوان", "En fazla 150 beden ve renk kombinasyonu", "Höchstens 150 Kombinationen aus Größe und Farbe"],
+["تعذر الاتصال. بياناتك باقية؛ تحقق من سجل مشترياتك ثم أعد المحاولة بنفس البيانات.", "Bağlantı kurulamadı. Verileriniz korundu; sipariş geçmişini kontrol edin ve aynı verilerle yeniden deneyin.", "Verbindung fehlgeschlagen. Ihre Daten bleiben erhalten. Prüfen Sie Ihre Bestellhistorie und wiederholen Sie mit denselben Angaben."],
+["لديك طلب قيد المراجعة بالفعل.", "İncelenen bir talebiniz zaten var.", "Sie haben bereits eine Anfrage in Bearbeitung."],
+["انتهت جلسة الدخول. سجل الدخول مجدداً؛ السلة محفوظة.", "Oturum süresi doldu. Yeniden giriş yapın; sepetiniz korundu.", "Ihre Sitzung ist abgelaufen. Melden Sie sich erneut an; der Warenkorb ist gespeichert."],
+["تعذر الحفظ. بياناتك باقية، حاول مجدداً.", "Kaydedilemedi. Verileriniz korundu, yeniden deneyin.", "Speichern fehlgeschlagen. Ihre Daten bleiben erhalten. Versuchen Sie es erneut."],
+["هناك محاولة طلب لم يتم تأكيد نتيجتها. أعد إرسالها بنفس البيانات أو راجع سجل مشترياتك.", "Sonucu doğrulanmamış bir sipariş denemesi var. Aynı verilerle yeniden gönderin veya sipariş geçmişini kontrol edin.", "Es gibt einen Bestellversuch ohne bestätigtes Ergebnis. Wiederholen Sie ihn mit denselben Daten oder prüfen Sie Ihre Bestellhistorie."],
+["قد تكون المحاولة السابقة وصلت إلى المحل. افتح سجل مشترياتك قبل تغيير بيانات الطلب أو إرسال طلب جديد.", "Önceki deneme işletmeye ulaşmış olabilir. Bilgileri değiştirmeden veya yeni sipariş vermeden önce geçmişi açın.", "Der vorige Versuch kann das Geschäft erreicht haben. Öffnen Sie die Bestellhistorie, bevor Sie Daten ändern oder neu bestellen."],
+["JPG أو PNG أو WebP، حتى 20 ميغابايت. تُصغّر تلقائياً.", "JPG, PNG veya WebP, 20 MB’a kadar. Otomatik küçültülür.", "JPG, PNG oder WebP bis 20 MB. Automatisch verkleinert."],
+["الكمية المتاحة في المخزون", "Mevcut stok miktarı", "Verfügbare Bestandsmenge"],
+["طلبات البيانات الشخصية", "Kişisel veri talepleri", "Anfragen zu persönlichen Daten"],
+["قيد المراجعة", "İnceleniyor", "In Bearbeitung"],
+["تمت المراجعة", "İncelendi", "Geprüft"],
+["وضع علامة تمت المراجعة", "İncelendi olarak işaretle", "Als geprüft markieren"],
+["لا توجد طلبات.", "Talep yok.", "Keine Anfragen."],
+["راجع الطلب وتواصل مع الزبون قبل تنفيذ حذف الحساب. لا يحذف زر المراجعة أي بيانات.", "Hesabı silmeden önce talebi inceleyin ve müşteriyle iletişime geçin. İnceleme düğmesi veri silmez.", "Prüfen Sie die Anfrage und kontaktieren Sie den Kunden vor einer Kontolöschung. Die Prüfmarkierung löscht keine Daten."],
+
 ["دليل صاحب المحل", "İşletme sahibi rehberi", "Leitfaden für Geschäftsinhaber"],
 ["من تجهيز صفحتك إلى متابعة طلباتك وحساباتك.", "Sayfanızı hazırlamaktan siparişlerinizi ve hesaplarınızı takip etmeye.", "Von der Einrichtung Ihrer Seite bis zur Verwaltung von Bestellungen und Finanzen."],
 ["العودة إلى لوحة محلي", "İşletme panelime dön", "Zurück zu meinem Geschäft"],
@@ -151,6 +178,8 @@ function translate(text){
  if(symbolic&&dictionary.has(symbolic[2]))return text.replace(trim,symbolic[1]+' '+dictionary.get(symbolic[2])[lang]);
  const arrow=trim.match(/^(.+?)\s*([←↗])$/);
  if(arrow&&dictionary.has(arrow[1]))return text.replace(trim,dictionary.get(arrow[1])[lang]+' '+(arrow[2]==='←'?'→':arrow[2]));
+ let available=trim.match(/^متوفر: (\d+)$/);if(available)return (lang==='tr'?'Stok: ':'Verfügbar: ')+available[1];
+ if(trim.includes(' · ')&&trim.includes(': '))return trim.split(' · ').map(part=>{const i=part.indexOf(': ');return i<0?translate(part):translate(part.slice(0,i))+': '+translate(part.slice(i+2));}).join(' · ');
  let m=trim.match(/^(\d+) محلات متاحة$/);if(m)return `${m[1]} ${lang==='tr'?'işletme mevcut':'Geschäfte verfügbar'}`;
  m=trim.match(/^(التوصيل|الحد الأدنى|الإجمالي:)\s+(.+)$/);if(m){const label=m[1]==='الحد الأدنى'?(lang==='tr'?'Minimum sipariş':'Mindestbestellwert'):dictionary.get(m[1])[lang];return label+' '+translate(m[2]);}
  m=trim.match(/^أضف بقيمة (.+) للوصول إلى الحد الأدنى\.$/);if(m)return lang==='tr'?`Minimum sipariş için ${translate(m[1])} tutarında ürün ekle.`:`Füge Produkte für ${translate(m[1])} hinzu, um den Mindestbestellwert zu erreichen.`;
