@@ -2,6 +2,9 @@
 // UI translations only. Merchant text and submitted values stay exactly as entered.
 (() => {
 const rows = [
+["تحديث العرض","Görünümü yenile","Ansicht aktualisieren"],
+["تحديث متاح","Güncelleme mevcut","Update verfügbar"],
+["احفظ تعديلاتك قبل تحديث الصفحة. هل تريد المتابعة؟","Sayfayı yenilemeden önce değişikliklerinizi kaydedin. Devam etmek istiyor musunuz?","Speichern Sie Ihre Änderungen vor dem Aktualisieren. Möchten Sie fortfahren?"],
 ["عرض السلة","Sepeti göster","Warenkorb anzeigen"],
 ["دروس المساعدة", "Yardım dersleri", "Hilfethemen"],
 ["لديك تغييرات غير محفوظة. هل تريد مغادرة الصفحة؟", "Kaydedilmemiş değişiklikler var. Sayfadan ayrılmak istiyor musunuz?", "Sie haben ungespeicherte Änderungen. Möchten Sie die Seite verlassen?"],
