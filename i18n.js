@@ -2,6 +2,22 @@
 // UI translations only. Merchant text and submitted values stay exactly as entered.
 (() => {
 const rows = [
+["سوق مدينتك،", "Şehrinin pazarı,", "Dein Markt in der Stadt,"],
+["بين إيديك.", "elinin altında.", "direkt für dich."],
+["محلات، مطاعم ومهن وخدمات من داريا، في مكان واحد.", "Daraya mağazaları, restoranları ve hizmetleri tek yerde.", "Geschäfte, Restaurants und Dienstleistungen aus Daraya an einem Ort."],
+["اكتشف المعروضات والأسعار والعناوين، واختر ما يناسبك.", "Ürünleri, fiyatları ve adresleri keşfet, sana uygun olanı seç.", "Entdecke Angebote, Preise und Adressen und finde das Passende."],
+["اكتشف سوق داريا", "Daraya pazarını keşfet", "Darayas Markt entdecken"],
+["✓ منتجات وخدمات متنوعة", "✓ Çeşitli ürünler ve hizmetler", "✓ Vielfältige Produkte und Dienstleistungen"],
+["✓ زيارة المحل أو طلب حسب المتاح", "✓ Mağazayı ziyaret et veya mevcut seçeneklerle sipariş ver", "✓ Geschäft besuchen oder nach Verfügbarkeit bestellen"],
+["المطاعم والمقاهي", "Restoranlar ve kafeler", "Restaurants und Cafés"],
+["الألبسة والتسوّق", "Giyim ve alışveriş", "Kleidung und Einkauf"],
+["الجوالات وإكسسواراتها", "Telefonlar ve aksesuarları", "Handys und Zubehör"],
+["المهن والخدمات", "Meslekler ve hizmetler", "Handwerk und Dienstleistungen"],
+["داريا بكل خياراتها", "Daraya’nın tüm seçenekleri", "Darayas ganze Vielfalt"],
+["اكتشف المحلات والخدمات", "Mağazaları ve hizmetleri keşfet", "Geschäfte und Dienstleistungen entdecken"],
+["قارن المعروضات والأسعار", "Ürünleri ve fiyatları karşılaştır", "Angebote und Preise vergleichen"],
+["زر المحل أو اطلب حسب المتاح", "Ziyaret et veya mevcut seçeneklerle sipariş ver", "Besuchen oder nach Verfügbarkeit bestellen"],
+["شو عم تدور عليه اليوم؟", "Bugün ne arıyorsun?", "Was suchst du heute?"],
 ["محل تجريبي — مثال", "Örnek işletme", "Beispielgeschäft"],
 ["بيانات هذه الصفحة للتوضيح فقط. العناوين والأسعار وساعات الدوام افتراضية.", "Bu sayfa örnektir. Adresler, fiyatlar ve saatler varsayımsaldır.", "Diese Seite ist ein Beispiel. Adresse, Preise und Zeiten sind fiktiv."],
 ["الخدمات والمعلومات", "Hizmetler ve bilgiler", "Dienstleistungen und Informationen"],
