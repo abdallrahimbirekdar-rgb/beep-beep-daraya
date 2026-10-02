@@ -2,6 +2,10 @@
 // UI translations only. Merchant text and submitted values stay exactly as entered.
 (() => {
 const rows = [
+["JPG أو PNG أو WebP، حتى ١٫٥ ميغابايت. نحفظ الأصل وننشئ صورة مصغّرة خفيفة.", "JPG, PNG veya WebP, en fazla 1,5 MB. Orijinali saklarız ve küçük önizleme oluştururuz.", "JPG, PNG oder WebP, bis 1,5 MB. Wir speichern das Original und erstellen ein kleines Vorschaubild."],
+["جاري إنشاء الصورة المصغّرة…", "Küçük önizleme oluşturuluyor…", "Vorschaubild wird erstellt…"],
+["جاري رفع الصورة الأصلية والمصغّرة…", "Orijinal ve küçük önizleme yükleniyor…", "Original und Vorschaubild werden hochgeladen…"],
+["تم حفظ الصورة الأصلية والمصغّرة", "Orijinal ve küçük önizleme kaydedildi", "Original und Vorschaubild gespeichert"],
 ["الاتجاهات عبر خرائط Google", "Google Haritalar ile yol tarifi", "Route in Google Maps"],
 ["الاتجاهات عبر خرائط Apple", "Apple Haritalar ile yol tarifi", "Route in Apple Karten"],
 ["عرض الخريطة هنا", "Haritayı burada göster", "Karte hier anzeigen"],
