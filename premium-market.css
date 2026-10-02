@@ -67,3 +67,14 @@ header nav .android-nav{color:#173b35!important;font-size:11px!important}
 .public-hours{background:#f0f4eb;border-color:#dce3d7;color:#3a5743;border-radius:10px}
 .example-notice{background:#faf6ea;border-color:#e8dec6;color:#846638}
 .android-download-icon{border-color:#b6c6ad}.android-download-action small{color:#64795f}
+
+/* Approved Daraya brand assets. */
+header .brand{gap:12px}
+header .brand-wordmark{display:none;object-fit:contain;width:280px;height:auto;max-width:100%}
+header .brand-icon{overflow:hidden}
+header .brand-icon img{display:block;width:100%;height:100%;object-fit:cover}
+html[lang="ar"] header .brand-wordmark{display:block}
+html[lang="ar"] header .brand-icon,html[lang="ar"] header .brand-localized-name{display:none}
+.android-download-icon{width:70px;height:70px;padding:0;border:0;overflow:hidden}
+.android-download-icon img{display:block;width:100%;height:100%;object-fit:cover}
+@media(max-width:600px){header .brand-wordmark{width:250px;max-width:calc(100vw - 48px)}header .brand{max-width:100%}.android-download-icon{width:52px;height:52px}}
