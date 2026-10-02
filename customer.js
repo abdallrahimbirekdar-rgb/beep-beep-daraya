@@ -2,8 +2,26 @@
 // Customer identity comes from Supabase Auth; SQL owns order attribution and access.
 let customerProfile=null,customerLoadedFor=null,customerAuthPending=false,customerHistoryPage=0,customerHistoryFilter={status:'',from:'',to:''},customerSearchLimit=24,pendingCustomerCheckout='';
 function accountRedirect(){return new URL('index.html',location.href).href.split('#')[0]+'#account';}
-function searchText(value){return String(value||'').normalize('NFKD').replace(/[\u0300-\u036f\u064b-\u065f\u0670\u200b-\u200f]/g,'').replace(/[أإآ]/g,'ا').replace(/ى/g,'ي').toLowerCase().trim();}
-function matchesProduct(p,term){const text=searchText([p.name,p.description,window.ShahinI18n?.translate(p.name),window.ShahinI18n?.translate(p.description)].join(' '));return searchText(term).split(/\s+/).every(word=>text.includes(word));}
+function searchText(value){return String(value||'').normalize('NFKD').replace(/[\u0300-\u036f\u064b-\u065f\u0670\u200b-\u200f]/g,'').replace(/[أإآ]/g,'ا').replace(/ى/g,'ي').replace(/ة/g,'ه').replace(/ـ/g,'').toLowerCase().trim();}
+const searchSynonymGroups=[
+['طبيب','اطباء','دكتور','عياده','عيادات','طب','doctor','arzt','doktor','hekim'],
+['حلاق','حلاقه','حلاقات','قص الشعر','قصه شعر','barber','haircut','friseur','berber'],
+['دهان','دهانات','طلاء','صباغ','دهان الجدران','painter','maler','boyaci'],
+['حداد','حداده','لحام','لحامات','حديد','welder','welding','metallbau','demirci'],
+['نجار','نجاره','خشب','خشبيه','اثاث','carpenter','tischler','marangoz'],
+['برغر','برجر','burger','hamburger'],
+['بوظه','ايس كريم','مثلجات','ice cream','eis','dondurma'],
+['حلويات','حلو','بقلاوه','كنافه','sweets','dessert','tatli','sussigkeiten'],
+['جوال','جوالات','موبايل','موبايلات','هاتف','هواتف','phone','handy','telefon'],
+['ملابس','البسه','ثياب','clothes','kleidung','giyim'],
+['شيكن','دجاج','فروج','chicken','hahnchen','tavuk'],
+['مشاوي','مشوي','كباب','grill','kebap'],
+['كافتيريا','مقهى','قهوه','كافيه','cafe','kaffee','kafe']
+].map(group=>group.map(searchText));
+function searchHasPhrase(text,phrase){return (' '+text.replace(/[^\p{L}\p{N}]+/gu,' ')+' ').includes(' '+phrase+' ');}
+function matchesSearch(text,term){text=searchText(text);return searchText(term).split(/\s+/).filter(Boolean).every(word=>{if(text.includes(word))return true;const bare=word.startsWith('ال')?word.slice(2):word;return searchSynonymGroups.some(group=>group.includes(bare)&&group.some(alias=>searchHasPhrase(text,alias)||searchHasPhrase(text,'ال'+alias)));});}
+function matchesStore(s,term){return matchesSearch([s.name,s.description,...['tr','de'].flatMap(lang=>[s.translations?.[lang]?.name,s.translations?.[lang]?.description]),window.ShahinI18n?.translate(s.name),window.ShahinI18n?.translate(s.description)].join(' '),term);}
+function matchesProduct(p,term){return matchesSearch([p.name,p.description,p.section,...['tr','de'].flatMap(lang=>[p.translations?.[lang]?.name,p.translations?.[lang]?.description]),window.ShahinI18n?.translate(p.name),window.ShahinI18n?.translate(p.description)].join(' '),term);}
 function searchProducts(term){if(!searchText(term))return [];return products.filter(p=>p.available&&matchesProduct(p,term)&&stores.some(s=>s.id===p.store_id&&s.active&&(filter==='all'||s.category===filter)&&(!browseFavorites||favoriteIds.includes(s.id))));}
 function updateCustomerNav(){const link=$('#customer-account');if(link){link.textContent=user?'حسابي':'دخول / إنشاء حساب';link.href='#account';}if($('#my-orders-link'))$('#my-orders-link').hidden=false;}
 async function loadCustomerData(){const uid=user?.id||null;customerProfile=null;customerLoadedFor=null;if(!uid){favoriteIds=remember.get('favorites',[]);if(!Array.isArray(favoriteIds))favoriteIds=[];return;}const results=await Promise.allSettled([api.from('customer_profiles').select('display_name,phone,address,area,address_parts').eq('user_id',uid).maybeSingle(),api.from('customer_favorites').select('store_id').eq('user_id',uid)]);if(user?.id!==uid)return;if(results.some(r=>r.status==='rejected'||r.value?.error)){toast('تعذر تحميل بيانات حسابك. حاول تحديث الصفحة.');favoriteIds=[];return;}customerProfile=results[0].value.data||{display_name:user.user_metadata?.display_name||'',phone:'',address:'',area:''};favoriteIds=results[1].value.data.map(row=>row.store_id);customerLoadedFor=uid;}
