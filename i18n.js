@@ -2,6 +2,20 @@
 // UI translations only. Merchant text and submitted values stay exactly as entered.
 (() => {
 const rows = [
+["حذف المحل", "Mağazayı kaldır", "Geschäft entfernen"],
+["حذف محل", "Mağaza kaldırma", "Geschäft entfernen"],
+["تأكيد حذف المحل", "Mağazayı kaldırmayı onayla", "Entfernen bestätigen"],
+["اكتب اسم المحل لتأكيد الحذف", "Kaldırmayı onaylamak için mağaza adını yazın", "Gib zur Bestätigung den Geschäftsnamen ein"],
+["المحلات المحذوفة", "Kaldırılan mağazalar", "Entfernte Geschäfte"],
+["استعادة المحل", "Mağazayı geri yükle", "Geschäft wiederherstellen"],
+["سيختفي المحل ومنتجاته من الموقع، ويتوقف استقبال الطلبات. تبقى الطلبات السابقة والحسابات محفوظة، ويمكن استعادة المحل من قسم المحلات المحذوفة.", "Mağaza ve ürünleri gizlenir ve sipariş alımı durur. Önceki siparişler ve hesaplar korunur. Mağazayı geri yükleyebilirsiniz.", "Geschäft und Produkte werden ausgeblendet. Frühere Bestellungen und Konten bleiben erhalten. Das Geschäft kann wiederhergestellt werden."],
+["إذا كانت لديه طلبات غير مكتملة، يجب إكمالها أو إلغاؤها أولاً.", "Önce açık siparişleri tamamlayın veya iptal edin.", "Schließe offene Bestellungen zuerst ab oder storniere sie."],
+["لا توجد محلات محذوفة", "Kaldırılan mağaza yok", "Keine entfernten Geschäfte"],
+["الطلبات والحسابات السابقة محفوظة. استعادة المحل لا تنشره تلقائياً.", "Önceki siparişler ve hesaplar korunur. Geri yükleme mağazayı otomatik yayınlamaz.", "Frühere Bestellungen und Konten bleiben erhalten. Wiederherstellen veröffentlicht das Geschäft nicht automatisch."],
+["سيعود المحل إلى لوحة الإدارة بحالة موقوف. راجع بياناته ثم فعّله عند الاستعداد.", "Mağaza pasif olarak geri gelir. Bilgilerini kontrol edip hazır olduğunda etkinleştirin.", "Das Geschäft wird deaktiviert wiederhergestellt. Prüfe die Daten und aktiviere es danach."],
+["اسم المحل غير مطابق", "Mağaza adı eşleşmiyor", "Der Geschäftsname stimmt nicht überein"],
+["تم حذف المحل من الموقع", "Mağaza siteden kaldırıldı", "Geschäft von der Website entfernt"],
+["تمت استعادة المحل بحالة موقوف", "Mağaza pasif olarak geri yüklendi", "Geschäft deaktiviert wiederhergestellt"],
 ["JPG أو PNG أو WebP، حتى ١٫٥ ميغابايت. نحفظ الأصل وننشئ صورة مصغّرة خفيفة.", "JPG, PNG veya WebP, en fazla 1,5 MB. Orijinali saklarız ve küçük önizleme oluştururuz.", "JPG, PNG oder WebP, bis 1,5 MB. Wir speichern das Original und erstellen ein kleines Vorschaubild."],
 ["جاري إنشاء الصورة المصغّرة…", "Küçük önizleme oluşturuluyor…", "Vorschaubild wird erstellt…"],
 ["جاري رفع الصورة الأصلية والمصغّرة…", "Orijinal ve küçük önizleme yükleniyor…", "Original und Vorschaubild werden hochgeladen…"],
