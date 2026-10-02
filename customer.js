@@ -9,17 +9,18 @@ const searchSynonymGroups=[
 ['دهان','دهانات','طلاء','صباغ','دهان الجدران','painter','maler','boyaci'],
 ['حداد','حداده','لحام','لحامات','حديد','welder','welding','metallbau','demirci'],
 ['نجار','نجاره','خشب','خشبيه','اثاث','carpenter','tischler','marangoz'],
-['برغر','برجر','burger','hamburger'],
-['بوظه','ايس كريم','مثلجات','ice cream','eis','dondurma'],
+['برغر','برجر','همبرغر','هامبرغر','همبرجر','burger','hamburger'],
+['بوظه','بوظا','ايس كريم','ايسكريم','مثلجات','ice cream','icecream','eis','dondurma'],
 ['حلويات','حلو','بقلاوه','كنافه','sweets','dessert','tatli','sussigkeiten'],
-['جوال','جوالات','موبايل','موبايلات','هاتف','هواتف','phone','handy','telefon'],
-['ملابس','البسه','ثياب','clothes','kleidung','giyim'],
+['جوال','جوالات','موبايل','موبايلات','هاتف','هواتف','تلفون','تلفونات','تليفون','تليفونات','تلفوناتنا','تليفوناتنا','فون','هاتف محمول','هاتف ذكي','اكسسوار','اكسسوارات','اكسسورات','phone','phones','mobile','smartphone','handy','handys','telefon','telefone','cep telefonu'],
+['ملابس','البسه','ثياب','تياب','لبس','ملبوسات','clothes','clothing','kleidung','giyim'],
 ['شيكن','دجاج','فروج','chicken','hahnchen','tavuk'],
 ['مشاوي','مشوي','كباب','grill','kebap'],
 ['كافتيريا','مقهى','قهوه','كافيه','cafe','kaffee','kafe']
 ].map(group=>group.map(searchText));
 function searchHasPhrase(text,phrase){return (' '+text.replace(/[^\p{L}\p{N}]+/gu,' ')+' ').includes(' '+phrase+' ');}
-function matchesSearch(text,term){text=searchText(text);return searchText(term).split(/\s+/).filter(Boolean).every(word=>{if(text.includes(word))return true;const bare=word.startsWith('ال')?word.slice(2):word;return searchSynonymGroups.some(group=>group.includes(bare)&&group.some(alias=>searchHasPhrase(text,alias)||searchHasPhrase(text,'ال'+alias)));});}
+function searchNearWord(a,b){if(a===b)return true;if(a.length<4||b.length<4||Math.abs(a.length-b.length)>1)return false;let i=0,j=0,edits=0;while(i<a.length&&j<b.length){if(a[i]===b[j]){i++;j++;continue;}if(++edits>1)return false;if(a.length>b.length)i++;else if(b.length>a.length)j++;else{i++;j++;}}return edits+(a.length-i)+(b.length-j)<=1;}
+function matchesSearch(text,term){text=searchText(text);const words=text.replace(/[^\p{L}\p{N}]+/gu,' ').split(/\s+/).filter(Boolean).map(w=>w.startsWith('ال')?w.slice(2):w);return searchText(term).split(/\s+/).filter(Boolean).every(word=>{if(text.includes(word))return true;const bare=word.startsWith('ال')?word.slice(2):word;if(words.some(candidate=>searchNearWord(bare,candidate)))return true;return searchSynonymGroups.some(group=>group.some(alias=>!alias.includes(' ')&&searchNearWord(bare,alias))&&group.some(alias=>searchHasPhrase(text,alias)||searchHasPhrase(text,'ال'+alias)));});}
 function matchesStore(s,term){return matchesSearch([s.name,s.description,...['tr','de'].flatMap(lang=>[s.translations?.[lang]?.name,s.translations?.[lang]?.description]),window.ShahinI18n?.translate(s.name),window.ShahinI18n?.translate(s.description)].join(' '),term);}
 function matchesProduct(p,term){return matchesSearch([p.name,p.description,p.section,...['tr','de'].flatMap(lang=>[p.translations?.[lang]?.name,p.translations?.[lang]?.description]),window.ShahinI18n?.translate(p.name),window.ShahinI18n?.translate(p.description)].join(' '),term);}
 function searchProducts(term){if(!searchText(term))return [];return products.filter(p=>p.available&&matchesProduct(p,term)&&stores.some(s=>s.id===p.store_id&&s.active&&(filter==='all'||s.category===filter)&&(!browseFavorites||favoriteIds.includes(s.id))));}
