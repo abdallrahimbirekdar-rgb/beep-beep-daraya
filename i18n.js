@@ -2,6 +2,7 @@
 // UI translations only. Merchant text and submitted values stay exactly as entered.
 (() => {
 const rows = [
+["الصحة والخدمات","Sağlık ve hizmetler","Gesundheit und Dienstleistungen"],
 ["سوق مدينتك،", "Şehrinin pazarı,", "Dein Markt in der Stadt,"],
 ["بين إيديك.", "elinin altında.", "direkt für dich."],
 ["محلات، مطاعم ومهن وخدمات من داريا، في مكان واحد.", "Daraya mağazaları, restoranları ve hizmetleri tek yerde.", "Geschäfte, Restaurants und Dienstleistungen aus Daraya an einem Ort."],
