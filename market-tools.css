@@ -14,3 +14,7 @@
 @media(max-width:600px){.store-banner .visit-store-button{max-width:none}}
 
 .store-map{height:320px;width:100%;border-radius:16px;isolation:isolate;margin:15px 0}.store-location-editor{padding:18px;border:1px solid #e2e6e8;border-radius:16px;margin:18px 0}.store-location-editor p{line-height:1.8}.store-address-dialog .store-map{text-align:start}
+
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+
+.low-data *,.low-data *::before,.low-data *::after{animation:none!important;transition:none!important}

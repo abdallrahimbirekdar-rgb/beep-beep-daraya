@@ -2,6 +2,16 @@
 // UI translations only. Merchant text and submitted values stay exactly as entered.
 (() => {
 const rows = [
+["الاتجاهات عبر خرائط Google", "Google Haritalar ile yol tarifi", "Route in Google Maps"],
+["الاتجاهات عبر خرائط Apple", "Apple Haritalar ile yol tarifi", "Route in Apple Karten"],
+["عرض الخريطة هنا", "Haritayı burada göster", "Karte hier anzeigen"],
+["يفتح الخرائط للوصول إلى الموقع الذي حدده صاحب المحل.", "Mağaza sahibinin seçtiği konuma gitmek için haritaları açar.", "Öffnet die Route zum vom Geschäftsinhaber gewählten Standort."],
+["JPG أو PNG أو WebP، حتى ١٫٥ ميغابايت. تُضغط تلقائياً لتوفير الإنترنت.", "JPG, PNG veya WebP, en fazla 1,5 MB. Veri tasarrufu için otomatik sıkıştırılır.", "JPG, PNG oder WebP, bis 1,5 MB. Wird automatisch komprimiert."],
+["رابط الصورة الحالية — لصور جديدة استخدم الرفع", "Mevcut görsel bağlantısı — yeni görselleri yükleyin", "Aktueller Bildlink — neue Bilder bitte hochladen"],
+["اختر JPG أو PNG أو WebP بحجم لا يتجاوز ١٫٥ ميغابايت", "En fazla 1,5 MB boyutunda JPG, PNG veya WebP seçin", "Wähle JPG, PNG oder WebP mit höchstens 1,5 MB"],
+["ارفع الصورة من جهازك لضمان حد الحجم وسرعة التحميل.", "Boyut sınırı ve hızlı yükleme için görseli cihazınızdan yükleyin.", "Lade das Bild vom Gerät hoch, damit die Größenbegrenzung eingehalten wird."],
+["كل صورة يجب ألا تتجاوز ١٫٥ ميغابايت", "Her görsel en fazla 1,5 MB olmalıdır", "Jedes Bild darf höchstens 1,5 MB groß sein"],
+["حتى 5 صور إضافية، كل صورة حتى ١٫٥ ميغابايت. اترك الحقل فارغاً للاحتفاظ بالصور.", "En fazla 5 ek görsel, her biri en fazla 1,5 MB. Mevcut görseller için boş bırakın.", "Bis zu 5 weitere Bilder mit je höchstens 1,5 MB. Zum Behalten leer lassen."],
 ["استخدم موقعي الحالي", "Mevcut konumumu kullan", "Meinen aktuellen Standort verwenden"],
 ["استخدم GPS وأنت داخل المحل. راجع العلامة والعنوان ثم اضغط حفظ.", "Mağazadayken GPS kullanın. Konumu ve adresi kontrol edip kaydedin.", "Verwende GPS im Geschäft. Prüfe Markierung und Adresse und speichere."],
 ["جاري تحديد موقع المحل…", "Mağaza konumu belirleniyor…", "Geschäftsstandort wird ermittelt…"],

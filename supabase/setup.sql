@@ -79,7 +79,7 @@ grant insert,update on public.stores to authenticated;
 grant insert,update,delete on public.products to authenticated;
 revoke insert,update,delete on public.orders from anon,authenticated;
 revoke insert,update,delete on public.platform_admins from anon,authenticated;
-insert into storage.buckets(id,name,public,file_size_limit,allowed_mime_types) values('store-images','store-images',true,5242880,array['image/jpeg','image/png','image/webp']);
+insert into storage.buckets(id,name,public,file_size_limit,allowed_mime_types) values('store-images','store-images',true,1572864,array['image/jpeg','image/png','image/webp']);
 create policy images_upload on storage.objects for insert to authenticated with check(bucket_id='store-images' and public.manages_store((storage.foldername(name))[1]::uuid));
 create policy images_read on storage.objects for select using(bucket_id='store-images');
 -- After creating YOUR user in Authentication > Users, run separately:
