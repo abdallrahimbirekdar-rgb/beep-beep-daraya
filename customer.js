@@ -16,11 +16,28 @@ const searchSynonymGroups=[
 ['ملابس','البسه','ثياب','تياب','لبس','ملبوسات','clothes','clothing','kleidung','giyim'],
 ['شيكن','دجاج','فروج','chicken','hahnchen','tavuk'],
 ['مشاوي','مشوي','كباب','grill','kebap'],
-['كافتيريا','مقهى','قهوه','كافيه','cafe','kaffee','kafe']
+['كافتيريا','مقهى','قهوه','كافيه','cafe','kaffee','kafe'],
+['شحن','اشحن','يشحن','شاحن','شواحن','كابل','كابلات','charging','charger','ladegerat','sarj'],
+['تصليح','اصلاح','صلح','صيانه','ترميم','repair','reparatur','tamir'],
+['باب','ابواب','door','doors','tur','turen','kapi'],
+['شعر','شعري','الشعر','حلاقه','حلاق','hair','haircut','haare','sac'],
+['اكل','اكله','اكلات','طعام','وجبه','وجبات','ماكولات','مطعم','مطاعم','جوعان','جوعانه','food','meal','restaurant','essen','yemek'],
+['سماعه','سماعات','هيدفون','headphones','earphones','kopfhorer','kulaklik'],
+['اطفال','طفل','اولاد','ولاد','صغار','رضع','بيبي','kids','children','kinder','cocuk'],
+['رجالي','رجاليه','رجال','شباب','men','mens','herren','erkek'],
+['نسائي','نسائيه','نساء','بنات','women','womens','damen','kadin'],
+['دهان','دهانات','طلاء','دهن','ادهن','صبغ','اصبغ','حيط','حيطان','جدران','painter','maler','boyaci']
 ].map(group=>group.map(searchText));
 function searchHasPhrase(text,phrase){return (' '+text.replace(/[^\p{L}\p{N}]+/gu,' ')+' ').includes(' '+phrase+' ');}
 function searchNearWord(a,b){if(a===b)return true;if(a.length<4||b.length<4||Math.abs(a.length-b.length)>1)return false;let i=0,j=0,edits=0;while(i<a.length&&j<b.length){if(a[i]===b[j]){i++;j++;continue;}if(++edits>1)return false;if(a.length>b.length)i++;else if(b.length>a.length)j++;else{i++;j++;}}return edits+(a.length-i)+(b.length-j)<=1;}
-function matchesSearch(text,term){text=searchText(text);const words=text.replace(/[^\p{L}\p{N}]+/gu,' ').split(/\s+/).filter(Boolean).map(w=>w.startsWith('ال')?w.slice(2):w);return searchText(term).split(/\s+/).filter(Boolean).every(word=>{if(text.includes(word))return true;const bare=word.startsWith('ال')?word.slice(2):word;if(words.some(candidate=>searchNearWord(bare,candidate)))return true;return searchSynonymGroups.some(group=>group.some(alias=>!alias.includes(' ')&&searchNearWord(bare,alias))&&group.some(alias=>searchHasPhrase(text,alias)||searchHasPhrase(text,'ال'+alias)));});}
+const searchIntentPhrases=[
+['قص شعري','حلاق'],['قص شعر','حلاق'],['قصه شعر','حلاق'],['احلق شعري','حلاق'],['احلق دقني','حلاق'],
+['شي يشحن الموبايل','شاحن'],['شي يشحن التلفون','شاحن'],['اشحن تلفوني','شاحن'],['اشحن موبايلي','شاحن'],
+['اصبغ البيت','دهان'],['ادهن البيت','دهان'],['لون الحيط','دهان'],['ايس كريم','ايسكريم']
+].map(([phrase,intent])=>[searchText(phrase),searchText(intent)]);
+const searchFillers=new Set(['بدي','بدنا','ابي','ابغى','عايز','عاوز','اريد','احتاج','محتاج','محتاجه','ابحث','بحث','دور','عم','عن','على','علي','لي','الي','لو','سمحت','وين','فين','اين','في','فيه','فيها','عند','عندي','عندكم','الكم','شي','شيء','شئ','شغله','ممكن','هل','يوجد','فيكن','اشتري','شراء','احصل','بلاقي','الاقي','انا','من','محل','محلات','i','want','need','looking','for','a','an','the','ich','suche','brauche','ein','eine','bir','istiyorum','ariyorum']);
+function searchQueryWords(term){let query=searchText(term).replace(/[^\p{L}\p{N}]+/gu,' ');for(const [phrase,intent] of searchIntentPhrases)query=(' '+query+' ').replaceAll(' '+phrase+' ',' '+intent+' ').trim();return query.split(/\s+/).filter(word=>word&&!searchFillers.has(word));}
+function matchesSearch(text,term){if(!searchText(term))return true;text=searchText(text);const words=text.replace(/[^\p{L}\p{N}]+/gu,' ').split(/\s+/).filter(Boolean).map(w=>w.startsWith('ال')?w.slice(2):w),query=searchQueryWords(term);if(!query.length)return false;return query.every(word=>{if(text.includes(word))return true;const bare=word.startsWith('ال')?word.slice(2):word;if(words.some(candidate=>searchNearWord(bare,candidate)))return true;return searchSynonymGroups.some(group=>group.some(alias=>!alias.includes(' ')&&searchNearWord(bare,alias))&&group.some(alias=>searchHasPhrase(text,alias)||searchHasPhrase(text,'ال'+alias)));});}
 function matchesStore(s,term){return matchesSearch([s.name,s.description,...['tr','de'].flatMap(lang=>[s.translations?.[lang]?.name,s.translations?.[lang]?.description]),window.ShahinI18n?.translate(s.name),window.ShahinI18n?.translate(s.description)].join(' '),term);}
 function matchesProduct(p,term){return matchesSearch([p.name,p.description,p.section,...['tr','de'].flatMap(lang=>[p.translations?.[lang]?.name,p.translations?.[lang]?.description]),window.ShahinI18n?.translate(p.name),window.ShahinI18n?.translate(p.description)].join(' '),term);}
 function searchProducts(term){if(!searchText(term))return [];return products.filter(p=>p.available&&matchesProduct(p,term)&&stores.some(s=>s.id===p.store_id&&s.active&&(filter==='all'||s.category===filter)&&(!browseFavorites||favoriteIds.includes(s.id))));}
