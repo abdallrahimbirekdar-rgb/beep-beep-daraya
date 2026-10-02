@@ -2,6 +2,14 @@
 // UI translations only. Merchant text and submitted values stay exactly as entered.
 (() => {
 const rows = [
+["استخدم موقعي الحالي", "Mevcut konumumu kullan", "Meinen aktuellen Standort verwenden"],
+["استخدم GPS وأنت داخل المحل. راجع العلامة والعنوان ثم اضغط حفظ.", "Mağazadayken GPS kullanın. Konumu ve adresi kontrol edip kaydedin.", "Verwende GPS im Geschäft. Prüfe Markierung und Adresse und speichere."],
+["جاري تحديد موقع المحل…", "Mağaza konumu belirleniyor…", "Geschäftsstandort wird ermittelt…"],
+["تم تحديد موقع المحل. راجع العلامة والعنوان ثم اضغط حفظ.", "Konum seçildi. Konumu ve adresi kontrol edip kaydedin.", "Standort ermittelt. Prüfe Markierung und Adresse und speichere."],
+["GPS غير متاح. حدد المحل يدوياً على الخريطة.", "GPS mevcut değil. Haritadan elle seçin.", "GPS nicht verfügbar. Wähle den Standort auf der Karte."],
+["تعذر تحديد الموقع. حدد المحل يدوياً على الخريطة.", "Konum belirlenemedi. Haritadan elle seçin.", "Standort konnte nicht ermittelt werden. Wähle ihn auf der Karte."],
+["لم تسمح بالوصول للموقع. فعّل إذن الموقع في المتصفح أو حدد المحل يدوياً.", "Konum izni verilmedi. Tarayıcıdan izin verin veya haritadan elle seçin.", "Standortzugriff abgelehnt. Erlaube ihn im Browser oder wähle den Standort auf der Karte."],
+["تعذر تحديد الموقع. تأكد من تشغيل GPS أو حدد المحل يدوياً على الخريطة.", "Konum belirlenemedi. GPS açın veya haritadan elle seçin.", "Standort konnte nicht ermittelt werden. Aktiviere GPS oder wähle ihn auf der Karte."],
 ["موقع المحل والعنوان", "Mağaza konumu ve adresi", "Standort und Adresse des Geschäfts"],
 ["موقع المحل على الخريطة", "Mağazanın haritadaki konumu", "Geschäft auf der Karte"],
 ["تحديد موقع المحل", "Mağaza konumunu seç", "Geschäftsstandort wählen"],
