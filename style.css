@@ -48,3 +48,5 @@ html[dir="ltr"] .hero-copy h1{font-size:clamp(36px,4vw,62px);letter-spacing:-1.5
 .example-badge{display:inline-block;background:#fff0b5;color:#684900;border:1px solid #e4c86d;border-radius:8px;padding:6px 10px;font-weight:800;margin-bottom:12px}.example-notice{background:#fff3c7;color:#684900;padding:16px;border:1px solid #e4c86d;border-radius:12px}.store-banner.text-only,.product.text-only{grid-template-columns:1fr}.text-only .card-cover{height:112px;background:linear-gradient(120deg,#183d45,#294f58);color:white}.service-card-heading{padding:25px 20px;font-size:24px;font-weight:800}.text-only .availability{top:auto;bottom:10px}.product.text-only{padding:22px}
 
 .card.text-only .card-cover{height:230px}.card.text-only .availability{top:14px;bottom:auto}.store-banner .store-image[src*="images/services/"]{object-fit:cover}@media(max-width:600px){.card.text-only .card-cover{height:195px}}
+
+.store-banner .store-image[src*="images.pexels.com"]{object-fit:cover;object-position:center 28%}
