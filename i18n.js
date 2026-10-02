@@ -2,6 +2,16 @@
 // UI translations only. Merchant text and submitted values stay exactly as entered.
 (() => {
 const rows = [
+["محل تجريبي — مثال", "Örnek işletme", "Beispielgeschäft"],
+["بيانات هذه الصفحة للتوضيح فقط. العناوين والأسعار وساعات الدوام افتراضية.", "Bu sayfa örnektir. Adresler, fiyatlar ve saatler varsayımsaldır.", "Diese Seite ist ein Beispiel. Adresse, Preise und Zeiten sind fiktiv."],
+["الخدمات والمعلومات", "Hizmetler ve bilgiler", "Dienstleistungen und Informationen"],
+["خدمات · داريا", "Hizmetler · Daraya", "Dienstleistungen · Daraya"],
+["الخدمات والأسعار", "Hizmetler ve fiyatlar", "Dienstleistungen und Preise"],
+["معلومات وخدمات فقط", "Yalnızca bilgi ve hizmetler", "Nur Informationen und Dienstleistungen"],
+["معلومات المحل والخدمات", "İşletme ve hizmet bilgileri", "Geschäfts- und Dienstleistungsinformationen"],
+["هذه صفحة معلومات فقط. لا تتوفر طلبات عبر الموقع.", "Bu sayfa yalnızca bilgi içindir. Online sipariş yoktur.", "Diese Seite dient nur zur Information. Keine Onlinebestellungen."],
+["زيارة المحل للاستفسار", "Bilgi için işletmeyi ziyaret edin", "Für Auskünfte das Geschäft besuchen"],
+["شاهد الخدمات ←", "Hizmetleri gör ←", "Dienstleistungen ansehen ←"],
 ["حذف المحل", "Mağazayı kaldır", "Geschäft entfernen"],
 ["حذف محل", "Mağaza kaldırma", "Geschäft entfernen"],
 ["تأكيد حذف المحل", "Mağazayı kaldırmayı onayla", "Entfernen bestätigen"],
