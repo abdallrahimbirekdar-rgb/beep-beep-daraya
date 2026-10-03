@@ -1,0 +1,61 @@
+/* Merchant tools: visible navigation and touch-friendly controls. */
+body:has(.merchant-layout) .merchant-top{align-items:flex-start}
+.merchant-top .merchant-actions{gap:10px}
+.merchant-top .merchant-actions>*{min-height:46px}
+.merchant-sidebar .merchant-nav a{min-height:48px;border:1px solid transparent}
+.merchant-sidebar .merchant-nav a.selected{border-color:#70997b;font-weight:700}
+.merchant-section-counter{display:inline-block;color:#48624e;background:#eef3e9;padding:4px 10px;border-radius:8px;font-size:13px}
+.merchant-content .editor-panel label{font-size:15px;line-height:1.7}
+.merchant-content input,.merchant-content select,.merchant-content textarea{font-size:16px;min-height:48px}
+.merchant-content input[type=checkbox]{width:22px;min-height:22px;height:22px;accent-color:#173b35;flex-shrink:0}
+.merchant-content input[type=time]{min-width:0}
+.merchant-content textarea{min-height:110px}
+.merchant-content .editor-footer button{min-height:48px}
+.merchant-content .editor-footer a{display:inline-flex;align-items:center;min-height:44px;text-decoration:underline}
+.merchant-content .choice-card{min-height:90px}
+.merchant-content .field-hint{line-height:1.9}
+@media(max-width:760px){
+ body:has(.merchant-layout) main{padding:18px 12px 34px}
+ .merchant-top{align-items:stretch;margin-bottom:18px}
+ .merchant-top h1{font-size:26px}
+ .merchant-top .merchant-actions{width:100%;display:grid;grid-template-columns:1fr 1fr}
+ .merchant-top .merchant-actions>*{padding:11px 10px;font-size:13px;text-align:center}
+ .merchant-layout{display:grid;grid-template-columns:minmax(0,1fr);gap:18px}
+ .merchant-sidebar{position:static;padding:14px;border:2px solid #cbd9c7}
+ .merchant-sidebar .store-identity{justify-content:flex-start;gap:10px}
+ .merchant-sidebar .store-identity .tag{margin-inline-start:0;width:100%;text-align:center;justify-content:center;font-size:12px;padding:7px}
+ .merchant-sidebar .merchant-nav{display:grid;grid-template-columns:1fr 1fr;gap:8px;overflow:visible;margin:12px 0 0;padding:0;max-width:none}
+ .merchant-sidebar .merchant-nav a{display:flex;flex-direction:column;justify-content:center;gap:6px;white-space:normal;text-align:center;min-height:78px;padding:12px 6px;background:#f3f6ef;border:1px solid #d7e1d1;border-radius:12px;font-size:13px;line-height:1.5}
+ .merchant-sidebar .merchant-nav a>span{width:auto;font-size:24px;line-height:1;color:#48624e}
+ .merchant-sidebar .merchant-nav a.selected{background:#173b35;color:#fff;border-color:#173b35;box-shadow:0 3px 8px #173b3522}
+ .merchant-sidebar .merchant-nav a.selected>span{color:#fff}
+ .merchant-sidebar .setup-mini{display:block;font-size:13px;margin-top:14px;padding-top:12px}
+ .merchant-content{min-width:0}
+ .merchant-content .panel.editor-panel{padding:18px 14px}
+ .merchant-content .section-heading{margin-bottom:20px}
+ .merchant-content .section-heading h2{font-size:23px}
+ .merchant-content .form-grid,.merchant-content .service-options,.merchant-content .setup-grid,.merchant-content .merchant-products{grid-template-columns:1fr}
+ .merchant-content .span2{grid-column:1/-1}
+ .merchant-content .choice-card{padding:16px;gap:12px}
+ .merchant-content .choice-card small{font-size:13px;line-height:1.8}
+ .merchant-content .editor-footer{position:sticky;bottom:10px;z-index:3;background:#fff;border:1px solid #cbd9c7;border-radius:13px;padding:12px;margin-top:24px;box-shadow:0 5px 20px #173b351a;display:grid;grid-template-columns:1fr;gap:6px}
+ .merchant-content .editor-footer button{width:100%;font-size:16px}
+ .merchant-content .editor-footer a{justify-content:center;font-size:13px;min-height:36px}
+ .merchant-content .setup-card{padding:18px}
+ .merchant-content .reception{align-items:stretch;flex-direction:column}
+ .merchant-content .reception button{width:100%;min-height:48px}
+ .merchant-content .products-heading{align-items:stretch;flex-direction:column}
+ .merchant-content #new-product{width:100%;min-height:50px;font-size:16px}
+ .merchant-content .merchant-product-actions{display:grid;grid-template-columns:1fr 1fr}
+ .merchant-content .merchant-product-actions button{min-height:46px;font-size:14px}
+ .merchant-content .hours-head{display:none}
+ .merchant-content .hours-row{grid-template-columns:1fr 1fr;border:1px solid #dce3df;border-radius:12px;padding:14px;margin:10px 0;gap:10px;background:#f8faf5}
+ .merchant-content .hours-row .day-toggle{grid-column:1/-1;font-size:16px;gap:10px}
+ .merchant-content .hours-row label:has(input[type=time]) .sr-only{position:static;width:auto;height:auto;clip:auto;white-space:normal;overflow:visible;display:block;font-size:13px;padding-bottom:5px}
+ .merchant-content .hours-row .day-state{grid-column:1/-1;margin:0}
+ .merchant-content .hours-row input[type=time]{width:100%;font-size:16px;padding:10px}
+ .merchant-content .image-preview{min-height:180px}
+ .merchant-content input[type=file]{padding:12px;background:#f0f5e9;border:2px dashed #90a987;max-width:100%}
+ .merchant-content input[type=file]::file-selector-button{font:inherit;background:#173b35;color:white;border:0;padding:10px 12px;border-radius:8px;margin-inline-end:8px}
+ .merchant-content .merchant-metrics>div{padding:14px 8px;text-align:center}
+}
