@@ -56,7 +56,17 @@ const palettes={gold:['#ffe7a0','#d9a532','#986618'],silver:['#f3f7fb','#b9c5d0'
 if(key==='free')return '<svg viewBox="0 0 36 36" width="28" height="28" aria-hidden="true" focusable="false"><path d="M6 29L27 8M14 21l-5-9M20 15l10 1M10 25l8 3" fill="none" stroke="#825533" stroke-width="4" stroke-linecap="round"/><path d="M9 12l-2-4M27 8l3-3" fill="none" stroke="#bb8957" stroke-width="2.5" stroke-linecap="round"/><path d="M11 25l12-12" stroke="#d6ab78" stroke-width="1.3" stroke-linecap="round"/></svg>';
 const p=palettes[key];if(!p)return '<svg viewBox="0 0 36 36" width="28" height="28" aria-hidden="true" focusable="false"><circle cx="18" cy="18" r="10" fill="none" stroke="#9ba49d" stroke-width="2"/></svg>';
 if(key==='iron')return '<svg viewBox="0 0 36 36" width="28" height="28" aria-hidden="true" focusable="false"><path d="M7 9l22-3v6l-7 1v10l7-1v6L7 31v-6l7-1V14l-7 1z" fill="'+p[1]+'" stroke="'+p[2]+'" stroke-width="1.2"/><path d="M7 9l22-3v3L7 12zM15 14l3-.4v10l-3 .4zM7 25l22-3v3L7 28z" fill="'+p[0]+'"/></svg>';
-return '<svg viewBox="0 0 36 36" width="28" height="28" aria-hidden="true" focusable="false"><path d="M10 7h17l5 20-22 5-6-5z" fill="'+p[1]+'" stroke="'+p[2]+'" stroke-width="1.1" stroke-linejoin="round"/><path d="M10 7h17l-3 18-20 2z" fill="'+p[0]+'" stroke="'+p[2]+'" stroke-width="1.1" stroke-linejoin="round"/><path d="M24 25l8 2-22 5-6-5z" fill="'+p[2]+'"/><path d="M12 10h12" stroke="#fff" stroke-opacity=".6" stroke-width="1.5"/><text x="16" y="20" text-anchor="middle" font-family="Arial,sans-serif" font-size="6" font-weight="bold" fill="'+p[2]+'">1 oz</text></svg>';
+const uid='bullion-'+key+'-'+(subscriptionMaterialIcon.sequence=(subscriptionMaterialIcon.sequence||0)+1);
+const metal=key==='gold'?'GOLD':key==='silver'?'SILVER':'BRONZE';
+return '<svg viewBox="0 0 36 36" width="28" height="28" aria-hidden="true" focusable="false"><defs>'+
+'<linearGradient id="'+uid+'" x1="0" y1="0" x2="1" y2=".8"><stop stop-color="'+p[2]+'"/><stop offset=".16" stop-color="'+p[1]+'"/><stop offset=".38" stop-color="'+p[0]+'"/><stop offset=".52" stop-color="#fff"/><stop offset=".65" stop-color="'+p[0]+'"/><stop offset="1" stop-color="'+p[1]+'"/></linearGradient>'+
+'</defs><ellipse cx="18" cy="31.5" rx="12" ry="2" fill="#172820" opacity=".15"/>'+
+'<path d="M8 6L25 3Q27 3 28 6L32 25Q33 28 30 29L12 33Q9 33 8 30L4 11Q3 8 8 6Z" fill="'+p[2]+'"/>'+
+'<path d="M7 6L24 3Q27 2.5 27.7 6L31 24Q31.5 26.5 28.5 27.2L11 31Q8.5 31.5 8 28.5L4.5 10Q4 7 7 6Z" fill="url(#'+uid+')" stroke="'+p[2]+'" stroke-width=".6"/>'+
+'<path d="M9 8L23 5.5Q25 5 25.5 7L28.6 23Q29 25 27 25.5L12 28.5Q10 29 9.7 27L6.8 11Q6.5 8.5 9 8Z" fill="none" stroke="'+p[2]+'" stroke-opacity=".5" stroke-width=".65"/>'+
+'<path d="M7 7L24 4M5.5 10L9 28" stroke="#fff" stroke-opacity=".8" stroke-width=".7" stroke-linecap="round"/>'+
+'<g transform="rotate(-11 18 18)" text-anchor="middle" font-family="Arial,sans-serif" font-weight="bold" fill="'+p[2]+'"><path d="M16 10h4l1.2 2-3.2 2-3.2-2z" fill="none" stroke="'+p[2]+'" stroke-width=".65"/><text x="18" y="18" font-size="3.4" letter-spacing=".4">'+metal+'</text><text x="18" y="23" font-size="5.5">1 oz</text><path d="M14 25h8" stroke="'+p[2]+'" stroke-width=".5"/></g></svg>';
+
 }
 function customerPlanBadge(s){
 const sub=storeSubscriptions.find(x=>x.store_id===s.id);const key=sub?(sub.active?sub.plan_id:'free'):'unassigned';
