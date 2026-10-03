@@ -38,10 +38,58 @@ body{padding-bottom:calc(72px + env(safe-area-inset-bottom))!important}
 #cart-shortcut{bottom:calc(78px + env(safe-area-inset-bottom))!important}
 .editor-footer{bottom:calc(78px + env(safe-area-inset-bottom))!important}
 }
-</style><style>[hidden]{display:none!important}.directory-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}.directory-actions>*{min-height:44px}.filters{flex-wrap:wrap}.store-location-editor input[type=url]{width:100%}</style></head><body>
+</style><style>[hidden]{display:none!important}.directory-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}.directory-actions>*{min-height:44px}.filters{flex-wrap:wrap}.store-location-editor input[type=url]{width:100%}</style><style>
+.admin-layout{display:flex!important;flex-direction:column!important;gap:14px!important}
+.admin-layout>.admin-heading{order:0;margin:0!important;align-items:center!important}
+.admin-layout>.tabs{order:1;display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px!important;margin:0!important}
+.admin-layout>.stats{order:2;display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:8px!important;margin:0!important}
+.admin-layout>#website-visit-stats{order:3;margin:0!important}
+.admin-layout>#dashboard-content{order:4;min-width:0}
+.admin-layout .stat{padding:12px!important;min-height:0!important;border-radius:12px!important}
+.admin-layout .stat strong{font-size:24px!important;line-height:1.4!important;overflow-wrap:anywhere}
+.admin-layout .stat span{font-size:12px!important}
+.admin-layout .tabs a{margin:0!important;padding:12px 8px!important;min-height:44px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:14px!important}
+.admin-layout .panel{padding:18px!important;margin-top:0!important}
+.admin-heading h1{font-size:23px!important;margin:0 0 4px!important}
+.admin-heading small{display:none}
+.admin-heading>.form-actions:empty{display:none}
+.admin-tools{position:relative}
+.admin-tools summary,.admin-place-more summary{cursor:pointer;min-height:44px;display:flex;align-items:center;color:#173b35;font-weight:700}
+.admin-tools-items{display:flex;flex-wrap:wrap;gap:8px;padding:10px 0}
+.admin-place-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:14px}
+.admin-place-card{border:1px solid #dce5de;border-radius:14px;padding:16px;background:white;min-width:0}
+.admin-place-heading{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:5px}
+.admin-place-heading strong{font-size:17px}
+.admin-place-heading .tag{font-size:11px;white-space:nowrap}
+.admin-place-card p{font-size:13px;margin:8px 0 12px}
+.admin-place-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.admin-place-actions>*{min-height:44px!important;padding:10px 6px!important;margin:0!important;text-align:center!important;font-size:13px!important}
+.admin-place-more{border-top:1px solid #edf0eb;margin-top:12px}
+.admin-owner-email{display:block;overflow-wrap:anywhere;margin-top:10px;color:#68766e}
+.admin-pagination{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:16px}
+.admin-pagination span{font-size:12px}
+.admin-layout #website-visit-stats .stats{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:8px!important}
+.admin-layout #website-visit-stats h2{font-size:18px!important}
+.admin-layout #website-visit-stats small{font-size:11px;line-height:1.6}
+@media(max-width:760px){
+.admin-layout{padding:12px!important;gap:12px!important}
+.admin-layout>.tabs{grid-template-columns:repeat(2,minmax(0,1fr))}
+.admin-place-list{grid-template-columns:1fr}
+.admin-layout>.stats{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+.admin-layout>.stats strong{font-size:19px!important}
+.admin-layout #website-visit-stats .stats{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+.admin-layout .topline{flex-wrap:wrap!important;gap:10px!important}
+.admin-layout .table-wrap{overflow:visible!important}
+.admin-layout .table-wrap table,.admin-layout .table-wrap tbody{display:block!important;width:100%!important;min-width:0!important}
+.admin-layout .table-wrap thead{display:none!important}
+.admin-layout .table-wrap tr{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));padding:12px!important;border:1px solid #dce5de;border-radius:12px;margin:10px 0!important;gap:8px!important}
+.admin-layout .table-wrap td{padding:4px!important;border:0!important;overflow-wrap:anywhere;min-height:0!important;height:auto!important}
+.admin-layout .table-wrap td:first-child,.admin-layout .table-wrap td:last-child{grid-column:1/-1}
+}
+</style></head><body>
 <header><a class="brand" href="#home"><img class="brand-wordmark" src="images/daraya-logo.webp?v=hero-mobile-height-1" alt="سوق داريا الإلكتروني" width="280" height="104"><span class="brand-icon"><img src="images/daraya-mark.webp?v=hero-mobile-height-1" alt="" width="48" height="48"></span><span class="brand-localized-name">سوق داريا الإلكتروني<small>طلبات داريا</small></span></a><button id="menu-toggle" type="button" aria-label="فتح القائمة" aria-controls="site-menu" aria-expanded="false">☰</button><nav id="site-menu" aria-label="قائمة الموقع" hidden><label class="language-switch"><span aria-hidden="true">◎</span><select id="language" aria-label="Language / Sprache / Dil / اللغة"><option value="ar" lang="ar">العربية</option><option value="tr" lang="tr">Türkçe</option><option value="de" lang="de">Deutsch</option></select></label><a id="customer-account" href="#account">دخول / إنشاء حساب</a><a id="dashboard-link" href="#dashboard" hidden>لوحة التحكم</a><button id="account" hidden>دخول أصحاب المتاجر</button><a class="android-nav" data-android-download href="https://github.com/abdallrahimbirekdar-rgb/beep-beep-daraya/releases/download/android-v1.0.0/shahin.apk">تطبيق أندرويد</a><button type="button" class="ios-install-nav" data-ios-install>تثبيت على آيفون</button><a href="mailto:info@damascus-shop.com">تواصل معنا</a></nav></header><nav id="mobile-navigation" aria-label="التنقل الرئيسي"></nav>
 <div id="notice" class="notice" hidden></div><main id="app"><p class="loading">جاري تحميل المتاجر…</p></main><div id="toast" role="status" aria-live="polite" hidden></div>
 <dialog id="modal"><button id="close-modal" class="close" aria-label="إغلاق">×</button><div id="modal-body"></div></dialog>
 <section class="android-download" data-android-download aria-labelledby="android-app-title"><div class="android-download-icon" aria-hidden="true"><img src="images/daraya-mark.webp?v=hero-mobile-height-1" alt="" width="70" height="70"></div><div class="android-download-content"><h2 id="android-app-title">تطبيق سوق داريا</h2><p>تصفّح المتاجر واطلب من هاتفك.</p></div><div class="android-download-action"><a href="https://github.com/abdallrahimbirekdar-rgb/beep-beep-daraya/releases/download/android-v1.0.0/shahin.apk" download="shahin.apk"><span aria-hidden="true">↓</span><span>تحميل تطبيق أندرويد</span></a><small>Android 7+ · APK · 1.0.0</small></div></section><p class="android-install-note" data-android-download>بعد التحميل، افتح ملف APK واتبع تعليمات التثبيت على هاتفك. التطبيق يحتاج اتصالاً بالإنترنت.</p>
 <section class="ios-install-card" data-ios-install-card><div><span class="ios-install-kicker">لأجهزة آيفون</span><h2>أضف السوق إلى هاتفك</h2><p>افتحه مباشرة من الشاشة الرئيسية.</p></div><button type="button" data-ios-install>تثبيت على آيفون</button></section><footer><strong>سوق داريا الإلكتروني <small>من مدينتك، إلى بابك.</small></strong><span>الدفع نقداً عند الاستلام · التوصيل أو الاستلام حسب خيارات المتجر</span><a href="mailto:info@damascus-shop.com" aria-label="تواصل معنا عبر البريد الإلكتروني" style="text-decoration:underline;text-underline-offset:4px">تواصل معنا: <bdi dir="ltr">info@damascus-shop.com</bdi></a></footer>
-<script src="i18n.js?v=directory-1"></script><script src="config.js?v=directory-1"></script><script src="merchant.js?v=directory-1"></script><script src="app.js?v=directory-1"></script><script src="features.js?v=directory-1"></script><script src="store-location.js?v=directory-1"></script><script src="store-removal.js?v=directory-1"></script><script src="customer.js?v=directory-1"></script><script src="market-tools.js?v=directory-1"></script><script src="cart-navigation.js?v=directory-1"></script><script src="android-download.js?v=directory-1"></script><script src="ios-install.js?v=directory-1"></script><script src="site-navigation.js?v=directory-1"></script><script src="directory.js?v=directory-1"></script><script src="website-visits.js?v=visitors-2"></script></body></html>
+<script src="i18n.js?v=directory-1"></script><script src="config.js?v=directory-1"></script><script src="merchant.js?v=directory-1"></script><script src="app.js?v=directory-1"></script><script src="features.js?v=directory-1"></script><script src="store-location.js?v=directory-1"></script><script src="store-removal.js?v=directory-1"></script><script src="customer.js?v=directory-1"></script><script src="market-tools.js?v=directory-1"></script><script src="cart-navigation.js?v=directory-1"></script><script src="android-download.js?v=directory-1"></script><script src="ios-install.js?v=directory-1"></script><script src="site-navigation.js?v=directory-1"></script><script src="directory.js?v=directory-1"></script><script src="website-visits.js?v=visitors-2"></script><script src="admin-interface.js?v=admin-cards-1"></script></body></html>
