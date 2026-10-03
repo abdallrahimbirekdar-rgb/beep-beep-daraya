@@ -1,6 +1,6 @@
 'use strict';
 function showPlaceQr(s){
-const url='https://damascus-shop.com/#store/'+encodeURIComponent(s.id);
+const url=placePublicUrl(s);
 modal('<section class="place-qr-panel"><span class="section-kicker">سوق داريا الإلكتروني</span><h2 data-no-translate>'+esc(s.name)+'</h2><p>امسح الرمز لفتح صفحة المكان مباشرة</p><div id="place-qr-code" aria-label="رمز QR"></div><div class="form-actions"><button type="button" id="download-place-qr">تنزيل QR باسم المكان</button><a class="button outline" href="'+esc(url)+'">فتح الصفحة</a></div><p class="field-hint">يمكن طباعة الصورة وتعليقها على واجهة المكان.</p></section>');
 const qr=new QRCode(document.querySelector('#place-qr-code'),{text:url,width:256,height:256,correctLevel:QRCode.CorrectLevel.M,useSVG:true});
 document.querySelector('#download-place-qr').onclick=()=>{
