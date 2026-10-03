@@ -13,8 +13,6 @@ function sync(){
  const items=s?[['▦','لوحتي',merchantHref('overview',s)],['▤','المنتجات',merchantHref('products',s)],['▧','الطلبات الواردة',merchantHref('orders',s)]]:[['⌂','المحلات','#home'],['▤',managing?'الإدارة':'طلباتي',managing?'#dashboard':'#my-orders'],['○','حسابي','#account']];
  const html=items.map(([icon,label,href])=>'<a href="'+href+'"'+(location.hash===href?' aria-current="page"':'')+'><span aria-hidden="true">'+icon+'</span><span>'+label+'</span></a>').join('');
  if(bottom.innerHTML!==html)bottom.innerHTML=html;
- const directory=document.querySelector('#admin-directory-link');
- directory.hidden=!(admin&&managing);
  const oldOrders=document.querySelector('#my-orders-link');if(oldOrders)oldOrders.hidden=true;
 }
 window.addEventListener('hashchange',()=>{close();sync();});
