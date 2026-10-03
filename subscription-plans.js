@@ -31,3 +31,6 @@ const subscriptionMerchantDashboard=merchantDashboard;merchantDashboard=function
 const subscriptionProduct=editProduct;editProduct=function(s,p={}){const f=storePlan(s).features;if(!f.catalog){toast('عرض المنتجات غير متاح في الاشتراك الحالي');return;}subscriptionProduct.apply(this,arguments);const desc=document.querySelector('#edit-form [name=description]');if(desc)desc.maxLength=f.description_length;document.querySelector('#edit-form')?.insertAdjacentHTML('afterbegin','<p class="field-hint">حد الصور الإجمالي '+f.max_photos+' · وصف المنتج حتى '+f.description_length+' حرفاً</p>');};
 
 const subscriptionInfo=directoryIsInfo;directoryIsInfo=function(s){if(storeSubscriptions.some(x=>x.store_id===s.id))return !storePlan(s).features.catalog;return subscriptionInfo(s);};
+
+const subscriptionAddress=showStoreAddress;showStoreAddress=function(s){const f=storePlan(s).features;subscriptionAddress({...s,contact_phone:f.phone?s.contact_phone:'',latitude:f.gps?s.latitude:null,longitude:f.gps?s.longitude:null});};
+const subscriptionGallery=gallery;gallery=function(p){const s=stores.find(x=>x.id===p.store_id);if(!s)return;const f=storePlan(s).features;if(!f.catalog)return;subscriptionGallery({...p,gallery:(p.gallery||[]).slice(0,Math.max(0,f.max_photos-2))});};
