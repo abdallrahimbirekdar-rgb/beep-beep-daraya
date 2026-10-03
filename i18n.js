@@ -13,7 +13,9 @@ const baseKeys=[...dictionary.keys()].filter(k=>/[\u0621-\u064a]/.test(k)&&k.len
 const escapeRegex=s=>s.replace(/[.*+?^$()|{}\[\]\\]/g,'\\$&');
 const phrasePattern=new RegExp('(?<![\\u0621-\\u064a])(?:'+baseKeys.map(escapeRegex).join('|')+')(?![\\u0621-\\u064a])','gu');
 function translate(text,target=lang){
- if(target==='ar'||!text)return text;
+ if(!text)return text;
+ text=text.replace(/([−-]?[\d٠-٩۰-۹][\d٠-٩۰-۹\s.,٬٫]*)\s*(SYP|ل\.س)/g,(_match,raw)=>{const digits=raw.replace(/[٠-٩]/g,c=>String('٠١٢٣٤٥٦٧٨٩'.indexOf(c))).replace(/[۰-۹]/g,c=>String('۰۱۲۳۴۵۶۷۸۹'.indexOf(c))),value=Number(digits.replace(/−/g,'-').replace(/[^0-9-]/g,''));return value.toLocaleString(target==='ar'?'ar-SY':target==='en'?'en-GB':'de-DE')+(target==='ar'?' ل.س':' SYP');});
+ if(target==='ar')return text;
  const trim=text.trim(),normal=normalize(trim),entry=catalogDictionary.get(trim)||dictionary.get(trim)||dictionary.get(normal);
  if(entry?.[target])return text.replace(trim,entry[target]);
  const choose=(en,de)=>target==='en'?en:de;
@@ -57,9 +59,9 @@ function apply(){
 const observer=new MutationObserver(apply);
 window.ShahinI18n={translate,translationFor(text,target){return (catalogDictionary.get(text)||dictionary.get(text)||dictionary.get(normalize(text)))?.[target]||'';},setCatalog(stores,products){
  catalogDictionary=new Map();
- const add=(source,en,de)=>{if(!source)return;const base=dictionary.get(source)||dictionary.get(normalize(source));if(en||de||base)catalogDictionary.set(source,{en:en||base?.en||source,de:de||base?.de||source});};
+ const add=(source,en,de,preferBase=false)=>{if(!source)return;const base=dictionary.get(source)||dictionary.get(normalize(source));if(en||de||base)catalogDictionary.set(source,{en:(preferBase?base?.en:null)||en||base?.en||source,de:(preferBase?base?.de:null)||de||base?.de||source});};
  for(const record of [...stores,...products]){
-  for(const key of ['name','description','address','delivery_time','section'])add(record[key],record.translations?.en?.[key],record.translations?.de?.[key]);
+  for(const key of ['name','description','address','delivery_time','section'])add(record[key],record.translations?.en?.[key],record.translations?.de?.[key],key==='name');
   for(const [i,area] of (record.areas||[]).entries())add(area,record.translations?.en?.areas?.[i],record.translations?.de?.areas?.[i]);
   for(const group of record.option_groups||[]){add(group.name,group.name_en,group.name_de);for(const option of group.options)add(option.name,option.name_en,option.name_de);}
  }
