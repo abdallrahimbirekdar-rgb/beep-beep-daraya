@@ -19,7 +19,7 @@ function qualityFields(form,s){
 const qualityEditStore=editStore;editStore=function(s={}){qualityEditStore(s);qualityFields($('#edit-form'),s);};
 const qualityMerchantEditor=merchantEditor;merchantEditor=function(s,section){qualityMerchantEditor(s,section);if(section==='details')qualityFields($('#merchant-editor'),s);};
 async function shareDirectoryPlace(s){
- const url='https://damascus-shop.com/#store/'+encodeURIComponent(s.id);const text=s.name+(s.address?' — '+s.address:'');
+ const url=placePublicUrl(s);const text=s.name+(s.address?' — '+s.address:'');
  if(navigator.share){try{await navigator.share({title:s.name,text,url});return;}catch(e){if(e.name==='AbortError')return;}}
  modal('<h2>مشاركة صفحة المكان</h2><p>'+esc(s.name)+'</p><a class="button" href="https://wa.me/?text='+encodeURIComponent(text+'\n'+url)+'" target="_blank" rel="noopener noreferrer">مشاركة عبر واتساب</a><label>رابط الصفحة<input readonly dir="ltr" value="'+esc(url)+'"></label><button id="copy-place-link">نسخ الرابط</button>');
  $('#copy-place-link').onclick=async()=>{try{await navigator.clipboard.writeText(url);toast('تم نسخ الرابط');}catch{toast('يمكنك تحديد الرابط ونسخه من الحقل');}};
