@@ -60,7 +60,6 @@ def build_readable_pages(stores, output):
         fallback = '<noscript><h1>'+esc(name)+'</h1><p>'+esc(s.get('description'))+'</p><p>'+esc(s.get('address'))+'</p></noscript>'
         content = content.replace('</main>',fallback+'</main>')
         # Resolve directly before application startup without changing the friendly path.
-        content = content.replace('<script defer src="i18n.js', '<script>if(!location.hash)history.replaceState(null,"",location.pathname+"#store/'+sid+'");</script><script defer src="i18n.js')
         destination = target/slug
         destination.mkdir()
         (destination/'index.html').write_text(content, encoding='utf-8')
