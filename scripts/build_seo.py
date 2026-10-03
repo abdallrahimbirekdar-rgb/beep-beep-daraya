@@ -1,4 +1,4 @@
-import html, json, math, re, shutil, uuid
+import html, json, math, re, shutil, uuid, unicodedata
 from pathlib import Path
 from urllib.request import Request, urlopen
 from urllib.parse import urlencode, urlsplit
@@ -15,6 +15,56 @@ def page(title, description, path, body, schema=None, image=''):
     data = json.dumps(schema, ensure_ascii=False).replace('<', '\\u003c') if schema else ''
     return f'''<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{esc(title)}</title><meta name="description" content="{esc(description)}"><link rel="canonical" href="{BASE}{path}"><meta property="og:type" content="website"><meta property="og:title" content="{esc(title)}"><meta property="og:description" content="{esc(description)}"><meta property="og:url" content="{BASE}{path}">{'<meta property="og:image" content="'+esc(image)+'">' if image else ''}<link rel="stylesheet" href="/style.css"><style>main{{max-width:900px}}.shop-photo{{max-width:100%;max-height:420px;object-fit:contain;border-radius:18px}}.directory{{display:grid;gap:16px}}.directory a{{display:block}}a.contact{{text-decoration:underline}}.shop-actions{{display:flex;gap:12px;flex-wrap:wrap;margin:24px 0}}</style>{'<script type="application/ld+json">'+data+'</script>' if schema else ''}</head><body><header><a class="brand" href="/">سوق داريا الإلكتروني</a><a href="/shops/">دليل المتاجر</a></header><main>{body}</main><footer><a class="contact" href="mailto:info@damascus-shop.com">تواصل معنا: <bdi>info@damascus-shop.com</bdi></a></footer></body></html>'''
 
+
+SLUG_LETTERS = {"ا":"a","أ":"a","إ":"i","آ":"a","ب":"b","ت":"t","ث":"th","ج":"j","ح":"h","خ":"kh","د":"d","ذ":"dh","ر":"r","ز":"z","س":"s","ش":"sh","ص":"s","ض":"d","ط":"t","ظ":"z","ع":"a","غ":"gh","ف":"f","ق":"q","ك":"k","ل":"l","م":"m","ن":"n","ه":"h","ة":"a","و":"w","ؤ":"w","ي":"y","ى":"a","ئ":"y","ء":""}
+def place_slug(s):
+    saved = s.get('translations', {}).get('_directory', {}).get('slug', '')
+    if saved and re.fullmatch(r'[a-z0-9]+(?:-[a-z0-9]+)*', saved): return saved
+    if s['id'] == 'a5e8abe7-974a-416c-a570-858d6fd03572': return 'falafel-alsultan'
+    value = ''.join(SLUG_LETTERS.get(c,c) for c in unicodedata.normalize('NFKD', str(s.get('name') or ''))).lower()
+    value = re.sub(r'[\u0300-\u036f\u064b-\u065f\u0670]', '', value)
+    value = re.sub(r'[^a-z0-9]+', '-', value).strip('-')[:60] or 'place'
+    return value+'-'+s['id'][:8]
+
+def build_readable_pages(stores, output):
+    template = (output/'index.html').read_text(encoding='utf-8')
+    template = template.replace('<head>', '<head><base href="/">')
+    (output/'404.html').write_text(template, encoding='utf-8')
+    target = output/'darayya'
+    if target.exists(): shutil.rmtree(target)
+    target.mkdir()
+    used = set()
+    for s in stores:
+        if not s.get('active') or s.get('deleted_at'): continue
+        slug = place_slug(s)
+        if slug in used: raise RuntimeError('Duplicate place slug: '+slug)
+        used.add(slug)
+        sid = store_id(s['id'])
+        name = str(s.get('name') or '')
+        path = '/darayya/'+slug+'/'
+        title = name+' في داريا | سوق داريا الإلكتروني'
+        description = ' — '.join(str(x) for x in [name, s.get('description'), s.get('address')] if x)[:300]
+        content = re.sub(r'<title>.*?</title>', '<title>'+esc(title)+'</title>', template)
+        content = re.sub(r'<link rel="canonical"[^>]*>', '<link rel="canonical" href="'+BASE+path+'">', content)
+        content = re.sub(r'<meta name="description"[^>]*>', '<meta name="description" content="'+esc(description)+'">', content)
+        content = re.sub(r'<meta property="og:title"[^>]*>', '<meta property="og:title" content="'+esc(title)+'">', content)
+        content = re.sub(r'<meta property="og:description"[^>]*>', '<meta property="og:description" content="'+esc(description)+'">', content)
+        content = re.sub(r'<meta property="og:url"[^>]*>', '<meta property="og:url" content="'+BASE+path+'">', content)
+        if s.get('is_example'): content = content.replace('</head>', '<meta name="robots" content="noindex,follow"></head>')
+        else:
+            schema = {'@context':'https://schema.org','@type':'Restaurant' if s.get('category')=='restaurant' else 'LocalBusiness','name':name,'url':BASE+path,'description':description}
+            if s.get('image'): schema['image'] = image_url(s['image'])
+            if s.get('address'): schema['address'] = {'@type':'PostalAddress','streetAddress':str(s['address']),'addressLocality':'داريا','addressCountry':'SY'}
+            data = json.dumps(schema,ensure_ascii=False).replace('<','\\u003c')
+            content = content.replace('</head>', '<script type="application/ld+json">'+data+'</script></head>')
+        fallback = '<noscript><h1>'+esc(name)+'</h1><p>'+esc(s.get('description'))+'</p><p>'+esc(s.get('address'))+'</p></noscript>'
+        content = content.replace('</main>',fallback+'</main>')
+        # Resolve directly before application startup without changing the friendly path.
+        content = content.replace('<script defer src="i18n.js', '<script>if(!location.hash)history.replaceState(null,"",location.pathname+"#store/'+sid+'");</script><script defer src="i18n.js')
+        destination = target/slug
+        destination.mkdir()
+        (destination/'index.html').write_text(content, encoding='utf-8')
+
 def build(stores, output):
     folder = output / 'shops'
     if folder.exists(): shutil.rmtree(folder)
@@ -25,7 +75,7 @@ def build(stores, output):
         sid = store_id(s['id'])
         name = str(s.get('name') or '').strip()
         if not name: continue
-        path = '/shops/'+sid+'/'
+        path = '/darayya/'+place_slug(s)+'/'
         title = name+' في داريا | سوق داريا الإلكتروني'
         description = ' — '.join(x for x in [name+' في داريا', s.get('description'), s.get('address')] if x)[:300]
         image = image_url(s.get('image'))
@@ -57,12 +107,13 @@ def build(stores, output):
     (folder/'index.html').write_text(page('دليل متاجر ومطاعم داريا | سوق داريا الإلكتروني','متاجر ومطاعم داريا: العناوين والصور وطرق التواصل.','/shops/',body),encoding='utf-8')
     (output/'sitemap.xml').write_text('<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'+''.join('<url><loc>'+esc(u)+'</loc></url>' for u in urls)+'</urlset>',encoding='utf-8')
     (output/'robots.txt').write_text('User-agent: *\nAllow: /\nSitemap: '+BASE+'/sitemap.xml\n',encoding='utf-8')
+    build_readable_pages(stores, output)
     return len(entries)
 
 def fetch_stores(config):
     endpoint = re.search(r"supabaseUrl:\s*'([^']+)'",config)[1]
     key = re.search(r"supabaseAnonKey:\s*'([^']+)'",config)[1]
-    fields = 'id,name,category,description,image,address,contact_phone,latitude,longitude,active,deleted_at,is_example'
+    fields = 'id,name,category,description,image,address,contact_phone,latitude,longitude,active,deleted_at,is_example,translations'
     rows, offset = [], 0
     while True:
         query = urlencode({'select':fields,'active':'eq.true','deleted_at':'is.null','order':'id','limit':1000,'offset':offset})
