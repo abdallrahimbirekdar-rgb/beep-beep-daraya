@@ -59,3 +59,10 @@ body:has(.merchant-layout) .merchant-top{align-items:flex-start}
  .merchant-content input[type=file]::file-selector-button{font:inherit;background:#173b35;color:white;border:0;padding:10px 12px;border-radius:8px;margin-inline-end:8px}
  .merchant-content .merchant-metrics>div{padding:14px 8px;text-align:center}
 }
+
+.merchant-actions .merchant-preview,.welcome-actions .merchant-preview{background:#f3c466;color:#23382c;border:2px solid #d7a337;font-weight:800;box-shadow:0 3px 10px #a57c2422}
+.merchant-preview:hover{background:#ffda86}
+.setup-review{margin:20px 0;border:1px solid #d4dfd0;border-radius:14px;background:white;padding:16px}
+.setup-review summary{cursor:pointer;min-height:44px;align-content:center;color:#173b35;font-weight:700;font-size:15px}
+.setup-review .setup-grid{margin-top:18px;margin-bottom:0}
+@media(max-width:760px){.welcome-actions{display:grid;grid-template-columns:1fr;gap:10px}.welcome-actions .button{min-height:48px}.merchant-actions .merchant-preview{grid-column:1/-1;font-size:16px;min-height:52px}.setup-review{padding:14px}}
