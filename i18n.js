@@ -2,6 +2,13 @@
 // UI translations only. Merchant text and submitted values stay exactly as entered.
 (() => {
 const rows = [
+["امسح الرمز لفتح صفحة المكان مباشرة","Yer sayfasını doğrudan açmak için kodu tara","Scanne den Code, um die Seite direkt zu öffnen"],
+["تنزيل QR باسم المكان","İşletme adıyla QR indir","QR mit Namen herunterladen"],
+["فتح الصفحة","Sayfayı aç","Seite öffnen"],
+["يمكن طباعة الصورة وتعليقها على واجهة المكان.","Görseli yazdırıp işletmenin girişine asabilirsin.","Du kannst das Bild ausdrucken und am Eingang aushängen."],
+["رمز QR للمكان","İşletmenin QR kodu","QR-Code des Ortes"],
+["تنزيل رمز QR","QR kodunu indir","QR-Code herunterladen"],
+["رمز QR","QR kodu","QR-Code"],
 ["داريا · ريف دمشق","Daraya · Şam kırsalı","Daraya · Umland von Damaskus"],
 ["دليلك إلى متاجر داريا وخدماتها","Daraya mağazaları ve hizmetleri için rehberin","Dein Wegweiser zu Geschäften und Dienstleistungen in Daraya"],
 ["اعثر على متجر، طبيب أو خدمة، وشاهد العنوان وطريقة الوصول والتواصل.","Mağaza, doktor veya hizmet bul; adresi, yol tarifini ve iletişim bilgilerini gör.","Finde Geschäfte, Ärzte und Dienstleistungen mit Adresse, Wegbeschreibung und Kontakt."],
