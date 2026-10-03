@@ -66,3 +66,5 @@ body:has(.merchant-layout) .merchant-top{align-items:flex-start}
 .setup-review summary{cursor:pointer;min-height:44px;align-content:center;color:#173b35;font-weight:700;font-size:15px}
 .setup-review .setup-grid{margin-top:18px;margin-bottom:0}
 @media(max-width:760px){.welcome-actions{display:grid;grid-template-columns:1fr;gap:10px}.welcome-actions .button{min-height:48px}.merchant-actions .merchant-preview{grid-column:1/-1;font-size:16px;min-height:52px}.setup-review{padding:14px}}
+
+.admin-manage-shop,.admin-shop-mobile{background:#173b35;color:white;min-height:44px;padding:10px 14px;font-size:14px}.admin-shop-mobile{display:none}@media(max-width:760px){.admin-shop-mobile{display:flex;width:max-content;max-width:100%;margin-top:12px;white-space:normal}}
