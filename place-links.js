@@ -16,7 +16,7 @@ const merchant=merchantEditor;merchantEditor=function(s,section){merchant.apply(
 const previousRender=render;
 render=function(){
 const match=location.pathname.match(/^\/darayya\/([^/]+)\/?$/);
-if(match&&!location.hash&&api){let slug;try{slug=decodeURIComponent(match[1]);}catch{}const s=stores.find(x=>x.active&&!x.deleted_at&&placeSlug(x)===slug);if(s){history.replaceState(null,'',location.pathname+'#store/'+s.id);}else{document.querySelector('#app').innerHTML='<section class="empty"><h1>المكان غير متاح</h1><a class="button" href="/">العودة إلى الموقع</a></section>';return;}}
+if(match&&!location.hash&&api){let slug;try{slug=decodeURIComponent(match[1]);}catch{}const s=stores.find(x=>x.active&&!x.deleted_at&&placeSlug(x)===slug);if(s){renderStore(s.id);document.querySelector('link[rel=canonical]')?.setAttribute('href',placePublicUrl(s));return;}else{document.querySelector('#app').innerHTML='<section class="empty"><h1>المكان غير متاح</h1><a class="button" href="/">العودة إلى الموقع</a></section>';return;}}
 previousRender.apply(this,arguments);
 const parts=location.hash.split('/');const s=parts[0]==='#store'?stores.find(x=>x.id===parts[1]):null;
 if(s){document.querySelector('link[rel=canonical]')?.setAttribute('href',placePublicUrl(s));}
