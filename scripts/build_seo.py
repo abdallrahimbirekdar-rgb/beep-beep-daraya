@@ -53,7 +53,7 @@ def build(stores, output):
         (destination/'index.html').write_text(page(title,description,path,body,schema,image), encoding='utf-8')
         entries.append(f'<article class="panel"><a href="{path}"><h2>{esc(name)}</h2><p>{esc(s.get("description"))}</p><p>{esc(s.get("address"))}</p></a></article>')
         urls.append(BASE+path)
-    body = '<h1>دليل محلات داريا</h1><p>اكتشف محلات ومطاعم داريا، وعناوينها وطرق التواصل معها.</p><section class="directory">'+''.join(entries)+'</section>'
+    body = '<h1>دليل محلات داريا</h1><p>اكتشف محلات ومطاعم داريا، وعناوينها وطرق التواصل معها.</p><section class="directory">'+(''.join(entries) or '<p class="panel">سيظهر هنا دليل المحلات الحقيقية بعد إضافتها وتفعيلها على المنصة.</p>')+'</section>'
     (folder/'index.html').write_text(page('دليل محلات ومطاعم داريا | سوق داريا الإلكتروني','محلات ومطاعم داريا: العناوين والصور وطرق التواصل.','/shops/',body),encoding='utf-8')
     (output/'sitemap.xml').write_text('<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'+''.join('<url><loc>'+esc(u)+'</loc></url>' for u in urls)+'</urlset>',encoding='utf-8')
     (output/'robots.txt').write_text('User-agent: *\nAllow: /\nSitemap: '+BASE+'/sitemap.xml\n',encoding='utf-8')
