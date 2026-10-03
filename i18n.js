@@ -17,7 +17,7 @@ function translate(text,target=lang){
  text=text.replace(/([−-]?[\d٠-٩۰-۹][\d٠-٩۰-۹\s.,٬٫]*)\s*(SYP|ل\.س)/g,(_match,raw)=>{const digits=raw.replace(/[٠-٩]/g,c=>String('٠١٢٣٤٥٦٧٨٩'.indexOf(c))).replace(/[۰-۹]/g,c=>String('۰۱۲۳۴۵۶۷۸۹'.indexOf(c))),value=Number(digits.replace(/−/g,'-').replace(/[^0-9-]/g,''));return value.toLocaleString(target==='ar'?'ar-SY':target==='en'?'en-GB':'de-DE')+(target==='ar'?' ل.س':' SYP');});
  if(target==='ar')return text;
  const trim=text.trim(),normal=normalize(trim),entry=catalogDictionary.get(trim)||dictionary.get(trim)||dictionary.get(normal);
- if(entry?.[target])return text.replace(trim,entry[target]);
+ if(entry?.[target]&&entry[target]!==trim)return text.replace(trim,entry[target]);
  const choose=(en,de)=>target==='en'?en:de;
  if(normal.includes(' · '))return normal.split(' · ').map(part=>translate(part,target)).join(' · ');
  let example=normal.match(/^داريا، سوريا — شارع المثال، بناء افتراضي ([١٢٣٤٥٦1-6])؛ ليس عنواناً فعلياً\.$/);if(example){const n='١٢٣٤٥٦'.includes(example[1])?'١٢٣٤٥٦'.indexOf(example[1])+1:example[1];return choose('Daraya, Syria — example street, fictional building '+n+'; not a real address.','Daraya, Syrien — Beispielstraße, fiktives Gebäude '+n+'; keine echte Adresse.');}
