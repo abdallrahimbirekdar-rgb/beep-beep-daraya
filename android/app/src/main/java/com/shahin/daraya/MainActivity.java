@@ -12,7 +12,7 @@ import android.widget.*;
 
 /** Small native shell. Orders and authentication use the existing HTTPS site. */
 public class MainActivity extends Activity {
-    private static final String SITE = "https://abdallrahimbirekdar-rgb.github.io/beep-beep-daraya/";
+    private static final String SITE = "https://damascus-shop.com/";
     private static final int PICK_FILE = 7;
     private WebView web;
     private ProgressBar progress;
@@ -43,7 +43,7 @@ public class MainActivity extends Activity {
         error.setPadding(32,32,32,32);
         error.setBackgroundColor(Color.rgb(255,246,235));
         TextView text = new TextView(this);
-        text.setText("شاهين\nتعذر الاتصال بالإنترنت\nتحقق من الاتصال ثم حاول مجدداً.");
+        text.setText("سوق داريا\nتعذر الاتصال بالإنترنت\nتحقق من الاتصال ثم حاول مجدداً.");
         text.setGravity(android.view.Gravity.CENTER);
         text.setTextSize(21);
         error.addView(text);
@@ -61,14 +61,14 @@ public class MainActivity extends Activity {
         settings.setAllowContentAccess(true);
         settings.setMixedContentMode(WebSettings.MIXED_CONTENT_NEVER_ALLOW);
         settings.setSupportMultipleWindows(false);
-        settings.setUserAgentString(settings.getUserAgentString()+" ShahinAndroid/1.0");
+        settings.setUserAgentString(settings.getUserAgentString()+" ShahinAndroid/1.1");
         CookieManager.getInstance().setAcceptCookie(true);
         CookieManager.getInstance().setAcceptThirdPartyCookies(web,false);
         WebView.setWebContentsDebuggingEnabled(false);
         web.setWebViewClient(new WebViewClient() {
             @Override public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
                 Uri uri = request.getUrl();
-                if ("https".equals(uri.getScheme()) && "abdallrahimbirekdar-rgb.github.io".equals(uri.getHost()) && uri.getPath() != null && uri.getPath().startsWith("/beep-beep-daraya/")) return false;
+                if (isSiteUrl(uri)) return false;
                 if ("https".equals(uri.getScheme()) || "tel".equals(uri.getScheme()) || "mailto".equals(uri.getScheme()) || "geo".equals(uri.getScheme()) || "whatsapp".equals(uri.getScheme())) {
                     try { startActivity(new Intent(Intent.ACTION_VIEW,uri)); }
                     catch (android.content.ActivityNotFoundException e) { Toast.makeText(MainActivity.this,"لا يوجد تطبيق مناسب لفتح الرابط",Toast.LENGTH_SHORT).show(); }
@@ -94,7 +94,28 @@ public class MainActivity extends Activity {
             }
         });
         web.setDownloadListener((url,ua,cd,mime,len) -> { if(url.startsWith("https://")) { try { startActivity(new Intent(Intent.ACTION_VIEW,Uri.parse(url))); } catch(android.content.ActivityNotFoundException ignored) {} } });
-        if(state == null || web.restoreState(state) == null) web.loadUrl(SITE+"#home");
+        String destination = destination(getIntent());
+        if(destination != null) web.loadUrl(destination);
+        else if(state == null || web.restoreState(state) == null) web.loadUrl(SITE+"#home");
+    }
+    private static boolean isSiteUrl(Uri uri) {
+        return "https".equals(uri.getScheme()) && ("damascus-shop.com".equals(uri.getHost()) || "www.damascus-shop.com".equals(uri.getHost()));
+    }
+    private static String destination(Intent intent) {
+        Uri uri = intent == null ? null : intent.getData();
+        if(uri == null) return null;
+        if(isSiteUrl(uri)) return uri.toString();
+        if("daraya".equals(uri.getScheme()) && "store".equals(uri.getHost())) {
+            String id = uri.getLastPathSegment();
+            if(id != null && id.matches("[0-9a-fA-F-]{36}")) return SITE+"#store/"+id;
+        }
+        return null;
+    }
+    @Override protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+        String target = destination(intent);
+        if(target != null) { error.setVisibility(View.GONE); web.loadUrl(target); }
     }
     @Override protected void onActivityResult(int request,int result,Intent data) {
         super.onActivityResult(request,result,data);
