@@ -50,3 +50,12 @@ const subscriptionGallery=gallery;gallery=function(p){const s=stores.find(x=>x.i
 const subscriptionMatchesProduct=matchesProduct;matchesProduct=function(p,term){const s=stores.find(x=>x.id===p.store_id);return !!s&&storePlan(s).features.catalog&&subscriptionMatchesProduct(p,term);};
 
 (function(){let attempted=false;const observer=new MutationObserver(async()=>{if(attempted||subscriptionDataLoaded||!api||!stores.length)return;attempted=true;try{await loadSubscriptionData();if(!document.querySelector('#modal')?.open&&!document.querySelector('#merchant-editor'))render();}catch(err){console.error('Subscription data load failed',err);}finally{observer.disconnect();}});observer.observe(document.querySelector('#app'),{childList:true,subtree:true});})();
+
+function customerPlanBadge(s){
+const sub=storeSubscriptions.find(x=>x.store_id===s.id);const key=sub?(sub.active?sub.plan_id:'free'):'unassigned';
+const styles={free:['○','#7e8981'],iron:['●','#607482'],bronze:['◆','#ab713b'],silver:['◆','#7a8d9c'],gold:['★','#bd922f'],unassigned:['○','#9ba49d']};const [symbol,color]=styles[key]||styles.unassigned;
+const label=sub?storePlan(s).name:'بدون اشتراك محدد';const b=document.createElement('button');b.type='button';b.className='customer-plan-badge';b.style.setProperty('--plan-badge-color',color);b.textContent=symbol;b.title='الاشتراك: '+label;b.setAttribute('aria-label','نوع الاشتراك: '+label);
+b.onclick=e=>{e.preventDefault();e.stopPropagation();modal('<section class="customer-plan-info"><span class="customer-plan-symbol" style="color:'+color+'" aria-hidden="true">'+symbol+'</span><h2>'+esc(label)+'</h2><p>هذا الرمز يوضح باقة اشتراك المكان في الموقع.</p></section>');};return b;
+}
+const badgeRenderHome=renderHome;renderHome=function(){badgeRenderHome.apply(this,arguments);document.querySelectorAll('#browse .card').forEach(card=>{const link=card.querySelector('a[href*="#store/"]'),s=stores.find(s=>s.id===link?.hash.split('/')[1]);const title=card.querySelector('.card-title');if(s&&title)title.append(customerPlanBadge(s));});};
+const badgeRenderStore=renderStore;renderStore=function(id){badgeRenderStore.apply(this,arguments);const s=stores.find(s=>s.id===id),title=document.querySelector('.store-banner h1');if(s&&title)title.append(customerPlanBadge(s));};
