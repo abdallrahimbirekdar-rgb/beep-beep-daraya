@@ -122,6 +122,18 @@ def fetch_stores(config):
         rows.extend(batch)
         if len(batch)<1000: break
         offset += len(batch)
+    def public_rows(table):
+        request = Request(endpoint+'/rest/v1/'+table+'?select=*',headers={'apikey':key})
+        with urlopen(request,timeout=60) as response: return json.load(response)
+    plans = {p['id']:p['features'] for p in public_rows('subscription_plans')}
+    subscriptions = {p['store_id']:p for p in public_rows('store_subscriptions')}
+    for store in rows:
+        sub = subscriptions.get(store['id'])
+        if not sub: continue
+        features = dict(plans.get(sub['plan_id'] if sub['active'] else 'free', {}))
+        if sub['active']: features.update(sub.get('overrides') or {})
+        if not features.get('phone'): store['contact_phone'] = ''
+        if not features.get('gps'): store['latitude'] = store['longitude'] = None
     return rows
 
 if __name__ == '__main__':
