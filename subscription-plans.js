@@ -34,3 +34,5 @@ const subscriptionInfo=directoryIsInfo;directoryIsInfo=function(s){if(storeSubsc
 
 const subscriptionAddress=showStoreAddress;showStoreAddress=function(s){const f=storePlan(s).features;subscriptionAddress({...s,contact_phone:f.phone?s.contact_phone:'',latitude:f.gps?s.latitude:null,longitude:f.gps?s.longitude:null});};
 const subscriptionGallery=gallery;gallery=function(p){const s=stores.find(x=>x.id===p.store_id);if(!s)return;const f=storePlan(s).features;if(!f.catalog)return;subscriptionGallery({...p,gallery:(p.gallery||[]).slice(0,Math.max(0,f.max_photos-2))});};
+
+const subscriptionMatchesProduct=matchesProduct;matchesProduct=function(p,term){const s=stores.find(x=>x.id===p.store_id);return !!s&&storePlan(s).features.catalog&&subscriptionMatchesProduct(p,term);};
