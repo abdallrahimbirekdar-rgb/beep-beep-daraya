@@ -2,6 +2,54 @@
 // UI translations only. Merchant text and submitted values stay exactly as entered.
 (() => {
 const rows = [
+["داريا · ريف دمشق","Daraya · Şam kırsalı","Daraya · Umland von Damaskus"],
+["دليلك إلى متاجر داريا وخدماتها","Daraya mağazaları ve hizmetleri için rehberin","Dein Wegweiser zu Geschäften und Dienstleistungen in Daraya"],
+["اعثر على متجر، طبيب أو خدمة، وشاهد العنوان وطريقة الوصول والتواصل.","Mağaza, doktor veya hizmet bul; adresi, yol tarifini ve iletişim bilgilerini gör.","Finde Geschäfte, Ärzte und Dienstleistungen mit Adresse, Wegbeschreibung und Kontakt."],
+["كيف يعمل الموقع؟","Site nasıl çalışır?","Wie funktioniert die Website?"],
+["عمّ تبحث في داريا؟","Daraya’da ne arıyorsun?","Was suchst du in Daraya?"],
+["كيف تستفيد من سوق داريا؟","Daraya Pazarı nasıl kullanılır?","So nutzt du Daraya Markt"],
+["إخفاء الشرح","Açıklamayı gizle","Erklärung ausblenden"],
+["ابحث عمّا تحتاجه","İhtiyacını bul","Finde, was du brauchst"],
+["اختر القسم أو اكتب اسم المكان أو الخدمة أو الشارع.","Kategori seç veya yer, hizmet ya da sokak adını yaz.","Wähle eine Kategorie oder suche nach Ort, Dienstleistung oder Straße."],
+["اعرف المكان قبل زيارته","Ziyaretten önce yeri tanı","Informiere dich vor deinem Besuch"],
+["شاهد صورة المكان وعنوانه، وافتح الاتجاهات عندما تكون متاحة.","Yerin fotoğrafını ve adresini gör; varsa yol tarifini aç.","Sieh dir Foto und Adresse an und öffne die Wegbeschreibung, wenn verfügbar."],
+["تواصل أو اطلب","İletişime geç veya sipariş ver","Kontakt aufnehmen oder bestellen"],
+["تواصل مباشرة مع المكان، أو اطلب من المتاجر التي توفر الطلب عبر الموقع.","İşletmeyle doğrudan iletişime geç veya online sipariş sunan mağazalardan sipariş ver.","Kontaktiere den Anbieter direkt oder bestelle bei Geschäften mit Onlinebestellung."],
+["التالي","Sonraki","Weiter"],
+["ابدأ الاستكشاف","Keşfetmeye başla","Jetzt entdecken"],
+["نتائج البحث","Arama sonuçları","Suchergebnisse"],
+["استكشف الأماكن والخدمات","Yerleri ve hizmetleri keşfet","Orte und Dienstleistungen entdecken"],
+["من داريا، لأهل داريا","Daraya’dan, Darayalılar için","Aus Daraya, für Daraya"],
+["اعرف مدينتك. ووصل لوجهتك بسهولة.","Şehrini tanı. Gideceğin yeri kolayca bul.","Entdecke deine Stadt und finde einfach dein Ziel."],
+["العناوين والتواصل متاحة للتصفح دون إنشاء حساب. الطلب عبر الموقع متاح لدى المتاجر التي توفره.","Adres ve iletişim bilgilerini hesap açmadan görebilirsin. Online sipariş, bu hizmeti sunan mağazalarda mevcuttur.","Adressen und Kontakte kannst du ohne Konto ansehen. Onlinebestellungen sind bei teilnehmenden Geschäften möglich."],
+["مطاعم ومقاهٍ","Restoranlar ve kafeler","Restaurants und Cafés"],
+["متاجر","Mağazalar","Geschäfte"],
+["مهن وخدمات","Meslekler ve hizmetler","Handwerk und Dienstleistungen"],
+["أطباء وعيادات","Doktorlar ve klinikler","Ärzte und Praxen"],
+["صيدليات","Eczaneler","Apotheken"],
+["مدارس","Okullar","Schulen"],
+["مساجد","Camiler","Moscheen"],
+["محامون","Avukatlar","Anwälte"],
+["اسم المكان، الخدمة، أو الشارع…","Yer, hizmet veya sokak adı…","Ort, Dienstleistung oder Straße…"],
+["البحث عن مكان أو خدمة أو عنوان","Yer, hizmet veya adres ara","Nach Ort, Dienstleistung oder Adresse suchen"],
+["أقسام الأماكن","Yer kategorileri","Kategorien"],
+["الاتجاهات","Yol tarifi","Wegbeschreibung"],
+["مشاركة","Paylaş","Teilen"],
+["اتصال","Ara","Anrufen"],
+["صفحة تعريفية","Bilgi sayfası","Informationsseite"],
+["عرض التفاصيل","Ayrıntıları gör","Details ansehen"],
+["الإبلاغ عن خطأ","Hata bildir","Fehler melden"],
+["العنوان","Adres","Adresse"],
+["جاري تحميل الأماكن والخدمات…","Yerler ve hizmetler yükleniyor…","Orte und Dienstleistungen werden geladen…"],
+["لا توجد أماكن مطابقة لبحثك.","Aramana uygun yer bulunamadı.","Keine passenden Orte gefunden."],
+["الكل","Tümü","Alle"],
+["تواصل معنا","Bize ulaş","Kontakt"],
+["تم نسخ الرابط","Bağlantı kopyalandı","Link kopiert"],
+["الخطوة 1","Adım 1","Schritt 1"],
+["الخطوة 2","Adım 2","Schritt 2"],
+["الخطوة 3","Adım 3","Schritt 3"],
+["شرح استخدام الموقع","Site kullanım rehberi","Anleitung zur Website"],
+["دليلك إلى متاجر داريا وخدماتها","Daraya mağazaları ve hizmetleri için rehberin","Dein Wegweiser für Daraya"],
 ["الصحة والخدمات","Sağlık ve hizmetler","Gesundheit und Dienstleistungen"],
 ["سوق مدينتك،", "Şehrinin pazarı,", "Dein Markt in der Stadt,"],
 ["بين إيديك.", "elinin altında.", "direkt für dich."],
@@ -288,6 +336,8 @@ function translate(text){
  if(arrow&&dictionary.has(arrow[1]))return text.replace(trim,dictionary.get(arrow[1])[lang]+' '+(arrow[2]==='←'?'→':arrow[2]));
  let available=trim.match(/^متوفر: (\d+)$/);if(available)return (lang==='tr'?'Stok: ':'Verfügbar: ')+available[1];
  if(trim.includes(' · ')&&trim.includes(': '))return trim.split(' · ').map(part=>{const i=part.indexOf(': ');return i<0?translate(part):translate(part.slice(0,i))+': '+translate(part.slice(i+2));}).join(' · ');
+ let placeCount=trim.match(/^(\d+) أماكن متاحة$/);if(placeCount)return `${placeCount[1]} ${lang==='tr'?'yer mevcut':'Orte verfügbar'}`;
+ if(trim.includes(' · داريا'))return translate(trim.replace(' · داريا',''))+' · Daraya';
  let m=trim.match(/^(\d+) متاجر متاحة$/);if(m)return `${m[1]} ${lang==='tr'?'işletme mevcut':'Geschäfte verfügbar'}`;
  m=trim.match(/^(التوصيل|الحد الأدنى|الإجمالي:)\s+(.+)$/);if(m){const label=m[1]==='الحد الأدنى'?(lang==='tr'?'Minimum sipariş':'Mindestbestellwert'):dictionary.get(m[1])[lang];return label+' '+translate(m[2]);}
  m=trim.match(/^أضف بقيمة (.+) للوصول إلى الحد الأدنى\.$/);if(m)return lang==='tr'?`Minimum sipariş için ${translate(m[1])} tutarında ürün ekle.`:`Füge Produkte für ${translate(m[1])} hinzu, um den Mindestbestellwert zu erreichen.`;
