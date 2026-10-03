@@ -15,7 +15,7 @@ async function stats(){
  const box=document.querySelector('#website-visit-stats');if(!box||!admin||statsLoading)return;statsLoading=true;
  const status=box.querySelector('[data-visit-status]');status.textContent='جاري تحميل الإحصاءات…';
  try{const r=await api.rpc('website_visit_stats');if(r.error)throw r.error;if(!box.isConnected)return;
- const data=r.data;box.querySelector('[data-visit-numbers]').innerHTML=[['visitors','الزوار المختلفون — تقديري'],['total','إجمالي الزيارات'],['today_visitors','زوار اليوم المختلفون'],['today','زيارات اليوم'],['week','زيارات آخر ٧ أيام'],['month','زيارات آخر ٣٠ يوماً']].map(([key,label])=>'<div class="stat"><span>'+label+'</span><strong data-no-translate>'+Number(data[key]||0).toLocaleString('ar')+'</strong></div>').join('');
+ const data=r.data;box.querySelector('[data-visit-numbers]').innerHTML=[['visitors','الزوار المختلفون — تقديري'],['total','إجمالي الزيارات'],['today_visitors','زوار اليوم المختلفون'],['today','زيارات اليوم'],['week','زيارات آخر ٧ أيام'],['month','زيارات آخر ٣٠ يوماً']].map(([key,label])=>'<div class="stat"><span>'+label+'</span><strong>'+Number(data[key]||0).toLocaleString(document.documentElement.lang)+'</strong></div>').join('');
  status.textContent=data.started?'بدء التسجيل: '+data.started+' · الأيام حسب توقيت سوريا':'لم تسجل زيارات بعد.';
  }catch{if(box.isConnected)status.textContent='عداد الزيارات غير مفعّل في قاعدة البيانات بعد، أو تعذر الاتصال. لا تتوفر أرقام حالياً.';}finally{statsLoading=false;}
 }
