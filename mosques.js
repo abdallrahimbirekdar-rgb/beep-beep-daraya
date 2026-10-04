@@ -37,7 +37,6 @@
  const previousHome=renderHome;
  renderHome=function(){addCatalog();clearMap();previousHome.apply(this,arguments);const anchor=$('.shahin-hero')||$('#app').firstElementChild;if(!anchor)return;
   if(filter!=='all'&&isMapCategory(filter)){const entry=document.createElement('section');entry.className='mosques-entry';entry.innerHTML='<div><strong>'+esc(mapTitle(filter))+'</strong><p>'+text('اعرض أماكن هذا القسم على الخريطة.','View places in this section on the map.','Zeige Orte dieses Bereichs auf der Karte.')+'</p></div><a class="button" href="#map/'+encodeURIComponent(filter)+'">'+esc(mapTitle(filter))+'</a>';anchor.insertAdjacentElement('afterend',entry);return;}
-  const entry=document.createElement('section');entry.className='mosques-entry';entry.innerHTML='<div><strong>'+text('خريطة داريا','Daraya map','Daraya-Karte')+'</strong><p>'+text('اكتشف متاجر المدينة ومساجدها وأطباءها وخدماتها على خريطة واحدة.','Find shops, mosques, doctors and services on one map.','Entdecke Geschäfte, Moscheen, Ärzte und Dienstleistungen auf einer Karte.')+'</p></div><a class="button" href="#map">'+text('فتح خريطة داريا','Open Daraya map','Daraya-Karte öffnen')+'</a>';anchor.insertAdjacentElement('afterend',entry);
  };
  const previousStore=renderStore;
  renderStore=function(id){addCatalog();previousStore.apply(this,arguments);const s=stores.find(x=>x.id===id&&x.active&&!x.deleted_at);if(!s||directoryKind(s)!=='mosque')return;
