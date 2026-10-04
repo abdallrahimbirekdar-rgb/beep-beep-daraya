@@ -16,7 +16,7 @@ renderDashboard=function(tab,sid){
  if(!admin||!user||tab==='setup'){lastAdminDashboardRoute='';return;}
  const tabs=document.querySelector('#app.admin-layout > .tabs'),content=document.querySelector('#dashboard-content');
  if(!tabs||!content)return;
- const names={stores:'الأماكن والعناوين',products:'المنتجات',orders:'الطلبات',accounts:'حسابات أصحاب المتاجر',drivers:'المندوبون والتوصيل',reports:'التقارير'};
+ const names={stores:'الأماكن والعناوين',products:'المنتجات',orders:'الطلبات',accounts:'حسابات أصحاب المتاجر',drivers:'مندوبو التوصيل والتوصيل',reports:'التقارير'};
  content.setAttribute('tabindex','-1');content.setAttribute('aria-label',names[tab]||'محتوى قسم الإدارة');
  tabs.querySelectorAll('a').forEach(a=>{a.setAttribute('aria-controls','dashboard-content');if(a.classList.contains('selected'))a.setAttribute('aria-current','page');else a.removeAttribute('aria-current');});
  const route=location.hash;
