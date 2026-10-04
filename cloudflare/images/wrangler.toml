@@ -1,0 +1,10 @@
+name = "daraya-images"
+main = "worker.mjs"
+compatibility_date = "2026-10-04"
+[vars]
+SUPABASE_URL = "https://nxnqsudwccjlvyepuxfg.supabase.co"
+SUPABASE_ANON_KEY = "sb_publishable__o8_Eq2Fmt3JIb-CKpfFXQ_bREsHBDc"
+ALLOWED_ORIGINS = "https://damascus-shop.com,https://www.damascus-shop.com,https://abdallrahimbirekdar-rgb.github.io"
+[[r2_buckets]]
+binding = "IMAGES"
+bucket_name = "daraya-images"
