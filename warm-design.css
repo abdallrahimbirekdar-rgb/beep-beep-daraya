@@ -86,3 +86,12 @@ html[dir="ltr"] .professional-home .delivery-hero-button:after{content:"→"}
 .browse-category-track>button.selected{background:#173b35!important;border-color:#173b35!important}
 .professional-home .delivery-hero-button{background:#f3e4cd!important;color:#634622!important;border-color:#d8b88a!important;box-shadow:0 5px 16px #ac753a20}
 .professional-home .delivery-hero-button:hover,.professional-home .delivery-hero-button.selected{background:#e9d2ad!important;color:#51391e!important}
+
+.delivery-hero-action{display:flex;align-items:center;gap:10px;width:fit-content;max-width:100%;margin:20px 0 24px}
+.professional-home .delivery-hero-action .delivery-hero-button{margin:0!important;min-width:0;flex:1}
+.delivery-info-button{flex:0 0 44px;width:44px;height:44px;padding:0!important;border:1px solid #d8b88a!important;border-radius:50%!important;background:#faf2e6!important;color:#634622!important;font-size:26px!important;line-height:1;display:flex;align-items:center;justify-content:center}
+.delivery-info-button:hover{background:#e9d2ad!important}
+.delivery-info-button:focus-visible{outline:3px solid #173b35;outline-offset:3px}
+.delivery-info-panel h2{font-size:22px;color:#173b35;padding-inline-end:28px}
+.delivery-info-panel p{font-size:16px;line-height:1.9;color:#51483d}
+@media(max-width:600px){.delivery-hero-action{width:100%;margin:16px 0;gap:8px}.professional-home .delivery-hero-action .delivery-hero-button{width:auto;gap:8px}.professional-home .delivery-hero-action .delivery-hero-button:after{display:none}}
