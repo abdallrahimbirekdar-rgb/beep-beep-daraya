@@ -101,3 +101,10 @@ html[dir="ltr"] .professional-home .shahin-hero:before{clip-path:ellipse(48% 81%
 html[dir="ltr"] .professional-home .shahin-hero:after{left:auto;right:40px}
 @media(max-width:899px){html[dir="ltr"] .professional-home .shahin-hero:before{clip-path:ellipse(88% 100% at 100% 0%)}html[dir="ltr"] .professional-home .shahin-hero:after{right:18px}}
 @media(min-width:601px) and (max-width:899px){html[dir="ltr"] .professional-home .shahin-hero:before{clip-path:ellipse(72% 100% at 100% 0%)}html[dir="ltr"] .professional-home .shahin-hero:after{right:28px}}
+
+/* A softly lit gold finish, rather than flat brown. */
+.professional-home .shahin-hero:before{background:linear-gradient(125deg,#b4872e 0%,#d3ac4d 23%,#f4dfa0 46%,#dfbd60 67%,#bf9435 100%)}
+.professional-home .delivery-hero-button{background:linear-gradient(115deg,#f3e5bc,#fff5d7 48%,#eddaa3)!important;color:#57451f!important;border-color:#d7b96d!important;box-shadow:0 5px 18px #b8973c18}
+.professional-home .delivery-hero-button:hover,.professional-home .delivery-hero-button.selected{background:linear-gradient(115deg,#e8d399,#f7e7b9 48%,#e3c77f)!important;color:#493917!important}
+.delivery-info-button{background:#fff7df!important;border-color:#d7b96d!important;color:#715720!important}
+.welcome-location{background:#fff9e9;border-color:#e6d6a6;color:#7b6127}
