@@ -10,8 +10,9 @@ function sync(){
  const managing=parts[0]==='dashboard';
  const shopPanel=managing&&(!admin||parts[1]==='setup');
  const s=shopPanel?(mine().find(x=>x.id===parts[2])||mine()[0]):null;
- const items=s&&typeof directoryIsInfo==='function'&&directoryIsInfo(s)?[['▦','لوحتي',merchantHref('overview',s)],['○','المعلومات',merchantHref('details',s)],['▤','الصور',merchantHref('photos',s)]]:s?[['▦','لوحتي',merchantHref('overview',s)],['▤','المنتجات',merchantHref('products',s)],['▧','الطلبات الواردة',merchantHref('orders',s)]]:[['⌂','المتاجر','#home'],['▤',managing?'الإدارة':'طلباتي',managing?'#dashboard':'#my-orders'],['○','حسابي','#account']];
+ const items=s&&typeof directoryIsInfo==='function'&&directoryIsInfo(s)?[['▦','لوحتي',merchantHref('overview',s)],['○','المعلومات',merchantHref('details',s)],['▤','الصور',merchantHref('photos',s)]]:s?[['▦','لوحتي',merchantHref('overview',s)],['▤','المنتجات',merchantHref('products',s)],['▧','الطلبات الواردة',merchantHref('orders',s)]]:[['⌂','المتاجر','#home'],...(!managing?[['⌖','خريطة داريا','#map']]:[]),['▤',managing?'الإدارة':'طلباتي',managing?'#dashboard':'#my-orders'],['○','حسابي','#account']];
  const html=items.map(([icon,label,href])=>'<a href="'+href+'"'+(location.hash===href?' aria-current="page"':'')+'><span aria-hidden="true">'+icon+'</span><span>'+label+'</span></a>').join('');
+ bottom.style.gridTemplateColumns='repeat('+items.length+',1fr)';
  if(bottom.innerHTML!==html)bottom.innerHTML=html;
  const oldOrders=document.querySelector('#my-orders-link');if(oldOrders)oldOrders.hidden=true;
 }

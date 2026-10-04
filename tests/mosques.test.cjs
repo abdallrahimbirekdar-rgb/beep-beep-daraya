@@ -5,7 +5,7 @@ const vm=require('node:vm');
 function fixture(){
  const context=vm.createContext({window:{},document:{baseURI:'https://damascus-shop.com/',querySelector:()=>null},URL,location:{hash:"#home"},stores:[],nativeRows:[],reload:async function(){context.stores=context.nativeRows.slice();},render(){},renderHome(){},renderStore(){},dashboardStores(){},$:()=>null,directoryKind:s=>s.translations?._directory?.kind,console});
  vm.runInContext(fs.readFileSync('mosques-data.js','utf8'),context);
- vm.runInContext(fs.readFileSync('mosques.js','utf8'),context);
+ vm.runInContext(fs.readFileSync('mosques.js','utf8').replace(/\}\)\(\);\s*$/, 'window.testMapRows=publicPlaces;})();'),context);
  return context;
 }
 test('all 29 mosque pages are information pages, with ten sourced coordinates and no guessed points',()=>{
@@ -26,4 +26,9 @@ test('deleted native records are never replaced by a public fallback',async()=>{
 
 test('first render restores catalog when startup reload began before the module loaded',()=>{
  const ctx=fixture();ctx.stores=[];ctx.render();assert.equal(ctx.stores.length,29);
+});
+
+test('general map includes new places; category maps exclude other kinds and hidden or example rows',()=>{
+ const ctx=fixture();ctx.stores.push({id:'doctor',name:'عيادة جديدة',active:true,translations:{_directory:{kind:'doctor'}}},{id:'hidden',active:false,translations:{_directory:{kind:'doctor'}}},{id:'deleted',active:true,deleted_at:'today',translations:{_directory:{kind:'doctor'}}},{id:'example',active:true,is_example:true,translations:{_directory:{kind:'doctor'}}});
+ assert.equal(ctx.window.testMapRows().length,30);assert.equal(ctx.window.testMapRows('mosque').length,29);assert.equal(ctx.window.testMapRows('doctor').length,1);assert.equal(ctx.window.testMapRows('doctor')[0].id,'doctor');assert.equal(ctx.window.testMapRows('pharmacy').length,0);
 });
