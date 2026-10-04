@@ -1,0 +1,3 @@
+[functions.create-phone-account]
+verify_jwt = false
+# The handler validates the current Auth user and platform_admins before any write.
