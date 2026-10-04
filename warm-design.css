@@ -108,3 +108,6 @@ html[dir="ltr"] .professional-home .shahin-hero:after{left:auto;right:40px}
 .professional-home .delivery-hero-button:hover,.professional-home .delivery-hero-button.selected{background:linear-gradient(115deg,#e8d399,#f7e7b9 48%,#e3c77f)!important;color:#493917!important}
 .delivery-info-button{background:#fff7df!important;border-color:#d7b96d!important;color:#715720!important}
 .welcome-location{background:#fff9e9;border-color:#e6d6a6;color:#7b6127}
+
+/* Align every menu action to the reading direction, including iPhone. */
+header #site-menu a,header #site-menu button{text-align:start!important;justify-content:flex-start!important}
