@@ -10,7 +10,7 @@ header{background:#fff!important;border-bottom:1px solid #f0e6df!important;box-s
 #mobile-navigation a.active{background:#fff0e7!important;color:#b73d17!important}
 .professional-home{max-width:1240px;padding:28px 28px 48px!important}
 .professional-home .shahin-hero{position:relative;isolation:isolate;background:#fff!important;border:0!important;border-radius:28px!important;overflow:hidden!important;padding:54px 48px 30px!important;box-shadow:0 10px 40px #7845220a!important}
-.professional-home .shahin-hero:before{content:"";display:block!important;position:absolute;inset:0;z-index:-1;pointer-events:none;background:#ed794b;clip-path:ellipse(48% 81% at 0% 0%)}
+.professional-home .shahin-hero:before{content:"";display:block!important;position:absolute;inset:0;z-index:-1;pointer-events:none;background:#ac753a;clip-path:ellipse(48% 81% at 0% 0%)}
 .professional-home .shahin-hero:after{content:"";display:block!important;position:absolute;top:-100px;left:-130px;width:380px;height:380px;border:1px solid #ffffff50;border-radius:50%;z-index:-1;pointer-events:none}
 .directory-welcome{position:relative;max-width:680px;margin-inline-start:0;margin-inline-end:auto}
 .welcome-location{display:inline-block;color:#a84626;background:#fff5ee;border:1px solid #f1d8c7;padding:5px 14px;border-radius:30px;font-size:12px}
@@ -57,3 +57,32 @@ html[dir="ltr"] .professional-home .delivery-hero-button:after{content:"→"}
 .professional-home .delivery-hero-button:hover,.professional-home .delivery-hero-button.selected{background:#efc29f!important;color:#4e301f!important}
 .home-search-hint{font-size:14px;color:#695b50;margin:0!important;line-height:1.8}
 @media(max-width:600px){.professional-home .delivery-hero-button{font-size:15px!important;padding:14px 12px!important}.home-search-hint{font-size:12px}}
+
+/* Keep the desktop shop artwork visible on phones and tablets. */
+@media(max-width:899px){
+ .professional-home .shahin-hero{padding-top:174px!important}
+ .professional-home .shahin-hero:before{inset:0 0 auto;height:232px;clip-path:ellipse(88% 100% at 0% 0%)}
+ .professional-home .shahin-hero:after{top:10px;left:18px;width:205px;height:154px;border:0;border-radius:0;background:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20320%20240%22%20fill%3D%22none%22%20stroke%3D%22%23fff%22%20stroke-width%3D%223%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Ccircle%20cx%3D%22156%22%20cy%3D%22114%22%20r%3D%22100%22%20stroke-opacity%3D%22.18%22%2F%3E%3Cpath%20d%3D%22M59%2099h180l-18-41H77L59%2099Z%22%2F%3E%3Cpath%20d%3D%22M59%2099v13c0%2012%2020%2018%2030%200%2010%2018%2030%2018%2040%200%2010%2018%2030%2018%2040%200%2010%2018%2030%2018%2040%200%2010%2018%2030%2012%2030%200V99M79%2058l10%2041M117%2058l4%2041M155%2058v41M193%2058l-5%2041M222%2058l-13%2041M74%20128v73h150v-73M95%20145h51v35H95zM170%20145h32v56M60%20202h180M154%2032v-8M137%2035l-6-9M173%2035l6-9%22%2F%3E%3Cpath%20d%3D%22M263%20164h31v-19h-31zM249%20180h45v-16M257%20180v12M285%20180v12%22%20stroke-opacity%3D%22.65%22%2F%3E%3Ccircle%20cx%3D%22258%22%20cy%3D%22195%22%20r%3D%226%22%2F%3E%3Ccircle%20cx%3D%22284%22%20cy%3D%22195%22%20r%3D%226%22%2F%3E%3Cpath%20d%3D%22M26%20175h20M36%20165v20%22%20stroke-opacity%3D%22.5%22%2F%3E%3C%2Fsvg%3E") center/contain no-repeat}
+ .directory-welcome{width:100%;max-width:none}
+ .welcome-location{position:relative}
+}
+@media(min-width:601px) and (max-width:899px){
+ .professional-home .shahin-hero{padding-top:206px!important}
+ .professional-home .shahin-hero:before{height:276px;clip-path:ellipse(72% 100% at 0% 0%)}
+ .professional-home .shahin-hero:after{top:16px;left:28px;width:250px;height:188px}
+}
+@media(max-width:360px){
+ .professional-home .shahin-hero{padding-inline:14px!important}
+ .directory-welcome h1{font-size:26px!important}
+}
+
+/* Gold sampled from the logo, paired with its deep green. */
+:root{--orange:#ac753a}
+#menu-toggle{background:#173b35!important}
+#mobile-navigation a.active{background:#edf3ef!important;color:#173b35!important}
+.welcome-location{color:#8b5b2a;background:#faf2e6;border-color:#e7d4b7}
+.how-it-works{color:#8b5b2a!important}
+.professional-home .search-wrap:focus-within{border-color:#ac753a!important;outline-color:#ead8be}
+.browse-category-track>button.selected{background:#173b35!important;border-color:#173b35!important}
+.professional-home .delivery-hero-button{background:#f3e4cd!important;color:#634622!important;border-color:#d8b88a!important;box-shadow:0 5px 16px #ac753a20}
+.professional-home .delivery-hero-button:hover,.professional-home .delivery-hero-button.selected{background:#e9d2ad!important;color:#51391e!important}
