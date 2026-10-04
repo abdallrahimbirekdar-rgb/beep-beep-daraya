@@ -3,7 +3,7 @@ const assert=require('node:assert/strict');
 const fs=require('node:fs');
 const vm=require('node:vm');
 function fixture(){
- const context=vm.createContext({window:{},document:{baseURI:'https://damascus-shop.com/',querySelector:()=>null},URL,location:{hash:"#home"},stores:[],nativeRows:[],reload:async function(){context.stores=context.nativeRows.slice();},render(){},renderHome(){},renderStore(){},dashboardStores(){},$:()=>null,directoryKind:s=>s.translations?._directory?.kind,console});
+ const context=vm.createContext({window:{},document:{baseURI:'https://damascus-shop.com/',querySelector:()=>null},URL,location:{hash:"#home"},stores:[],nativeRows:[],reload:async function(){context.stores=context.nativeRows.slice();},render(){},renderHome(){},renderStore(){},dashboardStores(){},$:()=>null,directoryKind:s=>s.translations?._directory?.kind,directoryKinds:['shop','restaurant','doctor','pharmacy','services','school','mosque','lawyer'].map(k=>[k,k]),console});
  vm.runInContext(fs.readFileSync('mosques-data.js','utf8'),context);
  vm.runInContext(fs.readFileSync('mosques.js','utf8').replace(/\}\)\(\);\s*$/, 'window.testMapRows=publicPlaces;})();'),context);
  return context;
