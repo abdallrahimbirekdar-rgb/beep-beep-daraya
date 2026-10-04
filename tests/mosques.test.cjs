@@ -32,3 +32,7 @@ test('general map includes new places; category maps exclude other kinds and hid
  const ctx=fixture();ctx.stores.push({id:'doctor',name:'عيادة جديدة',active:true,translations:{_directory:{kind:'doctor'}}},{id:'hidden',active:false,translations:{_directory:{kind:'doctor'}}},{id:'deleted',active:true,deleted_at:'today',translations:{_directory:{kind:'doctor'}}},{id:'example',active:true,is_example:true,translations:{_directory:{kind:'doctor'}}});
  assert.equal(ctx.window.testMapRows().length,30);assert.equal(ctx.window.testMapRows('mosque').length,29);assert.equal(ctx.window.testMapRows('doctor').length,1);assert.equal(ctx.window.testMapRows('doctor')[0].id,'doctor');assert.equal(ctx.window.testMapRows('pharmacy').length,0);
 });
+
+test('entering a section offers its map without loading map code or tiles',()=>{
+ const ctx=fixture(),entries=[];let loads=0;ctx.filter='doctor';ctx.search='';ctx.esc=String;ctx.loadLeaflet=async()=>{loads++;};const hero={insertAdjacentElement:(where,entry)=>entries.push(entry)};ctx.$=selector=>selector==='.shahin-hero'?hero:null;ctx.document.createElement=()=>({});ctx.renderHome();assert.equal(loads,0);assert.equal(entries.length,1);assert.match(entries[0].innerHTML,/#map\/doctor/);assert.match(entries[0].innerHTML,/خريطة أطباء داريا/);assert.doesNotMatch(entries[0].innerHTML,/id="mosques-map"/);
+});
