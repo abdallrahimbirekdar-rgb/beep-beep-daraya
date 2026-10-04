@@ -1,0 +1,47 @@
+/* Warm orange and white, with locally hosted Arabic type. */
+@font-face{font-family:Cairo;src:url('fonts/cairo-regular.woff') format('woff');font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:Cairo;src:url('fonts/cairo-bold.woff') format('woff');font-weight:600 900;font-style:normal;font-display:swap}
+:root{font-family:Cairo,Tahoma,Arial,sans-serif;--orange:#d94e22;--ink:#242925;--line:#eee3db;background:#fffaf6;color:var(--ink)}
+body{background:#fffaf6;color:#242925}
+button,input,select,textarea{font-family:inherit}
+header{background:#fff!important;border-bottom:1px solid #f0e6df!important;box-shadow:none!important}
+#menu-toggle{background:#df582d!important;color:white!important;border-radius:16px!important}
+#mobile-navigation{background:#fff!important;border-top:1px solid #eee3db!important;box-shadow:0 -4px 24px #5c311109!important}
+#mobile-navigation a.active{background:#fff0e7!important;color:#b73d17!important}
+.professional-home{max-width:1240px;padding:28px 28px 48px!important}
+.professional-home .shahin-hero{position:relative;isolation:isolate;background:#fff!important;border:0!important;border-radius:28px!important;overflow:hidden!important;padding:54px 48px 30px!important;box-shadow:0 10px 40px #7845220a!important}
+.professional-home .shahin-hero:before{content:"";display:block!important;position:absolute;inset:0;z-index:-1;pointer-events:none;background:#ed794b;clip-path:ellipse(61% 81% at 0% 0%)}
+.professional-home .shahin-hero:after{content:"";display:block!important;position:absolute;top:-100px;left:-130px;width:380px;height:380px;border:1px solid #ffffff50;border-radius:50%;z-index:-1;pointer-events:none}
+.directory-welcome{position:relative;max-width:680px;margin-inline-start:0;margin-inline-end:auto}
+.welcome-location{display:inline-block;color:#a84626;background:#fff5ee;border:1px solid #f1d8c7;padding:5px 14px;border-radius:30px;font-size:12px}
+.directory-welcome h1{color:#272b28!important;font-size:clamp(30px,3.5vw,46px)!important;font-weight:700;line-height:1.6!important;margin:16px 0 12px!important;max-width:640px}
+.directory-welcome p{color:#65665f;font-size:16px;line-height:2;max-width:580px}
+.how-it-works{color:#b8441e!important;font-weight:700}
+.professional-home .delivery-hero-button{position:relative;width:auto;min-width:250px;margin:20px 0 24px!important;min-height:56px;background:#c9441a!important;border:1px solid #c9441a!important;border-radius:14px!important;font-size:18px!important;box-shadow:0 6px 18px #c9441a24;animation:none}
+.professional-home .delivery-hero-button:hover,.professional-home .delivery-hero-button.selected{background:#ae3511!important}
+.professional-home .shahin-hero .filters{position:relative;background:#fff!important;border:1px solid #f0e4db!important;border-radius:20px!important;padding:18px!important;margin-top:12px!important;box-shadow:0 5px 24px #50351a08!important}
+.professional-home .search-wrap{border:1px solid #e5d8ce!important;background:#fffdfb!important;border-radius:13px!important;box-shadow:none!important}
+.professional-home .search-wrap:focus-within{border-color:#d94e22!important;outline:2px solid #f7d3c5}
+.professional-home .search-wrap input{color:#34342e;font-size:16px!important;min-height:56px!important}
+.browse-category-track{scrollbar-color:#ecc3ac transparent}
+.browse-category-track>button{background:#fff!important;border-color:#ebded5!important;color:#65645b!important}
+.browse-category-track>button.selected{background:#c9441a!important;border-color:#c9441a!important;color:#fff!important}
+.featured-places{margin:28px 0!important}
+.featured-places h2,.professional-home .browse-heading h2{color:#292d28!important;font-weight:700}
+.featured-place-track{gap:16px;padding-bottom:16px}
+.featured-place-track>a{border:1px solid #eddfd4;border-radius:18px;padding:10px;box-shadow:0 4px 14px #78452205;color:#37392f}
+.featured-place-image{border-radius:12px}
+.professional-home .card{border-color:#ede1d7!important;border-radius:20px!important;box-shadow:0 6px 22px #68402306!important;transition:box-shadow .2s,transform .2s}
+.professional-home .card:hover{box-shadow:0 10px 30px #68402312!important;transform:translateY(-2px)}
+.professional-home .card-title h3{color:#2d302a!important;font-weight:700}
+.professional-home .place-card-actions a,.professional-home .place-card-actions button{background:#fff3eb;color:#a9401d;border-color:#f0d9ca;border-radius:12px}
+.professional-home .brand-note{background:#fff0e5!important;border:1px solid #f0d9c8!important;border-radius:24px;color:#603b26!important}
+.welcome-guide{border-color:#efdfd2;border-radius:20px}
+.guide-symbol{background:#fff0e5;color:#be461f}
+.guide-dots button[aria-pressed=true]{background:#c9441a}
+.android-download,.ios-install-card{border-color:#eedbc9!important;border-radius:24px!important}
+footer{border-top:1px solid #ecdacc!important;background:#fff4eb!important;color:#674633!important}
+@media(min-width:900px){.professional-home .shahin-hero{min-height:470px!important}.directory-welcome{width:68%}.professional-home .delivery-hero-button{margin-inline-start:0!important;margin-inline-end:auto!important}}
+@media(max-width:899px){.professional-home .shahin-hero:before{clip-path:ellipse(45% 35% at 0% 0%)}.directory-welcome{max-width:none}}
+@media(max-width:600px){.professional-home{padding:14px 12px 28px!important}.professional-home .shahin-hero{padding:28px 18px 18px!important;border-radius:22px!important}.professional-home .shahin-hero:before{clip-path:ellipse(36% 17% at 0% 0%)}.professional-home .shahin-hero:after{width:180px;height:180px;top:-85px;left:-80px}.welcome-location{font-size:11px;padding:4px 11px}.directory-welcome h1{font-size:29px!important;line-height:1.6!important;margin:14px 0 10px!important}.directory-welcome p{font-size:14px;line-height:1.9}.professional-home .delivery-hero-button{width:100%;min-width:0;margin:16px 0!important;font-size:18px!important}.professional-home .shahin-hero .filters{padding:12px!important;border-radius:16px!important;gap:10px!important}.professional-home .search-wrap input{font-size:14px!important;min-height:50px!important}.featured-places h2{font-size:21px}.professional-home .card-cover{height:180px!important}}
+@media(prefers-reduced-motion:reduce){.professional-home .card{transition:none}.professional-home .card:hover{transform:none}}
