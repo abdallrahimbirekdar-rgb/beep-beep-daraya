@@ -149,7 +149,7 @@ if __name__ == '__main__':
     for item in source.iterdir():
         if item.is_file() and (item.suffix in {'.html','.js','.css','.webmanifest','.png','.ico','.svg','.webp'} or item.name in {'CNAME','.nojekyll'}):
             shutil.copy2(item,output/item.name)
-        elif item.name in {'images','thumbnails'} and item.is_dir():
+        elif item.name in {'images','thumbnails','fonts'} and item.is_dir():
             shutil.copytree(item,output/item.name,dirs_exist_ok=True)
     count = build(fetch_stores((source/'config.js').read_text()),output)
     print(f'Generated {count} public shop pages and sitemap')
