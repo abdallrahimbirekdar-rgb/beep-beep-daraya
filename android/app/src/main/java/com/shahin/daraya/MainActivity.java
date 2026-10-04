@@ -14,6 +14,9 @@ import android.widget.*;
 public class MainActivity extends Activity {
     private static final String SITE = "https://damascus-shop.com/";
     private static final int PICK_FILE = 7;
+    private static final int LOCATION_PERMISSION = 8;
+    private GeolocationPermissions.Callback locationCallback;
+    private String locationOrigin;
     private WebView web;
     private ProgressBar progress;
     private LinearLayout error;
@@ -57,11 +60,12 @@ public class MainActivity extends Activity {
         WebSettings settings = web.getSettings();
         settings.setJavaScriptEnabled(true);
         settings.setDomStorageEnabled(true);
+        settings.setGeolocationEnabled(true);
         settings.setAllowFileAccess(false);
         settings.setAllowContentAccess(true);
         settings.setMixedContentMode(WebSettings.MIXED_CONTENT_NEVER_ALLOW);
         settings.setSupportMultipleWindows(false);
-        settings.setUserAgentString(settings.getUserAgentString()+" ShahinAndroid/1.1");
+        settings.setUserAgentString(settings.getUserAgentString()+" ShahinAndroid/1.2");
         CookieManager.getInstance().setAcceptCookie(true);
         CookieManager.getInstance().setAcceptThirdPartyCookies(web,false);
         WebView.setWebContentsDebuggingEnabled(false);
@@ -81,6 +85,17 @@ public class MainActivity extends Activity {
             // Certificate errors retain WebView's secure default: cancel.
         });
         web.setWebChromeClient(new WebChromeClient() {
+            @Override public void onGeolocationPermissionsShowPrompt(String origin, GeolocationPermissions.Callback callback) {
+                if(!isSiteUrl(Uri.parse(origin))) { callback.invoke(origin,false,false); return; }
+                if(checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION)==android.content.pm.PackageManager.PERMISSION_GRANTED || checkSelfPermission(android.Manifest.permission.ACCESS_COARSE_LOCATION)==android.content.pm.PackageManager.PERMISSION_GRANTED) { callback.invoke(origin,true,false); return; }
+                if(locationCallback!=null)locationCallback.invoke(locationOrigin,false,false);
+                locationCallback=callback;locationOrigin=origin;
+                requestPermissions(new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION,android.Manifest.permission.ACCESS_COARSE_LOCATION},LOCATION_PERMISSION);
+            }
+            @Override public void onGeolocationPermissionsHidePrompt() {
+                if(locationCallback!=null)locationCallback.invoke(locationOrigin,false,false);
+                locationCallback=null;locationOrigin=null;
+            }
             @Override public void onProgressChanged(WebView v,int n) { progress.setProgress(n); }
             @Override public boolean onShowFileChooser(WebView v,ValueCallback<Uri[]> callback,FileChooserParams params) {
                 if(fileCallback != null) fileCallback.onReceiveValue(null);
@@ -124,7 +139,16 @@ public class MainActivity extends Activity {
             fileCallback=null;
         }
     }
+    @Override public void onRequestPermissionsResult(int request,String[] permissions,int[] results) {
+        super.onRequestPermissionsResult(request,permissions,results);
+        if(request==LOCATION_PERMISSION && locationCallback!=null) {
+            boolean granted=checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION)==android.content.pm.PackageManager.PERMISSION_GRANTED || checkSelfPermission(android.Manifest.permission.ACCESS_COARSE_LOCATION)==android.content.pm.PackageManager.PERMISSION_GRANTED;
+            locationCallback.invoke(locationOrigin,granted,false);locationCallback=null;locationOrigin=null;
+        }
+    }
+    @Override protected void onPause() { super.onPause(); if(web!=null){if(locationCallback==null)web.evaluateJavascript("window.dispatchEvent(new Event('daraya-app-pause'));",null);web.onPause();} }
+    @Override protected void onResume() { super.onResume(); if(web!=null)web.onResume(); }
     @Override public void onBackPressed() { if(web.canGoBack()) web.goBack(); else super.onBackPressed(); }
     @Override protected void onSaveInstanceState(Bundle state) { web.saveState(state); super.onSaveInstanceState(state); }
-    @Override protected void onDestroy() { if(fileCallback!=null) fileCallback.onReceiveValue(null); web.destroy(); super.onDestroy(); }
+    @Override protected void onDestroy() { if(fileCallback!=null) fileCallback.onReceiveValue(null); if(locationCallback!=null)locationCallback.invoke(locationOrigin,false,false); web.destroy(); super.onDestroy(); }
 }
