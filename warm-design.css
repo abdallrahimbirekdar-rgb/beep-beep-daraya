@@ -95,3 +95,9 @@ html[dir="ltr"] .professional-home .delivery-hero-button:after{content:"→"}
 .delivery-info-panel h2{font-size:22px;color:#173b35;padding-inline-end:28px}
 .delivery-info-panel p{font-size:16px;line-height:1.9;color:#51483d}
 @media(max-width:600px){.delivery-hero-action{width:100%;margin:16px 0;gap:8px}.professional-home .delivery-hero-action .delivery-hero-button{width:auto;gap:8px}.professional-home .delivery-hero-action .delivery-hero-button:after{display:none}}
+
+/* Mirror decorative artwork for languages read from left to right. */
+html[dir="ltr"] .professional-home .shahin-hero:before{clip-path:ellipse(48% 81% at 100% 0%)}
+html[dir="ltr"] .professional-home .shahin-hero:after{left:auto;right:40px}
+@media(max-width:899px){html[dir="ltr"] .professional-home .shahin-hero:before{clip-path:ellipse(88% 100% at 100% 0%)}html[dir="ltr"] .professional-home .shahin-hero:after{right:18px}}
+@media(min-width:601px) and (max-width:899px){html[dir="ltr"] .professional-home .shahin-hero:before{clip-path:ellipse(72% 100% at 100% 0%)}html[dir="ltr"] .professional-home .shahin-hero:after{right:28px}}
