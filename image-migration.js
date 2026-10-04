@@ -2,6 +2,14 @@
 (()=>{
  const SID='a5e8abe7-974a-416c-a570-858d6fd03572';let running=false;
  const owned=url=>typeof url==='string'&&url.startsWith(window.BEEP_CONFIG.supabaseUrl+'/storage/v1/object/public/store-images/');
+ async function prepare(blob){
+  const bytes=new Uint8Array(await blob.slice(0,12).arrayBuffer());
+  const type=bytes[0]===255&&bytes[1]===216&&bytes[2]===255?'image/jpeg':[137,80,78,71,13,10,26,10].every((n,i)=>bytes[i]===n)?'image/png':new TextDecoder().decode(bytes.slice(0,4))==='RIFF'&&new TextDecoder().decode(bytes.slice(8,12))==='WEBP'?'image/webp':null;
+  if(!type)throw Error('صيغة إحدى الصور القديمة غير مدعومة');
+  const file=new Blob([blob],{type});if(file.size<=1572864)return file;
+  const bitmap=await createImageBitmap(file);
+  try{const canvas=document.createElement('canvas'),scale=Math.min(1,1600/Math.max(bitmap.width,bitmap.height));canvas.width=Math.max(1,Math.round(bitmap.width*scale));canvas.height=Math.max(1,Math.round(bitmap.height*scale));canvas.getContext('2d').drawImage(bitmap,0,0,canvas.width,canvas.height);for(const quality of [.82,.72,.6,.45]){const result=await new Promise(resolve=>canvas.toBlob(resolve,'image/webp',quality));if(result?.type==='image/webp'&&result.size<=1572864)return result;}throw Error('تعذر تقليل حجم الصورة القديمة');}finally{bitmap.close?.();}
+ }
  const check=url=>new Promise((resolve,reject)=>{const img=new Image();const timer=setTimeout(()=>reject(Error('انتهت مهلة التحقق من الصورة')),20000);img.onload=()=>{clearTimeout(timer);img.naturalWidth?resolve():reject(Error('الصورة غير قابلة للعرض'));};img.onerror=()=>{clearTimeout(timer);reject(Error('تعذر عرض الصورة المنقولة'));};img.src=url;});
  async function run(status){
   if(running||!admin||!user) return;running=true;
@@ -18,7 +26,7 @@
    for(let i=0;i<urls.length;i++){
     const old=urls[i];status.textContent=`نقل صور ${s.name}: ${i+1} من ${urls.length}`;
     if(!backup.mapping[old]){
-     const response=await fetch(old);if(!response.ok)throw Error('تعذر تحميل الصورة الأصلية');const blob=await response.blob();
+     const response=await fetch(old);if(!response.ok)throw Error('تعذر تحميل الصورة الأصلية');const blob=await prepare(await response.blob());
      const f=new FormData();f.set('photo',new File([blob],'migration.'+(blob.type==='image/png'?'png':blob.type==='image/webp'?'webp':'jpg'),{type:blob.type}));
      const next=await uploadOrLink(f,SID);await check(next);await check(thumbnailForImage(next));backup.mapping[old]=next;save();
     }else{await check(backup.mapping[old]);await check(thumbnailForImage(backup.mapping[old]));}
