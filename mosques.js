@@ -17,7 +17,7 @@
  async function drawMap(box,rows,zoom=14){
   const status=document.querySelector('[data-mosques-map-status]');
   try{await loadLeaflet();if(!box.isConnected)return;clearMap();map=L.map(box,{scrollWheelZoom:false}).setView([33.4588,36.2388],zoom);
-   L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a>'}).addTo(map);
+   L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,referrerPolicy:'strict-origin-when-cross-origin',attribution:'© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a>'}).addTo(map);
    const points=[];
    for(const s of rows){const point=storeCoordinates(s);if(!point)continue;points.push(point);const label=document.createElement('span');label.textContent=s.name;const popup=document.createElement('div');const title=document.createElement('strong');title.textContent=s.name;const link=document.createElement('a');link.href='#store/'+s.id;link.className='mosque-pin-action';link.textContent=text('فتح صفحة المسجد','Open mosque page','Moscheeseite öffnen');popup.append(title,link);L.marker(point,{title:s.name,alt:s.name}).addTo(map).bindTooltip(label,{permanent:true,direction:'top',className:'mosque-label'}).bindPopup(popup);}
    if(rows.length===1&&points.length)map.setView(points[0],17);
