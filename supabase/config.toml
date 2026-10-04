@@ -1,3 +1,7 @@
 [functions.create-phone-account]
 verify_jwt = false
 # The handler validates the current Auth user and platform_admins before any write.
+
+[functions.driver-code]
+verify_jwt = false
+# Auth user and store ownership are validated by the handler and binding RPC.
