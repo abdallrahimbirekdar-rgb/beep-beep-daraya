@@ -114,8 +114,8 @@ header #site-menu a,header #site-menu button{text-align:start!important;justify-
 
 /* Match mobile navigation to the site's luminous gold palette. */
 @media(max-width:760px){
- #mobile-navigation{background:linear-gradient(115deg,#f3e5bc,#fff5d7 48%,#eddaa3);border-top-color:#d7b96d;box-shadow:0 -3px 18px #b8973c18}
- #mobile-navigation a{color:#57451f}
- #mobile-navigation a[aria-current=page]{background:linear-gradient(125deg,#b4872e 0%,#d3ac4d 23%,#f4dfa0 46%,#dfbd60 67%,#bf9435 100%);color:#493917;box-shadow:inset 0 0 0 1px #bf943559}
+ #mobile-navigation{background:linear-gradient(115deg,#f3e5bc,#fff5d7 48%,#eddaa3)!important;border-top-color:#d7b96d!important;box-shadow:0 -3px 18px #b8973c18!important}
+ #mobile-navigation a{color:#57451f!important}
+ #mobile-navigation a[aria-current=page]{background:linear-gradient(125deg,#b4872e 0%,#d3ac4d 23%,#f4dfa0 46%,#dfbd60 67%,#bf9435 100%)!important;color:#493917!important;box-shadow:inset 0 0 0 1px #bf943559}
  #mobile-navigation a:focus-visible{outline:2px solid #715720;outline-offset:-2px}
 }
