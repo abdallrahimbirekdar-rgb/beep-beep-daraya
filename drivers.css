@@ -4,3 +4,4 @@
 body.driver-only-workspace #mobile-navigation,body.driver-only-workspace footer,body.driver-only-workspace #site-menu>a:not(#driver-nav),body.driver-only-workspace #site-menu>#account,body.driver-only-workspace #site-menu>.ios-install-nav{display:none!important}
 body.driver-only-workspace header .brand{pointer-events:none}
 body.driver-only-workspace #app{padding-bottom:30px}
+body.driver-only-workspace .android-download,body.driver-only-workspace .android-install-note,body.driver-only-workspace .ios-install-card{display:none!important}
