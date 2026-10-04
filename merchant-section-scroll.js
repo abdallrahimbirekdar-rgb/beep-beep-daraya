@@ -1,13 +1,23 @@
 'use strict';
 (()=>{
- let lastRoute='';
- function reveal(route=location.hash){
-  if(!matchMedia('(max-width:760px)').matches)return;
-  const content=document.querySelector('#dashboard-content.merchant-content');if(!content)return;
-  requestAnimationFrame(()=>{if(location.hash!==route||!content.isConnected)return;content.setAttribute('tabindex','-1');content.scrollIntoView({block:'start',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});content.focus({preventScroll:true});});
+ let lastShownRoute='',request=0;
+ const mobile=()=>matchMedia('(max-width:900px)').matches||matchMedia('(pointer:coarse)').matches;
+ function reveal(route=location.hash,force=false){
+  if(!mobile()||(!force&&lastShownRoute===route))return;
+  const token=++request;
+  // Resolve the final DOM after every dashboard wrapper has finished rendering.
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+   if(token!==request||location.hash!==route)return;
+   const content=document.querySelector('#dashboard-content.merchant-content');if(!content?.isConnected)return;
+   content.setAttribute('tabindex','-1');content.focus({preventScroll:true});
+   content.scrollIntoView({block:'start',behavior:'auto'});lastShownRoute=route;
+  }));
  }
- const previous=merchantDashboard;
- merchantDashboard=function(){previous.apply(this,arguments);const route=location.hash;if(lastRoute!==route){lastRoute=route;reveal(route);}};
- window.addEventListener('hashchange',()=>{if(!location.hash.startsWith('#dashboard'))lastRoute='';});
- document.addEventListener('click',event=>{if(event.defaultPrevented||event.button!==0||event.ctrlKey||event.metaKey||event.shiftKey||event.altKey)return;const link=event.target.closest('.merchant-nav a, #mobile-navigation a, .setup-card, .help-action');if(link&&link.getAttribute('href')===location.hash)reveal();});
+ const previous=merchantDashboard;merchantDashboard=function(){previous.apply(this,arguments);reveal();};
+ window.addEventListener('hashchange',()=>{if(!location.hash.startsWith('#dashboard')){lastShownRoute='';request++;}else reveal();});
+ document.addEventListener('click',event=>{
+  if(event.defaultPrevented||event.button!==0||event.ctrlKey||event.metaKey||event.shiftKey||event.altKey)return;
+  const link=event.target.closest('.merchant-nav a, #mobile-navigation a, .setup-card, .help-action, .welcome-actions a');
+  if(link&&link.getAttribute('href')===location.hash)reveal(location.hash,true);
+ });
 })();
