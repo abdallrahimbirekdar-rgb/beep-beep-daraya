@@ -4,6 +4,22 @@ from urllib.request import Request, urlopen
 from urllib.parse import urlencode, urlsplit
 
 BASE = 'https://damascus-shop.com'
+def merge_mosques(stores, source=Path('.'), output=None):
+    text = (source/'mosques-data.js').read_text(encoding='utf-8')
+    catalog = json.loads(text.split('=',1)[1].strip().rstrip(';'))
+    def normalized(name):
+        return re.sub(r'[ًٌٍَُِّْـ]', '', re.sub(r'^(مسجد|جامع)\s+', '', str(name))).translate(str.maketrans('أإآ','ااا')).strip()
+    result = list(stores)
+    for mosque in catalog:
+        existing = next((s for s in stores if s['id']==mosque['id'] or (s.get('translations') or {}).get('_directory',{}).get('slug')==mosque['slug'] or re.search(r'مسجد|جامع',s.get('name','')) and normalized(s['name'])==normalized(mosque['name'])),None)
+        if existing:
+            mosque['adopted'] = True
+            continue
+        if mosque.get('adopted'): continue
+        result.append({**mosque,'category':'shop','description':'مسجد في مدينة داريا، ريف دمشق.','address':'داريا، ريف دمشق، سوريا','image':BASE+'/images/services/mosque.svg','active':True,'is_example':False,'translations':{'_directory':{'kind':'mosque','mode':'info','slug':mosque['slug'],'location_source':mosque.get('location_source')}}})
+    if output:
+        (output/'mosques-data.js').write_text('window.DARAYA_MOSQUES = '+json.dumps(catalog,ensure_ascii=False,indent=2)+';\n',encoding='utf-8')
+    return result
 def esc(value):
     return html.escape(str(value or ''), quote=True)
 def image_url(value):
@@ -52,7 +68,8 @@ def build_readable_pages(stores, output):
         content = re.sub(r'<meta property="og:url"[^>]*>', '<meta property="og:url" content="'+BASE+path+'">', content)
         if s.get('is_example'): content = content.replace('</head>', '<meta name="robots" content="noindex,follow"></head>')
         else:
-            schema = {'@context':'https://schema.org','@type':'Restaurant' if s.get('category')=='restaurant' else 'LocalBusiness','name':name,'url':BASE+path,'description':description}
+            kind = (s.get('translations') or {}).get('_directory',{}).get('kind')
+            schema = {'@context':'https://schema.org','@type':'Mosque' if kind=='mosque' else 'Restaurant' if s.get('category')=='restaurant' else 'LocalBusiness','name':name,'url':BASE+path,'description':description}
             if s.get('image'): schema['image'] = image_url(s['image'])
             if s.get('address'): schema['address'] = {'@type':'PostalAddress','streetAddress':str(s['address']),'addressLocality':'داريا','addressCountry':'SY'}
             data = json.dumps(schema,ensure_ascii=False).replace('<','\\u003c')
@@ -78,7 +95,8 @@ def build(stores, output):
         title = name+' في داريا | سوق داريا الإلكتروني'
         description = ' — '.join(x for x in [name+' في داريا', s.get('description'), s.get('address')] if x)[:300]
         image = image_url(s.get('image'))
-        schema = {'@context':'https://schema.org', '@type':'Restaurant' if s.get('category')=='restaurant' else 'LocalBusiness', 'name':name, 'url':BASE+path, 'description':description}
+        kind = (s.get('translations') or {}).get('_directory',{}).get('kind')
+        schema = {'@context':'https://schema.org', '@type':'Mosque' if kind=='mosque' else 'Restaurant' if s.get('category')=='restaurant' else 'LocalBusiness', 'name':name, 'url':BASE+path, 'description':description}
         body = f'<a href="/shops/">جميع المتاجر</a><h1>{esc(name)}</h1><p>داريا، ريف دمشق، سوريا</p><p>{esc(s.get("description"))}</p>'
         if image:
             schema['image'] = image
@@ -151,5 +169,5 @@ if __name__ == '__main__':
             shutil.copy2(item,output/item.name)
         elif item.name in {'images','thumbnails','fonts'} and item.is_dir():
             shutil.copytree(item,output/item.name,dirs_exist_ok=True)
-    count = build(fetch_stores((source/'config.js').read_text()),output)
+    count = build(merge_mosques(fetch_stores((source/'config.js').read_text()),source,output),output)
     print(f'Generated {count} public shop pages and sitemap')
