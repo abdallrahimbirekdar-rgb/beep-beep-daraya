@@ -125,6 +125,11 @@ def fetch_stores(config):
     def public_rows(table):
         request = Request(endpoint+'/rest/v1/'+table+'?select=*',headers={'apikey':key})
         with urlopen(request,timeout=60) as response: return json.load(response)
+    try:
+        settings = public_rows('platform_settings')
+        if settings and settings[0].get('subscriptions_enabled') is False: return rows
+    except Exception as error:
+        if getattr(error, 'code', None) != 404: raise
     plans = {p['id']:p['features'] for p in public_rows('subscription_plans')}
     subscriptions = {p['store_id']:p for p in public_rows('store_subscriptions')}
     for store in rows:
