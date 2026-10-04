@@ -68,6 +68,14 @@ function renderDriverInvitation(token){
  $('#leave-driver-invite').onclick=()=>{sessionStorage.removeItem('daraya-driver-invite');location.hash='home';};
  if($('#accept-driver-invite'))$('#accept-driver-invite').onclick=async e=>{e.currentTarget.disabled=true;try{const r=await api.rpc('accept_driver_invite',{p_token:token});if(r.error)throw r.error;sessionStorage.removeItem('daraya-driver-invite');await reload();location.hash='driver';render();toast('تم ربط حساب المندوب');}catch(err){if($('#driver-invite-error'))$('#driver-invite-error').textContent=err.message;if($('#accept-driver-invite'))$('#accept-driver-invite').disabled=false;}};
 }
+const driverAccountAuth=renderCustomerAuth;renderCustomerAuth=function(mode='login',nextStore=''){
+ driverAccountAuth.apply(this,arguments);
+ if(location.hash.startsWith('#driver')||pendingDriverInvite()){
+ const title=document.querySelector('.customer-auth h1'),hint=document.querySelector('.customer-auth .muted');
+ if(title)title.textContent=mode==='register'?'إنشاء حساب مندوب':'دخول المندوب';
+ if(hint)hint.textContent='استخدم البريد الذي أضافه صاحب المتجر. أكد بريدك ثم افتح رابط الدعوة لقبولها ومتابعة توصيلاتك.';
+ }
+};
 const driversRender=render;render=function(){
  const route=location.hash.slice(1).split('/');updateDriverNav();
  if(api&&!passwordRecovery&&route[0]==='driver'){$('#account').hidden=true;$('#dashboard-link').hidden=true;clearInterval(trackingTimer);if(route[1]==='invite')renderDriverInvitation(route[2]);else renderDriverDashboard();return;}
