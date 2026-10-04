@@ -3,7 +3,7 @@ const assert=require('node:assert/strict');
 const fs=require('node:fs');
 const vm=require('node:vm');
 function fixture(){
- const context=vm.createContext({window:{},document:{baseURI:'https://damascus-shop.com/',querySelector:()=>null},URL,stores:[],nativeRows:[],reload:async function(){context.stores=context.nativeRows.slice();},render(){},renderHome(){},renderStore(){},dashboardStores(){},$:()=>null,directoryKind:s=>s.translations?._directory?.kind,console});
+ const context=vm.createContext({window:{},document:{baseURI:'https://damascus-shop.com/',querySelector:()=>null},URL,location:{hash:"#home"},stores:[],nativeRows:[],reload:async function(){context.stores=context.nativeRows.slice();},render(){},renderHome(){},renderStore(){},dashboardStores(){},$:()=>null,directoryKind:s=>s.translations?._directory?.kind,console});
  vm.runInContext(fs.readFileSync('mosques-data.js','utf8'),context);
  vm.runInContext(fs.readFileSync('mosques.js','utf8'),context);
  return context;
@@ -22,4 +22,8 @@ test('a native mosque with another UUID is matched by name',async()=>{
 });
 test('deleted native records are never replaced by a public fallback',async()=>{
  const ctx=fixture();ctx.nativeRows=[{...ctx.stores[0],active:false,deleted_at:'2026-10-04',_mosqueCatalog:false}];await ctx.reload();assert.equal(ctx.stores.length,29);assert.equal(ctx.stores[0].active,false);
+});
+
+test('first render restores catalog when startup reload began before the module loaded',()=>{
+ const ctx=fixture();ctx.stores=[];ctx.render();assert.equal(ctx.stores.length,29);
 });
