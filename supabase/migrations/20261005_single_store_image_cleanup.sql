@@ -5,7 +5,7 @@ for delete to authenticated using (
  bucket_id='store-images'
  and public.is_admin()
  and (storage.foldername(name))[1]='a5e8abe7-974a-416c-a570-858d6fd03572'
- and not exists(select 1 from public.stores s where position(storage.objects.name in to_jsonb(s)::text)>0)
- and not exists(select 1 from public.products p where position(storage.objects.name in to_jsonb(p)::text)>0)
- and not exists(select 1 from public.store_page_photos p where position(storage.objects.name in to_jsonb(p)::text)>0)
+ and not exists(select 1 from public.stores s where position(storage.objects.name in concat(s.image,' ',s.translations::text))>0)
+ and not exists(select 1 from public.products p where position(storage.objects.name in concat(p.image,' ',p.gallery::text,' ',p.translations::text))>0)
+ and not exists(select 1 from public.store_page_photos p where position(storage.objects.name in p.image)>0)
 );

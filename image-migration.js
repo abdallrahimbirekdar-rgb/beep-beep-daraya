@@ -50,7 +50,7 @@
   if(running||!admin||!user)return;running=true;
   try{
    const backup=JSON.parse(localStorage.getItem('daraya-r2-migration-'+SID)||'null');if(!backup?.mapping||!Object.keys(backup.mapping).length)throw Error('افتح من نفس المتصفح الذي نقل الصور؛ سجل النقل غير موجود هنا');
-   const catalog=[];for(const table of ['stores','products','store_page_photos']){for(let start=0;;start+=500){const result=await api.from(table).select('*').range(start,start+499);if(result.error)throw result.error;catalog.push(...result.data);if(result.data.length<500)break;}}
+   const catalog=[];for(const table of ['stores','products','store_page_photos']){for(let start=0;;start+=500){const result=await api.from(table).select(table==='products'?'id,image,gallery,translations':table==='stores'?'id,image,translations':'id,image').range(start,start+499);if(result.error)throw result.error;catalog.push(...result.data);if(result.data.length<500)break;}}
    const references=JSON.stringify(catalog),prefix=window.BEEP_CONFIG.supabaseUrl+'/storage/v1/object/public/store-images/';let deleted=0,kept=0;
    for(const [old,next] of Object.entries(backup.mapping)){
     if(!owned(old)||!next.startsWith(new URL(window.BEEP_CONFIG.r2UploadUrl).origin+'/images/'+SID+'/'))throw Error('سجل نقل غير صالح');
