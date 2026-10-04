@@ -46,6 +46,25 @@
   }catch(e){status.textContent='توقف النقل: '+e.message+' . النسخ الأصلية محفوظة، وقد اكتمل جزء من النقل. يمكن إعادة المحاولة.';}
   finally{running=false;}
  }
- function mount(){if(!admin||!user||!location.hash.startsWith('#dashboard')||document.getElementById('r2-migration-one'))return;const host=document.getElementById('dashboard-content')||document.getElementById('app');if(!host)return;const box=document.createElement('section');box.id='r2-migration-one';box.className='panel';box.innerHTML='<h2>نقل صور فلافل السلطان</h2><p>ينقل صور هذا المتجر فقط إلى Cloudflare، مع إبقاء النسخ الأصلية. لا ينتقل إلى متجر آخر.</p><button type="button">نقل صور هذا المتجر فقط</button><p role="status" aria-live="polite"></p>';box.querySelector('button').onclick=async e=>{e.target.disabled=true;await run(box.querySelector('[role="status"]'));e.target.disabled=false;};host.append(box);}
+ async function cleanup(status){
+  if(running||!admin||!user)return;running=true;
+  try{
+   const backup=JSON.parse(localStorage.getItem('daraya-r2-migration-'+SID)||'null');if(!backup?.mapping||!Object.keys(backup.mapping).length)throw Error('افتح من نفس المتصفح الذي نقل الصور؛ سجل النقل غير موجود هنا');
+   const catalog=[];for(const table of ['stores','products','store_page_photos']){for(let start=0;;start+=500){const result=await api.from(table).select('*').range(start,start+499);if(result.error)throw result.error;catalog.push(...result.data);if(result.data.length<500)break;}}
+   const references=JSON.stringify(catalog),prefix=window.BEEP_CONFIG.supabaseUrl+'/storage/v1/object/public/store-images/';let deleted=0,kept=0;
+   for(const [old,next] of Object.entries(backup.mapping)){
+    if(!owned(old)||!next.startsWith(new URL(window.BEEP_CONFIG.r2UploadUrl).origin+'/images/'+SID+'/'))throw Error('سجل نقل غير صالح');
+    const key=decodeURIComponent(old.slice(prefix.length).split('?')[0]);if(!key.startsWith(SID+'/')||key.includes('..'))throw Error('الصورة خارج متجر فلافل السلطان');
+    if(references.includes(old)||references.includes(key)){kept++;continue;}
+    await check(next);await check(thumbnailForImage(next));
+    const candidates=[key];if(/\/original\.(jpg|png|webp)$/.test(key)){const thumb=key.replace(/original\.(jpg|png|webp)$/,'thumbnail.webp');if(!references.includes(thumb))candidates.push(thumb);}
+    const result=await api.storage.from('store-images').remove(candidates);if(result.error)throw result.error;
+    const folder=key.slice(0,key.lastIndexOf('/')),name=key.slice(key.lastIndexOf('/')+1),remaining=await api.storage.from('store-images').list(folder,{search:name,limit:100});if(remaining.error)throw remaining.error;if(remaining.data.some(x=>x.name===name))throw Error('صلاحية حذف الصور غير مفعلة في Supabase؛ شغّل ملف إعداد الحذف ثم أعد المحاولة');
+    deleted++;backup.deleted=Array.from(new Set([...(backup.deleted||[]),old]));localStorage.setItem('daraya-r2-migration-'+SID,JSON.stringify(backup));
+   }
+   status.textContent=`تم حذف نسخ Supabase لـ ${deleted} صورة من فلافل السلطان بعد التحقق من Cloudflare.${kept?' أُبقيت '+kept+' صورة لأنها ما زالت مستخدمة.':''} لم يُحذف شيء من متجر آخر.`;toast('انتهى تنظيف صور المتجر');
+  }catch(e){status.textContent='توقف الحذف: '+e.message;}finally{running=false;}
+ }
+ function mount(){if(!admin||!user||!location.hash.startsWith('#dashboard')||document.getElementById('r2-migration-one'))return;const host=document.getElementById('dashboard-content')||document.getElementById('app');if(!host)return;const box=document.createElement('section');box.id='r2-migration-one';box.className='panel';box.innerHTML='<h2>نقل صور فلافل السلطان</h2><p>ينقل صور هذا المتجر فقط إلى Cloudflare. يمكن حذف نسخ Supabase بعد التحقق من اكتمال النقل.</p><button type="button" data-migrate>نقل صور هذا المتجر فقط</button> <button type="button" class="outline" data-cleanup>حذف نسخ Supabase المنقولة</button><p role="status" aria-live="polite"></p>';for(const [selector,action] of [['[data-migrate]',run],['[data-cleanup]',cleanup]])box.querySelector(selector).onclick=async()=>{box.querySelectorAll('button').forEach(b=>b.disabled=true);await action(box.querySelector('[role="status"]'));box.querySelectorAll('button').forEach(b=>b.disabled=false);};host.append(box);}
  new MutationObserver(mount).observe(document.getElementById('app'),{childList:true,subtree:true});window.addEventListener('hashchange',mount);mount();
 })();
