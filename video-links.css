@@ -1,8 +1,8 @@
 .place-video-editor{border:1px solid #ded5ba;border-radius:16px;padding:18px;margin:20px 0;min-width:0}.place-video-editor legend{font-weight:800;color:#173b35}.place-video-editor input{width:100%;box-sizing:border-box}.place-video-surface{max-width:760px;margin-inline:auto}.place-video-launch{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;width:100%;min-height:220px;aspect-ratio:16/9;border:1px solid #c7b37b;border-radius:18px;background:linear-gradient(135deg,#163b35,#244e45);color:#fff;cursor:pointer}.place-video-launch strong{color:#fff;font-size:22px}.place-video-launch small{color:#ead8a3}.place-video-play{display:grid;place-items:center;width:64px;height:64px;background:#dfbb66;color:#173b35;border-radius:50%;font-size:24px}.place-video-stage{width:100%;aspect-ratio:16/9;min-height:220px;border-radius:14px;overflow:hidden;background:#111}.place-video-stage iframe,.place-video-stage video{display:block;width:100%;height:100%;min-height:220px;border:0;object-fit:contain}.place-video-original{display:inline-block;margin-block:10px;color:#80591e;font-weight:700}.product-video-button{margin-top:12px}.product-video-dialog h2{overflow-wrap:anywhere}.place-video-editor .form-actions{position:static!important;flex-wrap:wrap}.place-video-panel h2{font-size:23px}.place-video-surface .field-hint{line-height:1.8}.place-video-editor [data-video-status]{overflow-wrap:anywhere}@media(max-width:600px){.place-video-editor{padding:14px}.place-video-launch strong{font-size:18px}.place-video-launch{border-radius:12px}.place-video-panel{padding:18px}}
 
-/* Keep the shop video beside its cover at the top, including on phones. */
+/* Cover first, then the shop video on every screen. */
 .store-banner.store-banner-with-video{display:flex;flex-direction:column;align-items:stretch}
-.store-header-media{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px;width:100%;align-items:start}
+.store-header-media{display:grid;grid-template-columns:minmax(0,1fr);gap:18px;width:100%;align-items:start}
 .store-header-media>.store-image{display:block;width:100%;height:auto;aspect-ratio:16/9;object-fit:cover;border-radius:14px;min-width:0}
 .store-header-media>.place-video-panel{padding:0;margin:0;border:0;box-shadow:none;background:transparent;min-width:0}
 .store-header-media .place-video-panel h2{font-size:18px;margin:0 0 8px}
@@ -21,3 +21,7 @@
 .store-header-media .place-video-launch small{font-size:12px}
 .store-header-media .place-video-stage{border-radius:12px}
 }
+
+.store-header-media{max-width:760px;margin-inline:auto}
+.store-header-media>.store-image{order:0}
+.store-header-media>.place-video-panel{order:1}
