@@ -9,3 +9,12 @@ header #site-menu .side-menu-toggle{width:100%;font-weight:700;text-align:start!
 #mobile-navigation>a,#mobile-navigation>button{width:100%;box-sizing:border-box;overflow-wrap:normal;word-break:normal;min-width:0}
 #mobile-navigation a>span:last-child{display:block;width:100%;text-align:center;font-size:clamp(9px,2.6vw,12px);line-height:1.35;white-space:normal;hyphens:auto}
 #mobile-navigation #android-refresh{font-size:clamp(9px,2.6vw,11px)!important;white-space:normal}
+
+/* Keep every group in one vertical track, including LTR languages. */
+header #site-menu{flex-wrap:nowrap!important;max-width:calc(100vw - 32px)!important;justify-content:flex-start!important;align-items:stretch!important}
+header #site-menu>.side-menu-group{flex:0 0 auto;width:100%;min-width:0;max-width:100%;box-sizing:border-box}
+header #site-menu .side-menu-items{width:100%;min-width:0;flex:0 0 auto;align-items:stretch}
+header #site-menu .side-menu-group a,header #site-menu .side-menu-group button{width:100%;min-width:0;white-space:normal;overflow-wrap:anywhere;box-sizing:border-box}
+/* The full gold logo is the same brand in every language. */
+html header .brand-wordmark{display:block!important}
+html header .brand-icon,html header .brand-localized-name{display:none!important}
