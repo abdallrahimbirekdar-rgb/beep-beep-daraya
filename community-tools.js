@@ -1,6 +1,6 @@
 'use strict';
 // Community tools for Souq Daraya. Private records are protected in SQL.
-const communityState={open:false,near:false,region:'',point:null,ready:null,promise:null};
+const communityState={open:false,near:false,region:'',point:null,locating:false,locationRequest:0,locationTimer:null,ready:null,promise:null};
 function communityPublicHeader(){if($('#account'))$('#account').hidden=true;if($('#dashboard-link'))$('#dashboard-link').hidden=true;}
 function communityLang(){return window.ShahinI18n?.language||'ar';}
 function ct(ar,en,de){return communityLang()==='en'?en:communityLang()==='de'?de:ar;}
@@ -17,7 +17,7 @@ function communityLocalTime(value){const m=/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d
 function communityKnownDate(value){if(!value)return '';const p=new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Damascus',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).formatToParts(new Date(value)),g=k=>p.find(x=>x.type===k)?.value;return `${g('year')}-${g('month')}-${g('day')}T${g('hour')}:${g('minute')}`;}
 function communityGo(hash){$('#modal').close();location.hash=hash;render();}
 const communityCategoryBase=matchesCategory;
-matchesCategory=function(s,key=filter){const onHome=['','#home','#browse'].includes(location.hash);return (!onHome||(!communityState.region||communityRegion(s)===communityState.region)&&(!communityState.open||communityHasHours(s)&&isStoreOpen(s))&&(!communityState.near||!communityState.point||!!storeCoordinates(s)))&&communityCategoryBase(s,key);};
+matchesCategory=function(s,key=filter){const onHome=['','#home','#browse'].includes(location.hash);return (!onHome||(!communityState.region||communityRegion(s)===communityState.region)&&(!communityState.open||communityHasHours(s)&&isStoreOpen(s)))&&communityCategoryBase(s,key);};
 const communityHomeBase=renderHome;
 renderHome=function(){
  if(location.hash==='#offers')return renderCommunityOffers();
@@ -31,14 +31,44 @@ renderHome=function(){
  const results=browse.querySelector('.grid');if(!results)return;results.insertAdjacentElement('beforebegin',tools);
  tools.querySelector('[data-open-now]').onclick=()=>{communityState.open=!communityState.open;renderHome();};
  tools.querySelector('select').onchange=e=>{communityState.region=e.target.value;renderHome();};
- tools.querySelector('[data-near-me]').onclick=()=>{
+ const nearButton=tools.querySelector('[data-near-me]');
+ nearButton.disabled=communityState.locating;
+ if(communityState.locating)tools.querySelector('[data-location-note]').textContent=ct('جاري تحديد موقعك…','Finding your location…','Dein Standort wird ermittelt…');
+ nearButton.onclick=()=>{
   if(communityState.near){communityState.near=false;renderHome();return;}
-  const note=tools.querySelector('[data-location-note]'),button=tools.querySelector('[data-near-me]');
-  if(!navigator.geolocation){note.textContent=ct('تحديد الموقع غير متاح. اختر المنطقة يدويًا.','Location is not available. Choose an area.','Standort nicht verfügbar. Wähle ein Viertel.');return;}
-  button.disabled=true;note.textContent=ct('جاري تحديد موقعك…','Finding your location…','Dein Standort wird ermittelt…');
-  navigator.geolocation.getCurrentPosition(p=>{communityState.point=[p.coords.latitude,p.coords.longitude];communityState.near=true;renderHome();},()=>{button.disabled=false;note.textContent=ct('تعذر تحديد موقعك. يمكنك اختيار المنطقة يدويًا.','Could not find your location. You can choose an area.','Standort konnte nicht ermittelt werden. Wähle ein Viertel.');},{timeout:15000,maximumAge:60000});
+  if(communityState.locating)return;
+  const showNote=message=>{const current=$('[data-location-note]');if(current)current.textContent=message;};
+  const unavailable=()=>ct('تعذر تحديد موقعك. يمكنك اختيار المنطقة يدويًا.','Could not find your location. You can choose an area.','Standort konnte nicht ermittelt werden. Wähle ein Viertel.');
+  if(!navigator.geolocation){showNote(unavailable());return;}
+  const request=++communityState.locationRequest;
+  communityState.locating=true;nearButton.disabled=true;
+  showNote(ct('جاري تحديد موقعك…','Finding your location…','Dein Standort wird ermittelt…'));
+  const finish=()=>{if(request!==communityState.locationRequest||!communityState.locating)return false;clearTimeout(communityState.locationTimer);communityState.locating=false;const button=$('[data-near-me]');if(button)button.disabled=false;return true;};
+  const failed=()=>{if(finish())showNote(unavailable());};
+  communityState.locationTimer=setTimeout(failed,10000);
+  try{navigator.geolocation.getCurrentPosition(p=>{
+   if(!finish())return;
+   const point=p?.coords&&storeCoordinates({latitude:p.coords.latitude,longitude:p.coords.longitude});
+   if(!point){showNote(unavailable());return;}
+   communityState.point=point;communityState.near=true;
+   if(['','#home','#browse'].includes(location.hash))renderHome();
+  },failed,{enableHighAccuracy:false,timeout:8000,maximumAge:60000});}catch{failed();}
  };
- if(communityState.near&&communityState.point){const grid=browse.querySelector('.grid');const cards=[...grid.querySelectorAll('.card')];cards.sort((a,b)=>{const get=c=>original.find(s=>s.id===c.querySelector('a').hash.split('/')[1]);return communityDistance(communityState.point,storeCoordinates(get(a)))-communityDistance(communityState.point,storeCoordinates(get(b)));});cards.forEach(card=>{grid.append(card);const s=original.find(s=>s.id===card.querySelector('a').hash.split('/')[1]);const n=communityDistance(communityState.point,storeCoordinates(s));card.querySelector('.card-body').insertAdjacentHTML('beforeend',`<small class="community-distance" data-no-translate>${ct('المسافة التقريبية','Approx. distance','Ungefähre Entfernung')}: ${n.toLocaleString(communityLang(),{maximumFractionDigits:1})} ${ct('كم','km','km')}</small>`);});}
+ if(communityState.near&&communityState.point){
+  const grid=browse.querySelector('.grid');
+  const ranked=[...grid.querySelectorAll(':scope > .card')].map((card,index)=>{
+   const link=card.querySelector('a[href^="#store/"]');
+   const s=original.find(s=>String(s.id)===link?.hash.split('/')[1]);
+   const point=s?storeCoordinates(s):null;
+   return {card,index,distance:point?communityDistance(communityState.point,point):Infinity};
+  });
+  ranked.sort((a,b)=>a.distance-b.distance||a.index-b.index);
+  ranked.forEach(({card,distance})=>{
+   grid.append(card);
+   if(Number.isFinite(distance))card.querySelector('.card-body')?.insertAdjacentHTML('beforeend',`<small class="community-distance" data-no-translate>${ct('المسافة التقريبية','Approx. distance','Ungefähre Entfernung')}: ${distance.toLocaleString(communityLang(),{maximumFractionDigits:1})} ${ct('كم','km','km')}</small>`);
+  });
+ }
+
 };
 function communityOfferCard(s,o){const translated=o[communityLang()]||{};return `<article class="panel community-offer" data-offer-end="${esc(o.ends_at)}" data-no-translate><span class="section-kicker">${esc(s.name)}</span><h3>${esc(translated.title||o.title)}</h3><p>${esc(translated.details||o.details||'')}</p><small>${ct('ينتهي','Ends','Endet')}: ${communityDate(o.ends_at)}</small><a class="button outline" href="#store/${s.id}">${ct('زيارة صفحة المكان','Visit the place','Anbieter ansehen')}</a></article>`;}
 function renderCommunityOffers(){communityPublicHeader();const items=stores.filter(s=>s.active&&!s.deleted_at).flatMap(s=>communityOffers(s).map(o=>({s,o})));$('#app').innerHTML=`<section class="community-page" data-no-translate><a href="#home">${ct('العودة للسوق','Back to the market','Zurück zum Markt')}</a><h1>${ct('عروض اليوم','Today’s offers','Aktuelle Angebote')}</h1><p>${ct('العروض المضافة من أصحاب الأماكن، حسب مدة صلاحيتها. راجع شروط العرض مع صاحب المكان.','Offers from local places while they are valid. Check offer terms with the owner.','Gültige Angebote der Anbieter. Kläre die Bedingungen mit dem Anbieter.')}</p><div class="community-offer-grid">${items.map(({s,o})=>communityOfferCard(s,o)).join('')||`<div class="panel">${ct('لا توجد عروض سارية حاليًا.','No current offers.','Zurzeit keine gültigen Angebote.')}</div>`}</div></section>`;}
