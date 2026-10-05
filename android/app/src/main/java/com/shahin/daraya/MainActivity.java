@@ -93,7 +93,7 @@ public class MainActivity extends Activity {
                 requestPermissions(new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION,android.Manifest.permission.ACCESS_COARSE_LOCATION},LOCATION_PERMISSION);
             }
             @Override public void onGeolocationPermissionsHidePrompt() {
-                if(locationCallback!=null)locationCallback.invoke(locationOrigin,false,false);
+                // WebView canceled this request; do not invoke its callback again.
                 locationCallback=null;locationOrigin=null;
             }
             @Override public void onProgressChanged(WebView v,int n) { progress.setProgress(n); }
@@ -143,10 +143,19 @@ public class MainActivity extends Activity {
         super.onRequestPermissionsResult(request,permissions,results);
         if(request==LOCATION_PERMISSION && locationCallback!=null) {
             boolean granted=checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION)==android.content.pm.PackageManager.PERMISSION_GRANTED || checkSelfPermission(android.Manifest.permission.ACCESS_COARSE_LOCATION)==android.content.pm.PackageManager.PERMISSION_GRANTED;
-            locationCallback.invoke(locationOrigin,granted,false);locationCallback=null;locationOrigin=null;
+            GeolocationPermissions.Callback callback=locationCallback;
+            String origin=locationOrigin;
+            locationCallback=null;locationOrigin=null;
+            if(web!=null)web.onResume();
+            callback.invoke(origin,granted,false);
+            if(!granted)new android.app.AlertDialog.Builder(this)
+                .setTitle("إذن الموقع")
+                .setMessage("لتحديد الأماكن الأقرب، اسمح باستخدام الموقع أثناء استخدام التطبيق. يمكنك تفعيل الإذن من إعدادات التطبيق.")
+                .setPositiveButton("فتح الإعدادات",(dialog,which)->startActivity(new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS,Uri.parse("package:"+getPackageName()))))
+                .setNegativeButton("لاحقًا",null).show();
         }
     }
-    @Override protected void onPause() { super.onPause(); if(web!=null){if(locationCallback==null)web.evaluateJavascript("window.dispatchEvent(new Event('daraya-app-pause'));",null);web.onPause();} }
+    @Override protected void onPause() { super.onPause(); if(web!=null&&locationCallback==null){web.evaluateJavascript("window.dispatchEvent(new Event('daraya-app-pause'));",null);web.onPause();} }
     @Override protected void onResume() { super.onResume(); if(web!=null)web.onResume(); }
     @Override public void onBackPressed() { if(web.canGoBack()) web.goBack(); else super.onBackPressed(); }
     @Override protected void onSaveInstanceState(Bundle state) { web.saveState(state); super.onSaveInstanceState(state); }

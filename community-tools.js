@@ -45,14 +45,16 @@ renderHome=function(){
   showNote(ct('جاري تحديد موقعك…','Finding your location…','Dein Standort wird ermittelt…'));
   const finish=()=>{if(request!==communityState.locationRequest||!communityState.locating)return false;clearTimeout(communityState.locationTimer);communityState.locating=false;const button=$('[data-near-me]');if(button)button.disabled=false;return true;};
   const failed=()=>{if(finish())showNote(unavailable());};
-  communityState.locationTimer=setTimeout(failed,10000);
+  // Allow time to read Android’s permission dialog before obtaining a GPS fix.
+  const appLocation=/ShahinAndroid\//.test(navigator.userAgent||'');
+  communityState.locationTimer=setTimeout(failed,appLocation?60000:10000);
   try{navigator.geolocation.getCurrentPosition(p=>{
    if(!finish())return;
    const point=p?.coords&&storeCoordinates({latitude:p.coords.latitude,longitude:p.coords.longitude});
    if(!point){showNote(unavailable());return;}
    communityState.point=point;communityState.near=true;
    if(['','#home','#browse'].includes(location.hash))renderHome();
-  },failed,{enableHighAccuracy:false,timeout:8000,maximumAge:60000});}catch{failed();}
+  },failed,{enableHighAccuracy:false,timeout:appLocation?45000:8000,maximumAge:60000});}catch{failed();}
  };
  if(communityState.near&&communityState.point){
   const grid=browse.querySelector('.grid');

@@ -7,7 +7,7 @@ if (gradle.startParameter.taskNames.any { it.toLowerCase().contains('release') }
 android {
  namespace 'com.shahin.daraya'
  compileSdk 35
- defaultConfig { applicationId 'com.shahin.daraya'; minSdk 24; targetSdk 35; versionCode releaseCode; versionName '1.4.0' }
+ defaultConfig { applicationId 'com.shahin.daraya'; minSdk 24; targetSdk 35; versionCode releaseCode; versionName '1.4.1' }
  signingConfigs {
   release {
    if (signingReady) {
