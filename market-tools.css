@@ -20,3 +20,5 @@
 .low-data *,.low-data *::before,.low-data *::after{animation:none!important;transition:none!important}
 
 .merchant-book-icon{width:24px;height:24px;flex-shrink:0;vertical-align:middle;margin-inline-end:8px}.merchant-actions a[href^="#merchant-help/"],.form-help a[href^="#merchant-help/"]{display:inline-flex;align-items:center}.merchant-book-cover{float:inline-end;color:#f5ce76;margin-inline-start:20px}.merchant-book-cover .merchant-book-icon{width:88px;height:88px;margin:0}.guide-plan-note{padding:16px 20px;background:#fff8e6;border:1px solid #ead8a8;border-radius:14px;line-height:1.8;margin:0 0 20px}.help-action{color:#80591e}.help-lesson>div{min-width:0}.help-lesson p{overflow-wrap:anywhere}@media(max-width:600px){.merchant-book-cover .merchant-book-icon{width:60px;height:60px}.help-contents a{max-width:100%;overflow-wrap:anywhere}}
+
+.merchant-help .help-hero h1{color:#fff}.merchant-help .help-hero .section-kicker{color:#f5ce76}
