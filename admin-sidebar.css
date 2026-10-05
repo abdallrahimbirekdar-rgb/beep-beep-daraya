@@ -1,0 +1,19 @@
+.admin-layout .admin-workspace{display:grid;grid-template-columns:minmax(0,1fr) 240px;gap:24px;align-items:start;direction:ltr;width:100%;min-width:0;margin-top:20px;order:2}
+.admin-workspace>#dashboard-content{grid-column:1;grid-row:1;min-width:0;direction:rtl;scroll-margin-top:95px}
+.admin-workspace>.admin-sidebar{grid-column:2;grid-row:1;direction:rtl;position:sticky;top:90px;background:linear-gradient(145deg,#fffaf0,#fff);border:1px solid #e7d9b6;border-radius:20px;padding:18px;box-shadow:0 8px 24px #173b3508;min-width:0;max-height:calc(100dvh - 110px);overflow:auto}
+html[dir=ltr] .admin-workspace>#dashboard-content,html[dir=ltr] .admin-workspace>.admin-sidebar{direction:ltr}
+.admin-sidebar-title{display:block;color:var(--ink,#173b35);font-size:15px;margin:0 0 14px;text-align:start}
+.admin-layout .admin-workspace .tabs{display:flex;flex-direction:column;align-items:stretch;gap:9px;flex-wrap:nowrap;margin:0;width:100%;overflow:visible}
+.admin-layout .admin-workspace .tabs a{width:100%;min-height:48px;padding:13px 14px;white-space:normal;text-align:start;justify-content:flex-start;border-radius:12px;font-size:14px;line-height:1.6;transition:background .15s}
+.admin-layout .admin-workspace .tabs a.selected{border-color:#b99346;box-shadow:inset -3px 0 #d8b455;font-weight:700}
+.admin-sidebar-toggle{display:none}
+.admin-layout .admin-workspace .tabs[hidden]{display:none}
+@media(max-width:900px){
+ .admin-layout .admin-workspace{grid-template-columns:minmax(0,1fr);gap:18px}
+ .admin-workspace>.admin-sidebar{grid-column:1;grid-row:1;position:static;max-height:none;padding:12px;overflow:visible}
+ .admin-workspace>#dashboard-content{grid-column:1;grid-row:2;scroll-margin-top:85px}
+ .admin-sidebar-title{display:none}
+ .admin-sidebar-toggle{display:flex;width:100%;justify-content:space-between;text-align:start;min-height:48px;font-size:14px;white-space:normal}
+ .admin-layout .admin-workspace .tabs{margin-top:12px;max-height:55dvh;overflow:auto}
+ .admin-layout .admin-workspace .tabs a{min-height:46px}
+}
