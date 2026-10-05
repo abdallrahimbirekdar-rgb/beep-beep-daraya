@@ -1,8 +1,8 @@
 'use strict';
 (() => {
  const menu=document.querySelector('#site-menu');if(!menu)return;
- function block(title,cls='',fold=false){const node=document.createElement(fold?'details':'section');node.className='side-menu-group '+cls;const label=document.createElement(fold?'summary':'h2');label.textContent=title;node.append(label);return node;}
- function move(node,group,icon){if(!node)return;if(icon)node.dataset.menuIcon=icon;group.append(node);}
+ function block(title,cls='',fold=false){const node=document.createElement('section');node.className='side-menu-group '+cls;const label=document.createElement(fold?'button':'h2');label.textContent=title;node.append(label);if(fold){label.type='button';label.className='side-menu-toggle';label.setAttribute('aria-expanded','false');const content=document.createElement('div');content.className='side-menu-items';content.hidden=true;node.append(content);label.onclick=()=>{const open=label.getAttribute('aria-expanded')!=='true';label.setAttribute('aria-expanded',String(open));content.hidden=!open;};}return node;}
+ function move(node,group,icon){if(!node)return;if(icon)node.dataset.menuIcon=icon;(group.querySelector('.side-menu-items')||group).append(node);}
  function organize(){
   const owner=menu.querySelector('a[href="#shop-owner"]'),home=menu.querySelector('a[href="#home-business"]');
   if(!owner||!home)return;

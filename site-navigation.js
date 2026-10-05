@@ -6,18 +6,32 @@ toggle.onclick=()=>{menu.hidden=!menu.hidden;toggle.setAttribute('aria-expanded'
 document.addEventListener('click',e=>{if(!e.target.closest('header'))close();});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){close();toggle.focus();}});
 menu.addEventListener('click',e=>{if(e.target.closest('a'))close();});
+const labels={
+en:{'المتاجر':'Shops','خريطة داريا':'Map','طلباتي':'Orders','حسابي':'Account','الإدارة':'Admin','لوحتي':'Dashboard','المعلومات':'Details','الصور':'Photos','المنتجات':'Products','الطلبات الواردة':'Orders'},
+de:{'المتاجر':'Läden','خريطة داريا':'Karte','طلباتي':'Bestellungen','حسابي':'Konto','الإدارة':'Verwaltung','لوحتي':'Übersicht','المعلومات':'Infos','الصور':'Fotos','المنتجات':'Produkte','الطلبات الواردة':'Bestellungen'}
+};
+function refreshLabel(){
+ if(!refresh)return;
+ const lang=window.ShahinI18n?.language||'ar',ready=refresh.classList.contains('android-update-ready');
+ const label=lang==='de'?(ready?'Update':'Neu laden'):lang==='en'?(ready?'Update':'Refresh'):(ready?'تحديث متاح':'تحديث العرض');
+ refresh.setAttribute('data-no-translate','');if(refresh.textContent!==label)refresh.textContent=label;
+}
 function sync(){
  const parts=location.hash.slice(1).split('/');
  const managing=parts[0]==='dashboard';
  const shopPanel=managing&&(!admin||parts[1]==='setup');
  const s=shopPanel?(mine().find(x=>x.id===parts[2])||mine()[0]):null;
  const items=s&&typeof directoryIsInfo==='function'&&directoryIsInfo(s)?[['▦','لوحتي',merchantHref('overview',s)],['○','المعلومات',merchantHref('details',s)],['▤','الصور',merchantHref('photos',s)]]:s?[['▦','لوحتي',merchantHref('overview',s)],['▤','المنتجات',merchantHref('products',s)],['▧','الطلبات الواردة',merchantHref('orders',s)]]:[['⌂','المتاجر','#home'],...(!managing?[['⌖','خريطة داريا','#map']]:[]),['▤',managing?'الإدارة':'طلباتي',managing?'#dashboard':'#my-orders'],['○','حسابي','#account']];
- const html=items.map(([icon,label,href])=>'<a href="'+href+'"'+(location.hash===href?' aria-current="page"':'')+'><span aria-hidden="true">'+icon+'</span><span>'+label+'</span></a>').join('');
+ const lang=window.ShahinI18n?.language||'ar';
+ const html=items.map(([icon,label,href])=>'<a href="'+href+'"'+(location.hash===href?' aria-current="page"':'')+' data-no-translate><span aria-hidden="true">'+icon+'</span><span>'+(labels[lang]?.[label]||label)+'</span></a>').join('');
  bottom.style.gridTemplateColumns='repeat('+(items.length+(refresh?1:0))+',minmax(0,1fr))';
  if(bottom.dataset.navigationMarkup!==html){bottom.innerHTML=html;bottom.dataset.navigationMarkup=html;}if(refresh&&refresh.parentElement!==bottom)bottom.append(refresh);
+ refreshLabel();
  const oldOrders=document.querySelector('#my-orders-link');if(oldOrders)oldOrders.hidden=true;
 }
 window.addEventListener('hashchange',()=>{close();sync();});
+new MutationObserver(sync).observe(document.documentElement,{attributes:true,attributeFilter:['lang']});
+if(refresh)new MutationObserver(refreshLabel).observe(refresh,{childList:true,attributes:true,attributeFilter:['class']});
 new MutationObserver(sync).observe(document.querySelector('#app'),{childList:true});
 sync();
 })();
