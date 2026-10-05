@@ -16,14 +16,14 @@ function communityDate(s){return new Date(s).toLocaleString(communityLang()==='a
 function communityLocalTime(value){const m=/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})$/.exec(value||'');if(!m)return '';const stamp=new Date(Date.UTC(+m[1],+m[2]-1,+m[3],+m[4],+m[5]));if(stamp.getUTCFullYear()!==+m[1]||stamp.getUTCMonth()!==+m[2]-1||stamp.getUTCDate()!==+m[3]||stamp.getUTCHours()!==+m[4]||stamp.getUTCMinutes()!==+m[5])return '';return new Date(stamp.getTime()-3*3600000).toISOString();}
 function communityKnownDate(value){if(!value)return '';const p=new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Damascus',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).formatToParts(new Date(value)),g=k=>p.find(x=>x.type===k)?.value;return `${g('year')}-${g('month')}-${g('day')}T${g('hour')}:${g('minute')}`;}
 function communityGo(hash){$('#modal').close();location.hash=hash;render();}
+const communityCategoryBase=matchesCategory;
+matchesCategory=function(s,key=filter){const onHome=['','#home','#browse'].includes(location.hash);return (!onHome||(!communityState.region||communityRegion(s)===communityState.region)&&(!communityState.open||communityHasHours(s)&&isStoreOpen(s))&&(!communityState.near||!communityState.point||!!storeCoordinates(s)))&&communityCategoryBase(s,key);};
 const communityHomeBase=renderHome;
 renderHome=function(){
  if(location.hash==='#offers')return renderCommunityOffers();
  if(location.hash==='#requests'){renderCommunityRequests();return;}
  if(location.hash==='#service-requests'){renderCommunityOwn();return;}
- const original=stores;let shown=stores.filter(s=>!s.deleted_at&&(!communityState.region||communityRegion(s)===communityState.region)&&(!communityState.open||communityHasHours(s)&&isStoreOpen(s)));
- if(communityState.near&&communityState.point)shown=shown.filter(s=>storeCoordinates(s));
- try{stores=shown;communityHomeBase();}finally{stores=original;}
+ const original=stores;communityHomeBase();
  const browse=$('#browse');if(!browse)return;
  const regions=[...new Set(original.filter(s=>s.active&&!s.deleted_at).map(communityRegion).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'ar'));
  const tools=document.createElement('section');tools.className='community-search';tools.dataset.noTranslate='';

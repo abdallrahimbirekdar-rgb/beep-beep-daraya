@@ -1,0 +1,45 @@
+-- Transactional checks: no requests, bookings or catalog changes are retained.
+begin;
+do $verify$
+declare actor uuid; sid uuid; rid uuid:=gen_random_uuid();bid uuid:=gen_random_uuid();report uuid; payload jsonb; blocked boolean;
+begin
+ select user_id into actor from public.platform_admins limit 1;
+ select id into sid from public.stores where active and deleted_at is null limit 1;
+ if actor is null or sid is null then raise exception 'A platform admin and an active place are required for validation';end if;
+ perform set_config('request.jwt.claims',jsonb_build_object('sub',actor,'role','authenticated')::text,true);
+ perform public.create_market_request(rid,'اختبار داخلي للأدوات','all','منطقة الاختبار','طلب اختبار داخل معاملة ستلغى بالكامل');
+ perform public.create_market_request(rid,'اختبار داخلي للأدوات','all','منطقة الاختبار','طلب اختبار داخل معاملة ستلغى بالكامل');
+ if (select count(*) from public.market_requests where id=rid)<>1 then raise exception 'Request retry duplicated';end if;
+ perform public.reply_market_request(sid,rid,'رد اختبار داخلي',100);
+ payload:=public.my_market_requests();
+ if not exists(select 1 from jsonb_array_elements(payload) r where r->>'id'=rid::text and jsonb_array_length(r->'replies')=1) then raise exception 'Customer reply not visible';end if;
+ if not exists(select 1 from jsonb_array_elements(public.browse_market_requests(sid)) r where r->>'id'=rid::text) then raise exception 'Provider request not visible';end if;
+ perform public.close_market_request(rid);
+ if exists(select 1 from jsonb_array_elements(public.browse_market_requests(sid)) r where r->>'id'=rid::text) then raise exception 'Closed request still browsable';end if;
+ update public.stores set translations=jsonb_set(coalesce(translations,'{}'::jsonb),'{_community}',coalesce(translations->'_community','{}'::jsonb)||'{"booking_enabled":true}'::jsonb) where id=sid;
+ perform public.create_service_booking(bid,sid,'اختبار داخلي','+963900000001','اختبار الحجز',now()+interval '1 day','اختبار داخل معاملة ملغاة');
+ perform public.create_service_booking(bid,sid,'اختبار داخلي','+963900000001','اختبار الحجز',now()+interval '1 day','اختبار داخل معاملة ملغاة');
+ if (select count(*) from public.service_bookings where id=bid)<>1 then raise exception 'Booking retry duplicated';end if;
+ perform public.set_service_booking_status(bid,'accepted');
+ if (select status from public.service_bookings where id=bid)<>'accepted' then raise exception 'Acceptance failed';end if;
+ perform public.set_service_booking_status(bid,'cancelled');
+ if (select status from public.service_bookings where id=bid)<>'cancelled' then raise exception 'Customer cancellation failed';end if;
+ report:=public.create_place_report(sid,'other','اختبار بلاغ داخل معاملة ملغاة');
+ perform public.resolve_place_report(report);
+ if (select status from public.place_reports where id=report)<>'resolved' then raise exception 'Report review failed';end if;
+ perform set_config('request.jwt.claims','{"role":"anon"}',true);
+ blocked:=false;begin perform public.create_market_request(gen_random_uuid(),'اختبار','all','اختبار','اختبار');exception when others then blocked:=true;end;
+ if not blocked then raise exception 'Anonymous request allowed';end if;
+ blocked:=false;begin perform public.place_event_stats(sid);exception when others then blocked:=true;end;
+ if not blocked then raise exception 'Anonymous stats allowed';end if;
+ perform set_config('request.jwt.claims',jsonb_build_object('sub',gen_random_uuid(),'role','authenticated')::text,true);
+ if public.my_market_requests()<>'[]'::jsonb then raise exception 'Unrelated customer could read requests';end if;
+ blocked:=false;begin perform public.browse_market_requests(sid);exception when others then blocked:=true;end;
+ if not blocked then raise exception 'Unrelated customer could read provider requests';end if;
+ blocked:=false;begin perform public.set_service_booking_status(bid,'accepted');exception when others then blocked:=true;end;
+ if not blocked then raise exception 'Unrelated customer could change booking';end if;
+ raise notice 'Request, reply, booking, report, retry and access checks passed. All test changes will be rolled back.';
+end;
+$verify$;
+rollback;
+select 'All community workflow checks passed; test changes rolled back' as validation;
