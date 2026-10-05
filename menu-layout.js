@@ -11,9 +11,9 @@
   const account=block('حسابك');move(get('#customer-account'),account,'○');move(get('#dashboard-link'),account,'▦');move(get('#account'),account,'▦');move(get('#driver-code-entry'),account,'↗');move(get('#driver-code-signout'),account,'↪');
   const discover=block('اكتشف داريا');move(get('a[href="#map"]'),discover,'⌖');
   const about=block('عن المشروع','',true);move(get('a[href="#who-we-are"]'),about,'◈');move(get('a[href="#about"]'),about,'؟');move(get('a[href^="mailto:"]'),about,'✉');
-  const apps=block('تطبيق الموقع','',true);menu.querySelectorAll('[data-android-download],[data-ios-install]').forEach(node=>move(node,apps,'↓'));
+  const apps=block('تطبيق الموقع','side-menu-apps',true);menu.querySelectorAll('[data-android-download],[data-ios-install]').forEach(node=>{if(node.matches('a[data-android-download]')){node.hidden=false;node.textContent='تحميل تطبيق أندرويد';}move(node,apps,'↓');});
   const language=block('اللغة','side-menu-language');move(get('.language-switch'),language);
-  const known=new Set([join,account,discover,about,apps,language]);
+
   // Preserve dynamically supplied controls and their click handlers.
   for(const node of [...menu.children])if(node.matches('a,button'))move(node,account);
   menu.querySelectorAll(':scope>.side-menu-group').forEach(node=>node.remove());
