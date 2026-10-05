@@ -40,4 +40,5 @@
  const observer=typeof IntersectionObserver==='function'?new IntersectionObserver(entries=>{for(const entry of entries)if(entry.isIntersecting){start(entry.target);observer.unobserve(entry.target);}},{rootMargin:'200px'}):null;
  function scan(node){if(node.nodeType!==1)return;const images=[...(node.matches?.('img[data-lazy-src]')?[node]:[]),...node.querySelectorAll('img[data-lazy-src]')];for(const img of images)observer?observer.observe(img):start(img);}
  const mutations=new MutationObserver(records=>{for(const record of records){for(const node of record.removedNodes)if(node.nodeType===1){if(node.matches?.('img'))observer?.unobserve(node);node.querySelectorAll('img').forEach(img=>observer?.unobserve(img));}record.addedNodes.forEach(scan);}});mutations.observe(document.body,{childList:true,subtree:true});scan(document.body);
+ window.dispatchEvent(new Event('daraya-demand-ready'));
 })();
