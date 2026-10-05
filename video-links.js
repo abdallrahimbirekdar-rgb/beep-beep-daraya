@@ -42,12 +42,12 @@ function videoSurface(info,title){
   button.onclick=()=>{
    const stage=document.createElement('div');stage.className='place-video-stage';
    if(info.kind==='video'){const player=document.createElement('video');player.src=info.src;player.controls=true;player.playsInline=true;player.preload='none';player.setAttribute('aria-label',title);stage.append(player);player.addEventListener('error',()=>{const warning=document.createElement('p');warning.className='error';warning.textContent=videoText('تعذر تحميل الفيديو. جرّب الرابط الأصلي أدناه.','Video could not load. Try the original link below.','Video konnte nicht geladen werden. Nutze den Originallink unten.');box.append(warning);},{once:true});}
-   else{const frame=document.createElement('iframe');frame.src=info.src;frame.title=title;frame.allow='fullscreen; picture-in-picture; encrypted-media';frame.allowFullscreen=true;frame.referrerPolicy='strict-origin-when-cross-origin';stage.append(frame);}
+   else{const frame=document.createElement('iframe');const playback=new URL(info.src);if(info.provider==='YouTube')playback.searchParams.set('autoplay','1');else if(info.provider==='Vimeo')playback.searchParams.set('autoplay','1');else if(info.provider==='Facebook')playback.searchParams.set('autoplay','true');frame.src=playback.href;frame.title=title;frame.allow='autoplay; fullscreen; picture-in-picture; encrypted-media';frame.allowFullscreen=true;frame.referrerPolicy='strict-origin-when-cross-origin';stage.append(frame);}
    button.replaceWith(stage);
   };box.append(button);
-  const hint=document.createElement('p');hint.className='field-hint';hint.textContent=videoText('يُحمّل المشغّل الخارجي عند الضغط فقط. إذا منع مصدر الفيديو عرضه هنا، استخدم الرابط الأصلي.','The external player loads only when clicked. If the source blocks playback here, use the original link.','Der externe Player lädt erst beim Klicken. Verhindert die Quelle die Wiedergabe hier, nutze den Originallink.');box.append(hint);
+  const hint=document.createElement('p');hint.className='field-hint';hint.textContent=videoText('اضغط للمشاهدة. إذا تعذر التشغيل هنا، افتح الفيديو في مصدره.','Tap to watch. If the video cannot play here, open it on its source site.','Zum Ansehen antippen. Falls das Video hier nicht abspielt, öffne es auf der Quellseite.');box.append(hint);
  }
- const original=document.createElement('a');original.className='place-video-original';original.href=info.url;original.target='_blank';original.rel='noopener noreferrer';original.textContent=videoText('فتح الفيديو في مصدره ↗','Open original video ↗','Originalvideo öffnen ↗');box.append(original);return box;
+ const original=document.createElement('a');original.className='place-video-original';original.href=info.url;original.target=/ShahinAndroid\//.test(navigator.userAgent)?'_self':'_blank';original.rel='noopener';original.referrerPolicy='strict-origin-when-cross-origin';original.textContent=videoText('فتح الفيديو في مصدره','Open original video','Originalvideo öffnen');box.append(original);return box;
 }
 function addVideoFields(form,record,product=false){
  if(!form||form.querySelector('[data-video-editor]'))return;
