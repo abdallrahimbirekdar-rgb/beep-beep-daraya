@@ -10,3 +10,16 @@ test('unsafe links and pasted embed HTML are rejected',()=>{const parse=helpers(
 test('video save and removal preserve translations and other shop metadata',()=>{const context=vm.createContext({URL,document:{documentElement:{lang:'en'},querySelector:()=>({addEventListener(){}})},readTranslations:(form,record)=>structuredClone(record.translations),merchantEditor(){},editStore(){},editProduct(){},renderStore(){}});vm.runInContext(code,context);const record={translations:{en:{name:'Shop'},_social_links:{website:'https://example.com'},_community:{booking_enabled:true}}};context.record=record;context.form=new Map([['video_url','https://youtu.be/M7lc1UVf-VE']]);let result=vm.runInContext('readTranslations(form,record,[])',context);assert.equal(result._video_url,'https://www.youtube.com/watch?v=M7lc1UVf-VE');assert.deepEqual(result._social_links,record.translations._social_links);assert.equal(result._community.booking_enabled,true);context.record={translations:result};context.form=new Map([['video_url','']]);result=vm.runInContext('readTranslations(form,record,[])',context);assert.equal(result._video_url,undefined);assert.equal(result.en.name,'Shop');});
 test('external players load and start only after visitor click',()=>{const nodes=[];class Element{constructor(tag){this.tag=tag;this.children=[];this.dataset={};nodes.push(this);}append(...items){for(const item of items){item.parent=this;this.children.push(item);}}replaceWith(item){const i=this.parent.children.indexOf(this);this.parent.children[i]=item;item.parent=this.parent;}setAttribute(name,value){this[name]=value;}addEventListener(){}}
  const context=vm.createContext({URL,navigator:{userAgent:'Chrome'},esc:x=>x,document:{documentElement:{lang:'en'},createElement:tag=>new Element(tag)}});vm.runInContext(code.slice(0,code.indexOf('function addVideoFields(')),context);const box=vm.runInContext("videoSurface(parsePlaceVideo('https://youtu.be/M7lc1UVf-VE'),'Demo')",context);assert.equal(nodes.filter(n=>n.tag==='iframe').length,0);box.children.find(n=>n.tag==='button').onclick();const frame=nodes.find(n=>n.tag==='iframe');assert.equal(new URL(frame.src).searchParams.get('autoplay'),'1');assert.ok(frame.allow.includes('autoplay'));assert.equal(frame.referrerPolicy,'strict-origin-when-cross-origin');assert.equal(frame.title,'Demo');});
+
+test('original video link works in the Android window and keeps source referrer',()=>{
+ for(const [userAgent,target] of [['Chrome','_blank'],['Chrome ShahinAndroid/1.2','_self']]){
+  const context=vm.createContext({URL,navigator:{userAgent},document:{documentElement:{lang:'en'},createElement:()=>({dataset:{},children:[],append(...items){this.children.push(...items)}})}});
+  vm.runInContext(code.slice(0,code.indexOf('function addVideoFields(')),context);
+  const box=vm.runInContext("videoSurface(parsePlaceVideo('https://example.com/video-page'),'Demo')",context);
+  const link=box.children.at(-1);
+  assert.equal(link.href,'https://example.com/video-page');
+  assert.equal(link.target,target);
+  assert.equal(link.referrerPolicy,'strict-origin-when-cross-origin');
+  assert.equal(link.rel,'noopener');
+ }
+});
