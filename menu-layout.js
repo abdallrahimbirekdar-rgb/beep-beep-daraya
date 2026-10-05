@@ -1,0 +1,24 @@
+'use strict';
+(() => {
+ const menu=document.querySelector('#site-menu');if(!menu)return;
+ function block(title,cls='',fold=false){const node=document.createElement(fold?'details':'section');node.className='side-menu-group '+cls;const label=document.createElement(fold?'summary':'h2');label.textContent=title;node.append(label);return node;}
+ function move(node,group,icon){if(!node)return;if(icon)node.dataset.menuIcon=icon;group.append(node);}
+ function organize(){
+  const owner=menu.querySelector('a[href="#shop-owner"]'),home=menu.querySelector('a[href="#home-business"]');
+  if(!owner||!home)return;
+  const get=selector=>menu.querySelector(selector);
+  const join=block('كن جزءًا من سوق داريا','side-menu-join');move(owner,join,'▣');move(home,join,'⌂');
+  const account=block('حسابك');move(get('#customer-account'),account,'○');move(get('#dashboard-link'),account,'▦');move(get('#account'),account,'▦');move(get('#driver-code-entry'),account,'↗');move(get('#driver-code-signout'),account,'↪');
+  const discover=block('اكتشف داريا');move(get('a[href="#map"]'),discover,'⌖');
+  const about=block('عن المشروع','',true);move(get('a[href="#who-we-are"]'),about,'◈');move(get('a[href="#about"]'),about,'؟');move(get('a[href^="mailto:"]'),about,'✉');
+  const apps=block('تطبيق الموقع','',true);menu.querySelectorAll('[data-android-download],[data-ios-install]').forEach(node=>move(node,apps,'↓'));
+  const language=block('اللغة','side-menu-language');move(get('.language-switch'),language);
+  const known=new Set([join,account,discover,about,apps,language]);
+  // Preserve dynamically supplied controls and their click handlers.
+  for(const node of [...menu.children])if(node.matches('a,button'))move(node,account);
+  menu.querySelectorAll(':scope>.side-menu-group').forEach(node=>node.remove());
+  menu.append(join,account);if(discover.querySelector('a'))menu.append(discover);menu.append(about);if(apps.querySelector('a,button'))menu.append(apps);menu.append(language);
+ }
+ organize();
+ new MutationObserver(records=>{if(records.some(r=>[...r.addedNodes].some(n=>n.nodeType===1&&n.matches('a,button'))))organize();}).observe(menu,{childList:true});
+})();

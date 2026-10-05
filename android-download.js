@@ -7,7 +7,7 @@
   button.type = 'button';
   button.className = 'android-nav';
   button.textContent = 'تحديث العرض';
-  document.querySelector('header nav').append(button);
+  document.querySelector('#mobile-navigation').append(button);
   button.onclick = () => {
     if ((location.hash.startsWith('#dashboard') || document.querySelector('dialog[open]')) &&
         !confirm(window.ShahinI18n?.translate('احفظ تعديلاتك قبل تحديث الصفحة. هل تريد المتابعة؟') || 'احفظ تعديلاتك قبل تحديث الصفحة. هل تريد المتابعة؟')) return;
@@ -42,3 +42,4 @@
   window.addEventListener('online', checkUpdate);
   checkUpdate();
 })();
+
