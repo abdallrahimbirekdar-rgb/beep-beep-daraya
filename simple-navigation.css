@@ -53,3 +53,8 @@ header #site-menu .side-menu-group a,header #site-menu .side-menu-group button{m
 .professional-home .browse-heading h2{font-size:20px!important;line-height:1.5!important;margin:0!important;padding:0!important}
 .professional-home .browse-heading .store-count{flex-shrink:0;font-size:14px!important;line-height:1.5!important;padding:4px 8px!important;margin:0!important;border-radius:10px!important}
 @media(max-width:380px){.professional-home .browse-heading{gap:8px!important}.professional-home .browse-heading h2{font-size:18px!important}}
+
+/* Smaller results heading, with normal readable labels. */
+.professional-home .browse-heading{gap:6px!important;margin:4px 0!important}
+.professional-home .browse-heading h2{font-size:16px!important;line-height:1.4!important}
+.professional-home .browse-heading .store-count{font-size:14px!important;padding:2px 6px!important;line-height:1.4!important;border-radius:7px!important}
