@@ -60,3 +60,21 @@ header #site-menu .side-menu-group a,header #site-menu .side-menu-group button{m
 .professional-home .browse-heading .store-count{font-size:14px!important;padding:2px 6px!important;line-height:1.4!important;border-radius:7px!important}
 
 .professional-home #browse>.filters[hidden]{display:none!important}
+
+/* Delivery is the first category, with a separate touch target for help. */
+.professional-home .browse-category-track .simple-delivery-category{grid-column:1/-1;display:flex!important;align-items:stretch!important;gap:8px!important;width:100%!important;margin:0!important;padding:8px!important;box-sizing:border-box;border:1px solid #c6a347;border-radius:14px;background:linear-gradient(115deg,#e3bf59,#fff0b8 48%,#d7ae43);box-shadow:0 4px 12px #b8973c20}
+.professional-home .simple-delivery-category .delivery-hero-button{flex:1!important;width:auto!important;min-width:0!important;min-height:56px!important;margin:0!important;padding:8px 6px!important;background:transparent!important;border:0!important;box-shadow:none!important;color:#493917!important;font-size:18px!important;line-height:1.5!important;animation:none!important}
+.professional-home .simple-delivery-category .delivery-hero-button:after{display:none!important}
+.professional-home .simple-delivery-category .delivery-info-button{align-self:center;flex:0 0 44px;width:44px;height:44px;font-size:25px!important;background:#fff9e5!important}
+.professional-home .simple-delivery-category button:focus-visible{outline:3px solid #173b35!important;outline-offset:2px}
+.professional-home .shahin-hero{padding:14px 18px!important;min-height:0!important;margin-bottom:12px!important;border-radius:16px!important}
+.professional-home .directory-welcome{width:100%!important}
+.professional-home .directory-welcome h1{font-size:21px!important;line-height:1.4!important;margin:4px 0!important}
+.professional-home .directory-welcome h1 br{display:none}
+.professional-home .directory-welcome p,.professional-home .welcome-location{display:none!important}
+.professional-home .shahin-hero:before{height:100%!important;clip-path:ellipse(30% 100% at 0% 0%)!important;opacity:.7}
+html[dir="ltr"] .professional-home .shahin-hero:before{clip-path:ellipse(30% 100% at 100% 0%)!important}
+.professional-home .shahin-hero:after{display:none!important}
+.professional-home .browse-section{margin-top:12px!important}
+.professional-home .browse-category-track>button[data-filter]{min-height:76px!important;padding:8px!important}
+.professional-home .home-search-hint{margin:0!important}
