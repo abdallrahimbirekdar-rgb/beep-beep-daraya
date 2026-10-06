@@ -1,7 +1,7 @@
 #menu-toggle{width:auto!important;min-width:94px;padding:8px 12px!important;font-size:16px!important}
-.professional-home .shahin-hero{min-height:0!important;padding-block:22px!important}
+.professional-home .shahin-hero{min-height:0!important}
 .professional-home .directory-welcome h1{font-size:clamp(24px,5vw,36px)!important}
-.professional-home .directory-welcome p,.professional-home .welcome-location{display:none}
+.professional-home .directory-welcome p{display:block}
 .professional-home .filters{width:100%;margin-top:0!important}
 .professional-home .browse-category-track{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr));overflow:visible!important;gap:10px;width:100%;white-space:normal!important}
 .professional-home .filters [data-filter]{min-height:66px!important;width:100%;min-width:0!important;margin:0!important;padding:10px 8px!important;font-size:16px!important;line-height:1.5!important;white-space:normal!important;border-radius:12px!important}
@@ -16,6 +16,15 @@ header #site-menu .side-menu-group a,header #site-menu .side-menu-group button{m
 .side-menu-join a{background:white!important;box-shadow:none!important}
 .simple-back{margin-bottom:16px;min-height:48px;font-size:16px}
 .community-controls button,.community-controls a,.community-controls select{min-height:48px;font-size:16px}
-@media(max-width:760px){.professional-home .browse-category-track{grid-template-columns:repeat(3,minmax(0,1fr))}header .brand-wordmark{max-width:190px!important}#mobile-navigation a>span:last-child{font-size:13px!important}}
+@media(max-width:760px){.professional-home .browse-category-track{grid-template-columns:repeat(2,minmax(0,1fr))}header .brand-wordmark{max-width:190px!important}#mobile-navigation a>span:last-child{font-size:13px!important}}
 @media(max-width:380px){.professional-home .browse-category-track{grid-template-columns:repeat(2,minmax(0,1fr))}header .brand-wordmark{max-width:160px!important}}
 @media(prefers-reduced-motion:reduce){.delivery-hero-button,.filters button{animation:none!important;transition:none!important}}
+
+/* Keep the gold introduction separate from the visitor controls. */
+.professional-home #browse>.filters{background:#fff!important;border:1px solid #e4dcc7!important;border-radius:18px!important;padding:16px!important;margin-bottom:24px!important;box-sizing:border-box}
+.professional-home .browse-category-track>button[data-filter]{display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:6px!important;min-height:100px!important;text-align:center!important;overflow-wrap:anywhere;font-size:16px!important;line-height:1.6!important}
+.professional-home .browse-category-track>button[data-filter]::before{display:block!important;position:static!important;flex:none!important;width:auto!important;height:auto!important;margin:0!important;font-size:26px!important;line-height:1.2!important}
+.professional-home .search-wrap{min-width:0!important;width:100%!important;box-sizing:border-box}
+.professional-home .search-wrap input{min-width:0!important;padding-inline:10px!important;font-size:15px!important}
+.professional-home .browse-category-track{padding:0!important;box-sizing:border-box}
+@media(max-width:600px){.professional-home #browse>.filters{padding:12px!important}.professional-home .directory-welcome h1{font-size:26px!important}.professional-home .shahin-hero{padding-bottom:20px!important}.professional-home .filters [data-filter]{font-size:15px!important}.professional-home .home-search-hint{font-size:15px!important;margin-top:0}}

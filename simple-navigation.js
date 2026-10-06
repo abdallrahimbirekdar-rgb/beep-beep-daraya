@@ -35,7 +35,7 @@
   const input=document.querySelector('#search');
   if(input){input.dataset.noTranslate='';input.placeholder=text('ماذا تبحث عن؟ مطعم، طبيب، صيدلية، محل…','What do you need? A shop, doctor or food…','Was suchst du? Restaurant, Arzt, Apotheke…');input.setAttribute('aria-label',input.placeholder);}
   label(document.querySelector('.home-search-hint'),['ابحث أو اختر قسمًا من الأقسام التالية','Search or choose a group below','Suche oder wähle einen Bereich']);
-  const filters=hero.querySelector('.filters');if(filters)hero.prepend(filters);
+  const filters=hero.querySelector('.filters'),browse=document.querySelector('#browse');if(filters&&browse)browse.prepend(filters);
   document.querySelectorAll('.filters [data-filter]').forEach(b=>{const key=b.dataset.filter;if(!words[key])return;label(b,words[key]);b.setAttribute('aria-pressed',String(filter===key));b.dataset.categoryIcon=icons[key];});
   const saved=document.querySelector('#favorite-filter');if(saved)saved.hidden=true;
   const delivery=document.querySelector('.delivery-hero-button');label(delivery,['اطلب توصيلًا إلى منزلك','Order home delivery','Lieferung nach Hause']);
