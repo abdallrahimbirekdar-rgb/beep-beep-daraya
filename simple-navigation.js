@@ -46,7 +46,21 @@
   document.querySelectorAll('.filters [data-filter]').forEach(b=>{const key=b.dataset.filter;if(!words[key])return;label(b,words[key]);b.setAttribute('aria-pressed',String(filter===key));b.dataset.categoryIcon=icons[key];b.onclick=()=>openSection(key);});
   const saved=document.querySelector('#favorite-filter');if(saved)saved.hidden=true;
   const delivery=document.querySelector('.delivery-hero-button');label(delivery,['اطلب توصيلًا إلى منزلك','Order home delivery','Lieferung nach Hause']);
-  if(delivery){delivery.onclick=()=>openSection('delivery');const hint=document.createElement('p');hint.className='simple-delivery-hint';label(hint,['اعرض المحلات التي توفر التوصيل','See shops with delivery','Läden mit Lieferung anzeigen']);delivery.parentElement.after(hint);}
+  if(delivery){
+   delivery.onclick=()=>openSection('delivery');
+   label(delivery,['التوصيل إلى منزلك','Home delivery','Lieferung nach Hause']);
+   const action=delivery.closest('.delivery-hero-action'),track=document.querySelector('.browse-category-track');
+   if(action&&track){
+    action.classList.add('simple-delivery-category');
+    track.prepend(action);
+    const info=action.querySelector('.delivery-info-button');
+    if(info){
+     label(info,['؟','?','?']);
+     info.setAttribute('aria-label',text('كيف تعمل خدمة التوصيل؟','How does delivery work?','Wie funktioniert die Lieferung?'));
+     info.onclick=e=>{e.preventDefault();e.stopPropagation();modal('<section class="delivery-info-panel" data-no-translate><h2>'+text('التوصيل إلى منزلك','Home delivery','Lieferung nach Hause')+'</h2><p>'+text('اضغط على زر التوصيل لعرض المحلات التي توفر التوصيل إلى منزلك. اختر المحل ثم شاهد منتجاته وخيارات الطلب ورسوم التوصيل.','Press home delivery to see shops that deliver. Choose a shop to see its products, order options and delivery fees.','Tippe auf Lieferung, um Läden mit Lieferung nach Hause zu sehen. Wähle einen Laden für Produkte, Bestellmöglichkeiten und Lieferkosten.')+'</p><p>'+text('لباقي المحلات والخدمات، اختر قسمًا من القائمة أو استخدم البحث.','For other places and services, choose a group or use search.','Für andere Orte und Dienste wähle einen Bereich oder nutze die Suche.')+'</p></section>');};
+    }
+   }
+  }
   label(document.querySelector('[data-near-me]'),['رتّب حسب الأقرب إليك','Sort by nearest','Nach Entfernung sortieren']);
   label(document.querySelector('#browse h2'),browseFavorites?['محلاتي المحفوظة','My saved places','Meine gemerkten Orte']:filter==='delivery'?['محلات توفر التوصيل','Shops with delivery','Läden mit Lieferung']:search?['نتائج البحث','Search results','Suchergebnisse']:['الأماكن والخدمات','Places and services','Orte und Dienste']);
   document.querySelectorAll('.card-bottom strong').forEach(n=>label(n,['عرض المكان','View place','Ort ansehen']));
