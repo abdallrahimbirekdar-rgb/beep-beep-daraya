@@ -28,3 +28,5 @@ header #site-menu .side-menu-group a,header #site-menu .side-menu-group button{m
 .professional-home .search-wrap input{min-width:0!important;padding-inline:10px!important;font-size:15px!important}
 .professional-home .browse-category-track{padding:0!important;box-sizing:border-box}
 @media(max-width:600px){.professional-home #browse>.filters{padding:12px!important}.professional-home .directory-welcome h1{font-size:26px!important}.professional-home .shahin-hero{padding-bottom:20px!important}.professional-home .filters [data-filter]{font-size:15px!important}.professional-home .home-search-hint{font-size:15px!important;margin-top:0}}
+
+.professional-home .shahin-hero[hidden],.professional-home .browse-category-track[hidden],.professional-home .home-search-hint[hidden],.professional-home .brand-note[hidden]{display:none!important}
