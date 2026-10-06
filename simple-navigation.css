@@ -84,3 +84,8 @@ html[dir="ltr"] .professional-home .shahin-hero:before{clip-path:ellipse(30% 100
 .professional-home .search-wrap>span{inset-inline-start:12px!important;inset-inline-end:auto!important;left:auto;right:auto;top:50%!important;transform:translateY(-50%);width:24px!important;text-align:center;line-height:1!important;pointer-events:none}
 .professional-home .search-wrap input{box-sizing:border-box!important;padding-inline-start:46px!important;padding-inline-end:12px!important;color:#173b35!important}
 .professional-home .search-wrap input::placeholder{color:#52645b!important;opacity:1!important}
+
+/* Highlight the way back and keep category maps secondary. */
+#app .simple-back{background:#ae752d!important;color:#fff!important;border:1px solid #c69b50!important;box-shadow:none!important}
+.professional-home .mosques-entry>.button{background:#fff!important;color:#173b35!important;border:1px solid #dbe1dc!important;box-shadow:none!important}
+#app .simple-back:focus-visible,.professional-home .mosques-entry>.button:focus-visible{outline:3px solid #173b35;outline-offset:3px}
