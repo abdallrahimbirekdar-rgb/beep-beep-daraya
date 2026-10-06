@@ -110,8 +110,11 @@ public class MainActivity extends Activity {
         });
         web.setDownloadListener((url,ua,cd,mime,len) -> { if(url.startsWith("https://")) { try { startActivity(new Intent(Intent.ACTION_VIEW,Uri.parse(url))); } catch(android.content.ActivityNotFoundException ignored) {} } });
         String destination = destination(getIntent());
-        if(destination != null) web.loadUrl(destination);
-        else if(state == null || web.restoreState(state) == null) web.loadUrl(SITE+"#home");
+        if(destination != null) web.loadUrl(freshUrl(destination));
+        else if(state == null || web.restoreState(state) == null) web.loadUrl(freshUrl(SITE+"#home"));
+    }
+    private static String freshUrl(String url) {
+        return Uri.parse(url).buildUpon().appendQueryParameter("app-open",Long.toString(System.currentTimeMillis())).build().toString();
     }
     private static boolean isSiteUrl(Uri uri) {
         return "https".equals(uri.getScheme()) && ("damascus-shop.com".equals(uri.getHost()) || "www.damascus-shop.com".equals(uri.getHost()));
@@ -130,7 +133,7 @@ public class MainActivity extends Activity {
         super.onNewIntent(intent);
         setIntent(intent);
         String target = destination(intent);
-        if(target != null) { error.setVisibility(View.GONE); web.loadUrl(target); }
+        if(target != null) { error.setVisibility(View.GONE); web.loadUrl(freshUrl(target)); }
     }
     @Override protected void onActivityResult(int request,int result,Intent data) {
         super.onActivityResult(request,result,data);
@@ -156,7 +159,7 @@ public class MainActivity extends Activity {
         }
     }
     @Override protected void onPause() { super.onPause(); if(web!=null&&locationCallback==null){web.evaluateJavascript("window.dispatchEvent(new Event('daraya-app-pause'));",null);web.onPause();} }
-    @Override protected void onResume() { super.onResume(); if(web!=null)web.onResume(); }
+    @Override protected void onResume() { super.onResume(); if(web!=null){web.onResume();web.evaluateJavascript("window.dispatchEvent(new Event('daraya-app-resume'));",null);} }
     @Override public void onBackPressed() { if(web.canGoBack()) web.goBack(); else super.onBackPressed(); }
     @Override protected void onSaveInstanceState(Bundle state) { web.saveState(state); super.onSaveInstanceState(state); }
     @Override protected void onDestroy() { if(fileCallback!=null) fileCallback.onReceiveValue(null); if(locationCallback!=null)locationCallback.invoke(locationOrigin,false,false); web.destroy(); super.onDestroy(); }
