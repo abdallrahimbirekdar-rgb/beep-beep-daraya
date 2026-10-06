@@ -27,6 +27,7 @@ returns uuid language plpgsql security definer set search_path=public as $$
 declare existing daraya_posts%rowtype;
 begin
  if auth.uid() is null then raise exception 'Sign in required';end if;
+ if p_kind='used' and coalesce(p_image,'')='' and coalesce(p_video,'')='' then raise exception 'Photo or video required';end if;
  perform pg_advisory_xact_lock(hashtext('daraya-post:'||auth.uid()::text));
  select * into existing from daraya_posts where id=p_id for update;
  if found then
