@@ -33,7 +33,7 @@
   if(typeof communityState!=='undefined'){communityState.open=false;communityState.region='';communityState.near=false;}
   renderHome();window.scrollTo(0,0);
  }
- function mainMenu(){sectionOpen=false;filter='all';search='';browseFavorites=false;renderHome();window.scrollTo(0,0);}
+ function mainMenu(){sectionOpen=false;filter='all';search='';browseFavorites=false;if(location.hash!=='#home')location.hash='#home';else renderHome();window.scrollTo(0,0);}
  const homeBase=renderHome;
  renderHome=function(){
   homeBase.apply(this,arguments);
@@ -50,12 +50,14 @@
   label(document.querySelector('[data-near-me]'),['رتّب حسب الأقرب إليك','Sort by nearest','Nach Entfernung sortieren']);
   label(document.querySelector('#browse h2'),browseFavorites?['محلاتي المحفوظة','My saved places','Meine gemerkten Orte']:filter==='delivery'?['محلات توفر التوصيل','Shops with delivery','Läden mit Lieferung']:search?['نتائج البحث','Search results','Suchergebnisse']:['الأماكن والخدمات','Places and services','Orte und Dienste']);
   document.querySelectorAll('.card-bottom strong').forEach(n=>label(n,['عرض المكان','View place','Ort ansehen']));
-  if(sectionOpen){
+  if(sectionOpen||browseFavorites||search||filter!=='all'){
    hero.hidden=true;
+   document.querySelector('.featured-places')?.remove();
    document.querySelector('.browse-category-track')?.setAttribute('hidden','');
    document.querySelector('.home-search-hint')?.setAttribute('hidden','');
    document.querySelector('.brand-note')?.setAttribute('hidden','');
-   if(words[filter])label(document.querySelector('#browse h2'),words[filter]);
+   if(!browseFavorites&&!search&&words[filter])label(document.querySelector('#browse h2'),words[filter]);
+   if(browseFavorites){document.querySelector('#browse>.filters')?.setAttribute('hidden','');document.querySelector('.community-search')?.remove();document.querySelector('.mosques-entry')?.remove();}
   }
   if(sectionOpen||filter!=='all'||browseFavorites||search){const b=document.createElement('button');b.type='button';b.className='outline simple-back';label(b,['العودة إلى القائمة الرئيسية','Back to main menu','Zurück zum Hauptmenü']);b.onclick=mainMenu;document.querySelector('#browse')?.prepend(b);}
  };
@@ -63,9 +65,19 @@
  document.addEventListener('click',e=>{if(e.target.closest('header .brand')){sectionOpen=false;filter='all';search='';browseFavorites=false;if(location.hash==='#home')renderHome();}if(e.target.closest('.card a[href^="#store/"]'))previousScroll=window.scrollY;
   const a=e.target.closest('#mobile-navigation a');if(!a)return;
   if(a.hash==='#more'){e.preventDefault();e.stopPropagation();menu.hidden=!menu.hidden;toggle.setAttribute('aria-expanded',String(!menu.hidden));if(!menu.hidden)menu.querySelector('a,button,select')?.focus();}
-  if(a.hash==='#saved'){e.preventDefault();sectionOpen=false;browseFavorites=true;filter='all';search='';if(!['','#home','#browse'].includes(location.hash))location.hash='#home';else renderHome();window.scrollTo(0,0);}
+  if(a.hash==='#saved'){e.preventDefault();sectionOpen=true;browseFavorites=true;filter='all';search='';if(location.hash!=='#saved')location.hash='#saved';else render();window.scrollTo(0,0);}
   if(a.hash==='#home'){sectionOpen=false;browseFavorites=false;filter='all';search='';if(location.hash==='#home')renderHome();}
  },true);
+ const pageBase=render;
+ render=function(){
+  if(location.hash==='#saved'){sectionOpen=true;browseFavorites=true;filter='all';search='';}
+  pageBase.apply(this,arguments);
+  const app=document.querySelector('#app');
+  const route=location.hash.slice(1).split('/')[0];
+  if(app&&route&&!['home','browse','more','dashboard'].includes(route)&&!app.querySelector('.simple-back')){
+   const back=document.createElement('button');back.type='button';back.className='outline simple-back';label(back,['العودة إلى القائمة الرئيسية','Back to main menu','Zurück zum Hauptmenü']);back.onclick=mainMenu;app.prepend(back);
+  }
+ };
  const storeBase=renderStore;
  renderStore=function(){storeBase.apply(this,arguments);const back=document.querySelector('#app > .topline a[href="#home"]');if(back){label(back,['العودة إلى قائمة الأماكن','Back to places','Zurück zur Liste']);back.onclick=e=>{e.preventDefault();location.hash='#home';requestAnimationFrame(()=>requestAnimationFrame(()=>window.scrollTo(0,previousScroll)));};}};
  new MutationObserver(menuLabels).observe(document.documentElement,{attributes:true,attributeFilter:['lang']});
