@@ -45,3 +45,11 @@ header #site-menu .side-menu-group a,header #site-menu .side-menu-group button{m
 .professional-home .community-search [data-location-note]:empty{display:none}
 .professional-home .simple-back{min-height:44px!important;padding:8px 12px!important;font-size:14px!important;margin-bottom:10px!important}
 @media(min-width:761px){.professional-home .community-controls{grid-template-columns:repeat(2,minmax(0,1fr)) minmax(180px,1.5fr) repeat(2,minmax(0,1fr))!important;align-items:end!important}.professional-home .community-controls label{grid-column:auto!important}}
+
+/* Keep the results title and count in a short, readable row. */
+.professional-home .browse-heading{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:10px!important;margin:10px 0!important;padding:0!important;min-height:0!important}
+.professional-home .browse-heading>div{min-width:0}
+.professional-home .browse-heading .section-kicker{display:none!important}
+.professional-home .browse-heading h2{font-size:20px!important;line-height:1.5!important;margin:0!important;padding:0!important}
+.professional-home .browse-heading .store-count{flex-shrink:0;font-size:14px!important;line-height:1.5!important;padding:4px 8px!important;margin:0!important;border-radius:10px!important}
+@media(max-width:380px){.professional-home .browse-heading{gap:8px!important}.professional-home .browse-heading h2{font-size:18px!important}}
