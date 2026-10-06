@@ -78,3 +78,9 @@ html[dir="ltr"] .professional-home .shahin-hero:before{clip-path:ellipse(30% 100
 .professional-home .browse-section{margin-top:12px!important}
 .professional-home .browse-category-track>button[data-filter]{min-height:76px!important;padding:8px!important}
 .professional-home .home-search-hint{margin:0!important}
+
+/* Keep the search icon outside the placeholder text in both directions. */
+.professional-home .search-wrap{position:relative!important}
+.professional-home .search-wrap>span{inset-inline-start:12px!important;inset-inline-end:auto!important;left:auto;right:auto;top:50%!important;transform:translateY(-50%);width:24px!important;text-align:center;line-height:1!important;pointer-events:none}
+.professional-home .search-wrap input{box-sizing:border-box!important;padding-inline-start:46px!important;padding-inline-end:12px!important;color:#173b35!important}
+.professional-home .search-wrap input::placeholder{color:#52645b!important;opacity:1!important}
