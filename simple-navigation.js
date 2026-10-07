@@ -68,7 +68,7 @@
   label(document.querySelector('[data-near-me]'),['رتّب حسب الأقرب إليك','Sort by nearest','Nach Entfernung sortieren']);
   label(document.querySelector('#browse h2'),browseFavorites?['محلاتي المحفوظة','My saved places','Meine gemerkten Orte']:filter==='delivery'?['محلات توفر التوصيل','Shops with delivery','Läden mit Lieferung']:search?['نتائج البحث','Search results','Suchergebnisse']:['الأماكن والخدمات','Places and services','Orte und Dienste']);
   document.querySelectorAll('.card-bottom strong').forEach(n=>label(n,['عرض المكان','View place','Ort ansehen']));
-  if(sectionOpen||browseFavorites||search||filter!=='all'){
+  if(sectionOpen||browseFavorites||filter!=='all'){
    hero.hidden=!search;
    document.querySelector('.featured-places')?.remove();
    document.querySelector('.browse-category-track')?.setAttribute('hidden','');
@@ -91,7 +91,7 @@
    }
    if(browseFavorites){document.querySelector('#browse>.filters')?.setAttribute('hidden','');document.querySelector('.community-search')?.remove();document.querySelector('.mosques-entry')?.remove();}
   }
-  if(sectionOpen||filter!=='all'||browseFavorites||search){const b=document.createElement('button');b.type='button';b.className='outline simple-back';label(b,['العودة إلى القائمة الرئيسية','Back to main menu','Zurück zum Hauptmenü']);b.onclick=mainMenu;document.querySelector('#browse')?.prepend(b);}
+  if(sectionOpen||filter!=='all'||browseFavorites){const b=document.createElement('button');b.type='button';b.className='outline simple-back';label(b,['العودة إلى القائمة الرئيسية','Back to main menu','Zurück zum Hauptmenü']);b.onclick=mainMenu;document.querySelector('#browse')?.prepend(b);}
  };
  let previousScroll=0;
  document.addEventListener('click',e=>{if(e.target.closest('header .brand')){sectionOpen=false;filter='all';search='';browseFavorites=false;if(location.hash==='#home')renderHome();}if(e.target.closest('.card a[href^="#store/"]'))previousScroll=window.scrollY;
