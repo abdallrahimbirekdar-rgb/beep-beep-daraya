@@ -66,7 +66,10 @@ public class MainActivity extends Activity {
         settings.setAllowContentAccess(true);
         settings.setMixedContentMode(WebSettings.MIXED_CONTENT_NEVER_ALLOW);
         settings.setSupportMultipleWindows(false);
-        settings.setUserAgentString(settings.getUserAgentString()+" ShahinAndroid/1.2");
+        int installedCode=0;
+        try { installedCode=getPackageManager().getPackageInfo(getPackageName(),0).versionCode; }
+        catch(android.content.pm.PackageManager.NameNotFoundException ignored) {}
+        settings.setUserAgentString(settings.getUserAgentString()+" ShahinAndroid/1.2 DarayaVersion/"+installedCode);
         CookieManager.getInstance().setAcceptCookie(true);
         CookieManager.getInstance().setAcceptThirdPartyCookies(web,false);
         WebView.setWebContentsDebuggingEnabled(false);
