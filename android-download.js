@@ -54,7 +54,7 @@
       const response=await fetch('https://api.github.com/repos/abdallrahimbirekdar-rgb/beep-beep-daraya/releases/tags/android-v1.3.0',{cache:'no-store'});
       if(!response.ok)return;
       const data=await response.json();
-      const asset=data.assets?.find(a=>a.name==='shahin.apk');
+      const asset=data.assets?.find(a=>a.name==='souq-daraya.apk')||data.assets?.find(a=>a.name==='shahin.apk');
       const code=Number(asset?.label?.match(/^daraya-version-code:(\d+)$/)?.[1]||0);
       if(!code||code<=installed||!asset.size||!asset.browser_download_url?.startsWith('https://github.com/abdallrahimbirekdar-rgb/beep-beep-daraya/releases/download/'))return;
       try{if(sessionStorage.getItem('daraya-apk-dismissed')===String(code))return;}catch(_){}
