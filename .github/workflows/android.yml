@@ -57,7 +57,7 @@ jobs:
           gh release view android-v1.3.0 >/dev/null 2>&1 || gh release create android-v1.3.0 --target "$GITHUB_SHA" --title 'Daraya Android 1.4.1' --notes "$NOTES"
           gh release edit android-v1.3.0 --title 'Daraya Android 1.4.1' --notes "$NOTES"
           gh release upload android-v1.3.0 shahin.apk shahin.apk.sha256 --clobber
-          APK_ASSET_ID=$(gh release view android-v1.3.0 --json assets --jq '.assets[] | select(.name == "shahin.apk") | .id')
+          APK_ASSET_ID=$(gh api "repos/$GITHUB_REPOSITORY/releases/tags/android-v1.3.0" --jq '.assets[] | select(.name == "shahin.apk") | .id')
           gh api --method PATCH "repos/$GITHUB_REPOSITORY/releases/assets/$APK_ASSET_ID" -f label="daraya-version-code:$ANDROID_VERSION_CODE"
       - uses: actions/upload-artifact@v4
         with:
