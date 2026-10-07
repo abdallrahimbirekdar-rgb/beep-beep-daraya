@@ -6,8 +6,8 @@ if (gradle.startParameter.taskNames.any { it.toLowerCase().contains('release') }
 }
 android {
  namespace 'com.souqdaraya.app'
- compileSdk 35
- defaultConfig { applicationId 'com.souqdaraya.app'; minSdk 24; targetSdk 35; versionCode releaseCode; versionName '1.4.1' }
+ compileSdk 36
+ defaultConfig { applicationId 'com.souqdaraya.app'; minSdk 24; targetSdk 36; versionCode releaseCode; versionName '1.4.2' }
  signingConfigs {
   release {
    if (signingReady) {
