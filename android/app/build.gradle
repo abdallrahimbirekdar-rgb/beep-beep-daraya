@@ -5,9 +5,9 @@ if (gradle.startParameter.taskNames.any { it.toLowerCase().contains('release') }
  throw new GradleException('Release signing is not configured. Set the four ANDROID signing variables; never use a generated debug key for releases.')
 }
 android {
- namespace 'com.shahin.daraya'
+ namespace 'com.souqdaraya.app'
  compileSdk 35
- defaultConfig { applicationId 'com.shahin.daraya'; minSdk 24; targetSdk 35; versionCode releaseCode; versionName '1.4.1' }
+ defaultConfig { applicationId 'com.souqdaraya.app'; minSdk 24; targetSdk 35; versionCode releaseCode; versionName '1.4.1' }
  signingConfigs {
   release {
    if (signingReady) {
