@@ -34,7 +34,7 @@
    :'لطلب المعاينة، أضف اسم المتجر أو الخدمة والعنوان وموقع GPS ورقمًا للتواصل (يفضّل واتساب أو تيليجرام)، وصورة واضحة لواجهة المحل. للخدمة دون محل، استخدم صورة تعبّر عن النشاط وحدّد منطقة تقديم الخدمة.';
   const review='احفظ الصفحة وعدّلها وعاينها قبل الإرسال. بعد تقديم الطلب تظهر رسالة انتظار المعاينة، ولا تُضاف الصفحة للزوار إلا بعد موافقة الإدارة. تجهيز الصفحة كاملة قبل الإرسال اختياري؛ يكفي تقديم المعلومات الأساسية للمعاينة، ويمكن إضافة بقية التفاصيل لاحقًا.';
   app.innerHTML='<article class="panel project-info"><div class="topline"><h1>'+esc(page.title)+'</h1><a class="button outline" href="#home">العودة للسوق</a></div><p class="project-info-lead">'+esc(page.lead)+'</p>'
-   +(page.steps?section("إنشاء صفحتك مجاني وسيبقى مجانيًا","إنشاء صفحة لمتجرك أو خدمتك أو نشاطك المنزلي، مع شرح النشاط والعنوان وموقعه على الخريطة وطرق التواصل، مجاني وسيبقى مجانيًا.")+actions()+section('ما المطلوب لطلب المعاينة؟',required)+section('أنشئ صفحتك ثم أرسلها للمعاينة',review):'')
+   +(page.steps?section("إنشاء صفحتك مجاني","إنشاء صفحة لمتجرك أو خدمتك أو نشاطك المنزلي، مع شرح النشاط والعنوان وموقعه على الخريطة وطرق التواصل، مجاني.")+actions()+section('ما المطلوب لطلب المعاينة؟',required)+section('أنشئ صفحتك ثم أرسلها للمعاينة',review):'')
    +(page.body?'<p>'+esc(page.body)+'</p>':'')
    +(page.sections?page.sections.map(x=>section(...x)).join(''):'')
    +(page.tools?'<section class="project-info-section"><h2>ما الأدوات التي نقدمها لك؟</h2><div class="project-tool-grid">'+tools.map(([title,body])=>'<div class="project-tool"><h3>'+esc(title)+'</h3><p>'+esc(body)+'</p></div>').join('')+'</div></section>':'')

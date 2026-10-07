@@ -13,7 +13,7 @@
    const app=document.querySelector('#app');
    const box=document.createElement('section');box.className='panel business-requirements';
    const title=document.createElement('strong');title.textContent='صفحتك مسودة مخفية عن الزوار';
-   const text=document.createElement('p');text.textContent='جهّز المنتجات والصور والأقسام والروابط والتوصيل وأوقات العمل باستخدام أدوات المتجر. التجهيز الكامل اختياري؛ تكفي صورة واضحة وعنوان مع موقع على الخريطة ووصف جيد للنشاط ورقم تواصل لطلب المعاينة وإنشاء صفحتك بعد الموافقة. إنشاء الصفحة مجاني وسيبقى مجانيًا؛ بقية الأقسام اختيارية.';
+   const text=document.createElement('p');text.textContent='جهّز المنتجات والصور والأقسام والروابط والتوصيل وأوقات العمل باستخدام أدوات المتجر. التجهيز الكامل اختياري؛ تكفي صورة واضحة وعنوان مع موقع على الخريطة ووصف جيد للنشاط ورقم تواصل لطلب المعاينة وإنشاء صفحتك بعد الموافقة. إنشاء الصفحة مجاني؛ بقية الأقسام اختيارية.';
    const link=document.createElement('a');link.className='button';link.href='#business-application/'+r.data.id;link.textContent='العودة إلى طلب المعاينة';
    box.append(title,text,link);app.prepend(box);
   });
