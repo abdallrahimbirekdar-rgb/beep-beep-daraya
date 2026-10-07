@@ -6,6 +6,7 @@ function revealAdminDashboardSection(route=location.hash){
  if(!tabs||!content)return;
  requestAnimationFrame(()=>{
   if(location.hash!==route||!tabs.isConnected||!content.isConnected)return;
+  if(content.closest?.('.dashboard-menu-layout'))return;
   content.scrollIntoView({block:'start',behavior:'auto'});
   content.focus({preventScroll:true});
  });

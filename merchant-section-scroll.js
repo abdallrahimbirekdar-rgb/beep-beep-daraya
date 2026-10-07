@@ -9,6 +9,7 @@
   requestAnimationFrame(()=>requestAnimationFrame(()=>{
    if(token!==request||location.hash!==route)return;
    const content=document.querySelector('#dashboard-content.merchant-content');if(!content?.isConnected)return;
+   if(content.closest?.('.dashboard-menu-layout'))return;
    content.setAttribute('tabindex','-1');content.focus({preventScroll:true});
    content.scrollIntoView({block:'start',behavior:'auto'});lastShownRoute=route;
   }));

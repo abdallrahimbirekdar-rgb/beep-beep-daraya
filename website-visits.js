@@ -17,14 +17,14 @@ async function stats(){
  try{const r=await api.rpc('website_visit_stats');if(r.error)throw r.error;if(!box.isConnected)return;
  const data=r.data;box.querySelector('[data-visit-numbers]').innerHTML=[['visitors','الزوار المختلفون — تقديري'],['total','إجمالي الزيارات'],['today_visitors','زوار اليوم المختلفون'],['today','زيارات اليوم'],['week','زيارات آخر ٧ أيام'],['month','زيارات آخر ٣٠ يوماً']].map(([key,label])=>'<div class="stat"><span>'+label+'</span><strong>'+Number(data[key]||0).toLocaleString(document.documentElement.lang)+'</strong></div>').join('');
  status.textContent=data.started?'بدء التسجيل: '+data.started+' · الأيام حسب توقيت سوريا':'لم تسجل زيارات بعد.';
- }catch{if(box.isConnected)status.textContent='عداد الزيارات غير مفعّل في قاعدة البيانات بعد، أو تعذر الاتصال. لا تتوفر أرقام حالياً.';}finally{statsLoading=false;}
+ }catch{if(box.isConnected)status.textContent='عداد الزيارات غير مفعّل في قاعدة البيانات بعد، أو تعذر الاتصال. لا تتوفر أرقام حالياً.';}finally{statsLoading=false;const current=document.querySelector('#website-visit-stats');if(location.hash==='#dashboard/statistics'&&current&&current!==box)queueMicrotask(stats);}
 }
 function sync(){
  record().catch(()=>{});
- if(!admin||!location.hash.startsWith('#dashboard')||document.querySelector('.merchant-layout'))return;
+ if(!admin||location.hash!=='#dashboard/statistics'||document.querySelector('.merchant-layout'))return;
  if(document.querySelector('#website-visit-stats'))return;
- const app=document.querySelector('#app');if(!app.querySelector('#dashboard-content'))return;
- app.insertAdjacentHTML('afterbegin','<section class="panel" id="website-visit-stats"><div class="topline"><h2>زيارات الموقع</h2><button type="button" class="outline" data-refresh-visits>تحديث الإحصاءات</button></div><div class="stats" data-visit-numbers></div><p data-visit-status role="status"></p><small class="muted">الزوار المختلفون تقدير حسب المتصفح، وليس إثباتاً لهوية الأشخاص. استخدام جهاز آخر أو حذف بيانات المتصفح قد يحسب الزائر مرة أخرى. الزيارات هي جلسات تصفح منذ التفعيل. التنقل وإعادة التحميل خلال الجلسة لا يضيفان زيارة جديدة. قد تتأثر الأرقام بحظر التخزين أو الزيارات الآلية.</small></section>');
+ const app=document.querySelector('#app');if(app.dataset.dashboardRoute!==location.hash||!app.querySelector('#dashboard-content'))return;
+ app.querySelector('#dashboard-content').insertAdjacentHTML('beforeend','<section class="panel" id="website-visit-stats"><div class="topline"><h2>زيارات الموقع</h2><button type="button" class="outline" data-refresh-visits>تحديث الإحصاءات</button></div><div class="stats" data-visit-numbers></div><p data-visit-status role="status"></p><small class="muted">الزوار المختلفون تقدير حسب المتصفح، وليس إثباتاً لهوية الأشخاص. استخدام جهاز آخر أو حذف بيانات المتصفح قد يحسب الزائر مرة أخرى. الزيارات هي جلسات تصفح منذ التفعيل. التنقل وإعادة التحميل خلال الجلسة لا يضيفان زيارة جديدة. قد تتأثر الأرقام بحظر التخزين أو الزيارات الآلية.</small></section>');
  app.querySelector('[data-refresh-visits]').onclick=stats;stats();
 }
 new MutationObserver(sync).observe(document.querySelector('#app'),{childList:true});

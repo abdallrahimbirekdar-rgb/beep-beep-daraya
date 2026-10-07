@@ -12,7 +12,7 @@
   tabs.id='admin-sidebar-navigation';tabs.setAttribute('aria-label','أقسام لوحة الإدارة');
   const label=document.createElement('strong');label.className='admin-sidebar-title';label.textContent='أقسام لوحة الإدارة';
   sidebar.append(label,toggle,tabs);workspace.append(sidebar,content);app.append(workspace);
-  const update=()=>{const selected=tabs.querySelector('[aria-current="page"],.selected');toggle.textContent='أقسام الإدارة'+(selected?' — '+selected.textContent:'')+' ▾';tabs.hidden=mobile.matches;toggle.setAttribute('aria-expanded',String(!tabs.hidden));};
+  const update=()=>{const selected=tabs.querySelector('[aria-current="page"],.selected');toggle.textContent='أقسام الإدارة'+(selected?' — '+selected.textContent:'')+' ▾';tabs.hidden=app.classList.contains('dashboard-menu-home')?false:mobile.matches;toggle.setAttribute('aria-expanded',String(!tabs.hidden));};
   toggle.onclick=()=>{tabs.hidden=!tabs.hidden;toggle.setAttribute('aria-expanded',String(!tabs.hidden));};
   update();
  }
@@ -22,6 +22,6 @@
   const link=event.target.closest('.admin-sidebar .tabs a');if(!link||!mobile.matches)return;
   const aside=link.closest('.admin-sidebar'),tabs=aside.querySelector('.tabs'),toggle=aside.querySelector('.admin-sidebar-toggle');tabs.hidden=true;toggle.setAttribute('aria-expanded','false');
  });
- mobile.addEventListener('change',()=>{const tabs=document.querySelector('.admin-sidebar .tabs'),toggle=document.querySelector('.admin-sidebar-toggle');if(tabs){tabs.hidden=mobile.matches;toggle?.setAttribute('aria-expanded',String(!tabs.hidden));}});
+ mobile.addEventListener('change',()=>{const tabs=document.querySelector('.admin-sidebar .tabs'),toggle=document.querySelector('.admin-sidebar-toggle');if(tabs){const app=document.getElementById('app');tabs.hidden=app?.classList.contains('dashboard-menu-home')?false:app?.classList.contains('dashboard-menu-section')?true:mobile.matches;toggle?.setAttribute('aria-expanded',String(!tabs.hidden));}});
  const app=document.getElementById('app');if(app)new MutationObserver(mount).observe(app,{childList:true});mount();
 })();
