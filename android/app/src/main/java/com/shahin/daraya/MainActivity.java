@@ -15,6 +15,7 @@ public class MainActivity extends Activity {
     private static final String SITE = "https://damascus-shop.com/";
     private static final int PICK_FILE = 7;
     private static final int LOCATION_PERMISSION = 8;
+    private static final int STARTUP_LOCATION_PERMISSION = 9;
     private GeolocationPermissions.Callback locationCallback;
     private String locationOrigin;
     private WebView web;
@@ -112,6 +113,21 @@ public class MainActivity extends Activity {
         String destination = destination(getIntent());
         if(destination != null) web.loadUrl(freshUrl(destination));
         else if(state == null || web.restoreState(state) == null) web.loadUrl(freshUrl(SITE+"#home"));
+        if(state==null)offerLocationPermission();
+    }
+    private void offerLocationPermission() {
+        if(checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION)==android.content.pm.PackageManager.PERMISSION_GRANTED ||
+           checkSelfPermission(android.Manifest.permission.ACCESS_COARSE_LOCATION)==android.content.pm.PackageManager.PERMISSION_GRANTED)return;
+        android.content.SharedPreferences preferences=getSharedPreferences("daraya_permissions",MODE_PRIVATE);
+        if(preferences.getBoolean("location_offered",false))return;
+        preferences.edit().putBoolean("location_offered",true).apply();
+        new android.app.AlertDialog.Builder(this)
+            .setTitle("الأماكن الأقرب إليك")
+            .setMessage("اسمح لسوق داريا الإلكتروني باستخدام موقعك أثناء استخدام التطبيق لعرض الأماكن الأقرب إليك. يمكنك متابعة التصفح دون السماح.")
+            .setPositiveButton("السماح بالموقع",(dialog,which)->requestPermissions(
+                new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION,android.Manifest.permission.ACCESS_COARSE_LOCATION},
+                STARTUP_LOCATION_PERMISSION))
+            .setNegativeButton("لاحقًا",null).show();
     }
     private static String freshUrl(String url) {
         return Uri.parse(url).buildUpon().appendQueryParameter("app-open",Long.toString(System.currentTimeMillis())).build().toString();
@@ -144,6 +160,11 @@ public class MainActivity extends Activity {
     }
     @Override public void onRequestPermissionsResult(int request,String[] permissions,int[] results) {
         super.onRequestPermissionsResult(request,permissions,results);
+        if(request==STARTUP_LOCATION_PERMISSION) {
+            boolean granted=checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION)==android.content.pm.PackageManager.PERMISSION_GRANTED ||
+                checkSelfPermission(android.Manifest.permission.ACCESS_COARSE_LOCATION)==android.content.pm.PackageManager.PERMISSION_GRANTED;
+            Toast.makeText(this,granted?"تم تفعيل الموقع. استخدم الأقرب إليك لعرض الأماكن القريبة.":"يمكنك متابعة التصفح وتفعيل الموقع لاحقًا من الأقرب إليك.",Toast.LENGTH_LONG).show();
+        }
         if(request==LOCATION_PERMISSION && locationCallback!=null) {
             boolean granted=checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION)==android.content.pm.PackageManager.PERMISSION_GRANTED || checkSelfPermission(android.Manifest.permission.ACCESS_COARSE_LOCATION)==android.content.pm.PackageManager.PERMISSION_GRANTED;
             GeolocationPermissions.Callback callback=locationCallback;
