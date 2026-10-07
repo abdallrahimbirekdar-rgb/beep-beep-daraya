@@ -44,10 +44,10 @@ renderHome=function(){
   communityState.locating=true;nearButton.disabled=true;
   showNote(ct('جاري تحديد موقعك…','Finding your location…','Dein Standort wird ermittelt…'));
   const finish=()=>{if(request!==communityState.locationRequest||!communityState.locating)return false;clearTimeout(communityState.locationTimer);communityState.locating=false;const button=$('[data-near-me]');if(button)button.disabled=false;return true;};
-  const failed=()=>{if(finish())showNote(unavailable());};
+  const failed=err=>{if(!finish())return;communityState.near=false;showNote(err?.code===1?ct('لم تسمح باستخدام الموقع. يمكنك متابعة التصفح واختيار الحي أو المنطقة من القائمة؛ اختيار الحي لا يحسب المسافة الدقيقة.','Location permission was denied. You can keep browsing and choose an area from the list; this does not calculate an exact distance.','Standortzugriff abgelehnt. Du kannst weiter stöbern und ein Viertel auswählen; dabei wird keine genaue Entfernung berechnet.'):unavailable());};
   // Allow time to read Android’s permission dialog before obtaining a GPS fix.
   const appLocation=/ShahinAndroid\//.test(navigator.userAgent||'');
-  communityState.locationTimer=setTimeout(failed,appLocation?60000:10000);
+  communityState.locationTimer=setTimeout(()=>failed(),appLocation?60000:10000);
   try{navigator.geolocation.getCurrentPosition(p=>{
    if(!finish())return;
    const point=p?.coords&&storeCoordinates({latitude:p.coords.latitude,longitude:p.coords.longitude});
@@ -141,3 +141,4 @@ new MutationObserver(()=>{const shortcuts=$('.account-shortcuts');if(shortcuts&&
 let communityLastLanguage=communityLang();
 new MutationObserver(()=>{const language=communityLang();if(language===communityLastLanguage)return;communityLastLanguage=language;if(api&&!passwordRecovery)render();}).observe(document.documentElement,{attributes:true,attributeFilter:['lang']});
 setInterval(()=>{if(document.visibilityState==='hidden'||$('#modal').open||marketHasDirty()||!api)return;if(location.hash==='#offers')renderCommunityOffers();else if(/^#(?:home|browse)?$/.test(location.hash)&&communityState.open)renderHome();else if(location.hash.startsWith('#store/')){const s=stores.find(s=>s.id===location.hash.split('/')[1]),box=$('[data-community-offers]');if(s&&box){const offers=communityOffers(s),signature=JSON.stringify(offers);if(box.dataset.offerSignature!==signature){box.innerHTML=offers.map(o=>communityOfferCard(s,o)).join('');box.dataset.offerSignature=signature;}}}},60000);
+
