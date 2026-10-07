@@ -69,13 +69,13 @@
   label(document.querySelector('#browse h2'),browseFavorites?['محلاتي المحفوظة','My saved places','Meine gemerkten Orte']:filter==='delivery'?['محلات توفر التوصيل','Shops with delivery','Läden mit Lieferung']:search?['نتائج البحث','Search results','Suchergebnisse']:['الأماكن والخدمات','Places and services','Orte und Dienste']);
   document.querySelectorAll('.card-bottom strong').forEach(n=>label(n,['عرض المكان','View place','Ort ansehen']));
   if(sectionOpen||browseFavorites||search||filter!=='all'){
-   hero.hidden=true;
+   hero.hidden=!search;
    document.querySelector('.featured-places')?.remove();
    document.querySelector('.browse-category-track')?.setAttribute('hidden','');
    document.querySelector('.home-search-hint')?.setAttribute('hidden','');
    document.querySelector('.brand-note')?.setAttribute('hidden','');
    if(!browseFavorites&&!search&&words[filter])label(document.querySelector('#browse h2'),words[filter]);
-   document.querySelector('#browse>.filters')?.setAttribute('hidden','');
+   if(!search)document.querySelector('#browse>.filters')?.setAttribute('hidden','');
    const tools=document.querySelector('.community-search');
    if(tools&&!browseFavorites){
     const details=document.createElement('details');
