@@ -9,7 +9,7 @@
  const validId=id=>/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id||'');
  let sequence=0;
  const back=(href='#business-applications',label='العودة إلى طلباتي')=>'<a class="button dashboard-menu-back" href="'+href+'">'+label+'</a>';
- const requirements=()=>'<aside class="business-requirements"><strong>قبل إرسال طلب المعاينة</strong><p>المطلوب: اسم النشاط والعنوان أو منطقة العمل، وصورة واضحة، وموقع GPS، ورقم للتواصل (يفضّل واتساب أو تيليجرام).</p><p>للمحل: صورة الواجهة وموقعه. للعمل من المنزل أو الخدمة دون محل: صورة النشاط أو المنتجات وموقع منطقة العمل أو الاستلام. المنتجات والأسعار وأوقات العمل وبقية التفاصيل اختيارية، ويمكن إضافتها لاحقًا.</p></aside>';
+ const requirements=()=>'<aside class="business-requirements"><strong>إنشاء صفحتك مجاني وسيبقى مجانيًا</strong><p>إنشاء صفحة لمتجرك أو خدمتك أو نشاطك المنزلي، مع شرح النشاط والعنوان وموقعه على الخريطة وطرق التواصل، مجاني وسيبقى مجانيًا.</p><strong>قبل إرسال طلب المعاينة</strong><p>المطلوب: اسم النشاط والعنوان أو منطقة العمل، وصورة واضحة، وموقع GPS، ورقم للتواصل (يفضّل واتساب أو تيليجرام).</p><p>للمحل: صورة الواجهة وموقعه. للعمل من المنزل أو الخدمة دون محل: صورة النشاط أو المنتجات وموقع منطقة العمل أو الاستلام. المنتجات والأسعار وأوقات العمل وبقية التفاصيل اختيارية، ويمكن إضافتها لاحقًا.</p></aside>';
  const errorText=e=>/غير مسموح|أولاً|تغير|تغيرت|معاينة|قبل طلب|ثلاثة|ارفع|اكتب|غير متاحة|غير متاح|مسودة|المسودة|المعلومات|صورة|تجهيز/.test(e?.message||'')?e.message:'تعذر إكمال العملية. حاول مجددًا أو تواصل مع الإدارة.';
  function status(node,text,bad=false){if(!node?.isConnected)return;node.textContent=text;node.classList.toggle('error',bad);}
  async function rpc(name,args){const r=await api.rpc(name,args);if(r.error)throw r.error;return r.data;}
