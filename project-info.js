@@ -9,15 +9,15 @@
   ['ظهور أسهل أمام الزبائن','تظهر صفحتك ضمن القسم المناسب والبحث، وعلى الخريطة عند إضافة موقعها. ويمكنك إضافة روابط حساباتك الاجتماعية ومشاركة رابط صفحتك ورمز QR الخاص بها.']
  ];
  const steps=[
-  'تواصل مع إدارة سوق داريا الإلكتروني لطلب إنشاء صفحة لمتجرك أو نشاطك المنزلي.',
-  'جهّز اسم النشاط ووصفه وصور البضائع وأسعارها ومعلومات التواصل وطريقة تسليم الطلبات.',
-  'بعد إنشاء صفحتك وتفعيل حساب صاحب النشاط، ادخل إلى لوحة التحكم بالحساب المخصص لك.',
-  'أكمل معلومات الصفحة وأضف المنتجات والصور والأسعار، وحدد إن كنت تريد العرض فقط أو استقبال الطلبات.',
-  'عاين الصفحة وراجع المعلومات، ثم شارك رابطها مع الزبائن وحدّثها كلما تغيرت بضائعك أو أسعارك.'
+  'سجّل الدخول أو أنشئ حسابًا، ثم اضغط «إنشاء صفحة نشاطي».',
+  'أضف اسم النشاط والعنوان وموقع GPS ورقم التواصل، مع صورة الواجهة للمحل أو صورة النشاط أو المنتجات للعمل من المنزل.',
+  'احفظ صفحتك كمسودة، وعدّل المعلومات وعاين الطلب. المنتجات والأسعار وأوقات العمل يمكن إضافتها لاحقًا.',
+  'عندما تصبح المعلومات الأساسية جاهزة، اضغط «إرسال طلب المعاينة». تتولى الإدارة مراجعة الصفحة وقد تطلب منك تصحيح بعض المعلومات.',
+  'بعد الموافقة تُضاف صفحتك إلى السوق وتُربط بحسابك. ادخل إلى لوحة نشاطك لتعديلها وإضافة بقية التفاصيل في أي وقت.'
  ];
  const pages={
-  'shop-owner':{title:'هل لديك متجر أو تقدّم خدمة؟',lead:'متجرك يمكن أن يكون جزءًا من سوق داريا الإلكتروني. نساعدك على تقديم نشاطك على الإنترنت، وإظهار منتجاتك وما تتميز به، وتسهيل وصول الزبائن إليك.',body:'سواء كنت صاحب محل أو مطعم أو تقدم خدمة، تستطيع الحصول على صفحة تعرّف الناس بنشاطك. أنت تدير محتواها من لوحة خاصة، وتختار طريقة التعامل مع الزبائن بحسب طبيعة عملك.',tools:true,steps:true},
-  'home-business':{title:'فرصتك للعمل من المنزل',lead:'إذا كانت لديك بضائع أو منتجات تصنعها في المنزل، يمكنك عرضها أو بيعها عبر صفحة خاصة بنشاطك في سوق داريا الإلكتروني، دون الحاجة إلى محل لاستقبال الزبائن.',body:'هذه فرصة لأصحاب البضائع والأنشطة المنزلية، مثل المأكولات والحلويات والأعمال اليدوية والملابس وغيرها. تحتاج إلى منتجات فعلية تستطيع توفيرها، وصور واضحة وأسعار ومعلومات صحيحة، والقدرة على تجهيز الطلبات وتسليمها وفق ما تتفق عليه مع زبائنك. هذه ليست وظيفة براتب من الموقع؛ أنت تعرض بضائعك وتدير نشاطك الخاص.',tools:true,steps:true},
+  'shop-owner':{title:'هل لديك متجر أو تقدّم خدمة؟',lead:'أنشئ صفحة لمتجرك أو خدمتك بنفسك، واحفظها كمسودة لتعديلها ومعاينتها قبل إرسال الطلب إلى إدارة سوق داريا الإلكتروني.',body:'هذه الخطوات مناسبة لأصحاب المتاجر والمطاعم والمهن والخدمات. بعد موافقة الإدارة تظهر صفحتك للزوار، وتديرها من لوحة خاصة بحسابك، مع إمكانية إضافة المنتجات والخدمات والصور والأسعار لاحقًا.',tools:true,steps:true},
+  'home-business':{title:'فرصتك للعمل من المنزل',lead:'هل تبيع منتجات أو تقدّم خدمة من المنزل؟ يمكنك إنشاء صفحة لنشاطك بنفسك، حتى لو لم يكن لديك محل لاستقبال الزبائن.',body:'يمكنك عرض المأكولات والحلويات والأعمال اليدوية والملابس وغيرها، أو تعريف الناس بخدمة تقدّمها من المنزل. تستخدم حسابك لإنشاء الصفحة وحفظ المسودة وتعديلها ومعاينتها، ثم ترسل الطلب إلى الإدارة، تمامًا مثل صاحب المتجر أو مقدّم الخدمة. بعد الموافقة تدير منتجاتك وخدماتك وطريقة التواصل أو التسليم من لوحة نشاطك.',tools:true,steps:true},
   'who-we-are':{title:'من نحن؟',lead:'نحن شباب من أبناء مدينة داريا، نسعى إلى أن تكون مدينتنا حاضرة وممثلة على الإنترنت، كما هي المدن المتطورة. نحتسب الأجر عند الله في خدمة مدينتنا وأهلها.',sections:[
    ['ماذا نريد لداريا؟','نريد أن نجمع متاجر المدينة وخدماتها وأماكنها في مساحة تسهّل التعرف عليها والوصول إليها، وأن نعطي أصحاب المتاجر والأنشطة فرصة لعرض منتجاتهم وخدماتهم وإبراز ما يتميزون به.'],
    ['كيف يستمر المشروع؟','يحتاج المشروع إلى تكاليف شهرية تشمل تطوير الموقع وقاعدة البيانات وصيانة الموقع والإعلان، وأجور المتفرغين لخدمته ومتابعته. نسعى في البداية إلى تأمين التمويل الذي يغطي هذه التكاليف ويحافظ على استمرار الخدمة وتطويرها.'],
@@ -25,7 +25,22 @@
   ]}
  };
  function section(title,body){return '<section class="project-info-section"><h2>'+esc(title)+'</h2><p>'+esc(body)+'</p></section>';}
- function show(key){const page=pages[key];if(!page)return;const app=document.querySelector('#app');app.classList.remove('professional-home');app.innerHTML='<article class="panel project-info"><div class="topline"><h1>'+esc(page.title)+'</h1><a class="button outline" href="#home">العودة للسوق</a></div><p class="project-info-lead">'+esc(page.lead)+'</p>'+(key==='shop-owner'?'<div class="project-info-actions"><a class="button" href="#business-applications">أنشئ صفحة متجرك أو خدمتك</a><a class="button outline" href="#dashboard">لوحة نشاطي</a></div><section class="project-info-section"><h2>ما المطلوب لطلب المعاينة؟</h2><p>اسم النشاط وعنوانه، وصورة واضحة لواجهة المحل، وموقع GPS، ورقم للتواصل (يفضّل واتساب أو تيليجرام). للخدمة دون محل، أضف صورة تعبّر عن نشاطك وحدّد منطقة تقديم الخدمة.</p><p>احفظ طلبك كمسودة وعدّله وعاينه قبل إرساله. بعد الإرسال، سيتم معاينة متجرك أو خدمتك وإضافته بعد موافقة الإدارة. المنتجات والخدمات والأسعار وأوقات العمل وبقية التفاصيل يمكن إضافتها لاحقًا.</p></section>':'')+(page.body?'<p>'+esc(page.body)+'</p>':'')+(page.sections?page.sections.map(x=>section(...x)).join(''):'')+(page.tools?'<section class="project-info-section"><h2>ما الأدوات التي نقدمها لك؟</h2><div class="project-tool-grid">'+tools.map(([title,body])=>'<div class="project-tool"><h3>'+esc(title)+'</h3><p>'+esc(body)+'</p></div>').join('')+'</div></section>':'')+(page.steps?'<section class="project-info-section"><h2>كيف تبدأ وتُنشئ صفحتك؟</h2><ol class="project-start-steps">'+(key==='shop-owner'?['سجّل الدخول أو أنشئ حسابًا، ثم اضغط «أنشئ صفحة متجرك أو خدمتك».','أضف الاسم والعنوان وصورة الواجهة وموقع GPS ورقم التواصل. بقية التفاصيل اختيارية.','احفظ المسودة وعدّلها وعاينها، ثم أرسل طلب المعاينة إلى الإدارة.','تابع حالة الطلب من حسابك. بعد الموافقة تظهر صفحتك للزوار ويمكنك تعديلها وإكمالها من لوحة نشاطك.']:steps).map(x=>'<li>'+esc(x)+'</li>').join('')+'</ol><div class="project-info-actions"><a class="button" href="'+(key==='shop-owner'?'#business-applications':'mailto:info@damascus-shop.com?subject='+encodeURIComponent('طلب صفحة لنشاط منزلي'))+'">'+(key==='shop-owner'?'أنشئ صفحة متجرك أو خدمتك':'تواصل معنا لإنشاء صفحتك')+'</a><a class="button outline" href="#dashboard">دخول أصحاب المتاجر والأنشطة</a></div></section>':'')+'</article>';}
+ function actions(){return '<div class="project-info-actions"><a class="button" href="#business-application/new">إنشاء صفحة نشاطي</a><a class="button outline" href="#business-applications">طلباتي والمسودات</a></div>';}
+ function show(key){
+  const page=pages[key];if(!page)return;
+  const app=document.querySelector('#app');app.classList.remove('professional-home');
+  const required=key==='home-business'
+   ?'لطلب المعاينة، أضف اسم نشاطك وعنوانه أو منطقة العمل أو الاستلام، وموقع GPS، ورقمًا للتواصل (يفضّل واتساب أو تيليجرام)، وصورة واضحة لنشاطك أو منتجاتك. صورة واجهة محل ليست مطلوبة للعمل من المنزل.'
+   :'لطلب المعاينة، أضف اسم المتجر أو الخدمة والعنوان وموقع GPS ورقمًا للتواصل (يفضّل واتساب أو تيليجرام)، وصورة واضحة لواجهة المحل. للخدمة دون محل، استخدم صورة تعبّر عن النشاط وحدّد منطقة تقديم الخدمة.';
+  const review='احفظ الصفحة وعدّلها وعاينها قبل الإرسال. بعد تقديم الطلب تظهر رسالة انتظار المعاينة، ولا تُضاف الصفحة للزوار إلا بعد موافقة الإدارة. بقية الصور والمنتجات والأسعار وأوقات العمل والتفاصيل الإضافية يمكن إضافتها لاحقًا.';
+  app.innerHTML='<article class="panel project-info"><div class="topline"><h1>'+esc(page.title)+'</h1><a class="button outline" href="#home">العودة للسوق</a></div><p class="project-info-lead">'+esc(page.lead)+'</p>'
+   +(page.steps?actions()+section('ما المطلوب لطلب المعاينة؟',required)+section('أنشئ صفحتك ثم أرسلها للمعاينة',review):'')
+   +(page.body?'<p>'+esc(page.body)+'</p>':'')
+   +(page.sections?page.sections.map(x=>section(...x)).join(''):'')
+   +(page.tools?'<section class="project-info-section"><h2>ما الأدوات التي نقدمها لك؟</h2><div class="project-tool-grid">'+tools.map(([title,body])=>'<div class="project-tool"><h3>'+esc(title)+'</h3><p>'+esc(body)+'</p></div>').join('')+'</div></section>':'')
+   +(page.steps?'<section class="project-info-section"><h2>كيف تبدأ وتُنشئ صفحتك؟</h2><ol class="project-start-steps">'+steps.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ol>'+actions()+'<p><a href="#dashboard">لوحة نشاطي</a></p></section>':'')
+   +'</article>';
+ }
  const previous=render;render=function(){const key=location.hash.slice(1);if(pages[key]){show(key);return;}return previous.apply(this,arguments);};
  const menu=document.querySelector('#site-menu');if(menu){for(const [key,page] of Object.entries(pages)){if(menu.querySelector('a[href="#'+key+'"]'))continue;const link=document.createElement('a');link.href='#'+key;link.textContent=page.title;menu.append(link);}}
  window.addEventListener('hashchange',()=>show(location.hash.slice(1)));
