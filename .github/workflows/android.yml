@@ -50,19 +50,19 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          cp android/app/build/outputs/apk/release/app-release.apk shahin.apk
-          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose --print-certs shahin.apk
-          sha256sum shahin.apk > shahin.apk.sha256
+          cp android/app/build/outputs/apk/release/app-release.apk souq-daraya.apk
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose --print-certs souq-daraya.apk
+          sha256sum souq-daraya.apk > souq-daraya.apk.sha256
           NOTES='Daraya Android 1.4.1. Signed with the permanent release key. Future builds using this key support in-place updates. Older builds signed with disposable development keys may require a one-time reinstall. Internet required. The legacy release tag is retained for existing website download links.'
           gh release view android-v1.3.0 >/dev/null 2>&1 || gh release create android-v1.3.0 --target "$GITHUB_SHA" --title 'Daraya Android 1.4.1' --notes "$NOTES"
           gh release edit android-v1.3.0 --title 'Daraya Android 1.4.1' --notes "$NOTES"
-          gh release upload android-v1.3.0 shahin.apk shahin.apk.sha256 --clobber
-          APK_ASSET_ID=$(gh api "repos/$GITHUB_REPOSITORY/releases/tags/android-v1.3.0" --jq '.assets[] | select(.name == "shahin.apk") | .id')
+          gh release upload android-v1.3.0 souq-daraya.apk souq-daraya.apk.sha256 --clobber
+          APK_ASSET_ID=$(gh api "repos/$GITHUB_REPOSITORY/releases/tags/android-v1.3.0" --jq '.assets[] | select(.name == "souq-daraya.apk") | .id')
           gh api --method PATCH "repos/$GITHUB_REPOSITORY/releases/assets/$APK_ASSET_ID" -f label="daraya-version-code:$ANDROID_VERSION_CODE"
       - uses: actions/upload-artifact@v4
         with:
           name: shahin-android-apk
-          path: shahin.apk
+          path: souq-daraya.apk
       - name: Remove private signing file
         if: always()
         run: rm -f "$ANDROID_KEYSTORE_PATH"
