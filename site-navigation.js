@@ -21,9 +21,9 @@ function sync(){
  const managing=parts[0]==='dashboard';
  const shopPanel=managing&&(!admin||parts[1]==='setup');
  const s=shopPanel?(mine().find(x=>x.id===parts[2])||mine()[0]):null;
- const items=s&&typeof directoryIsInfo==='function'&&directoryIsInfo(s)?[['▦','لوحتي',merchantHref('overview',s)],['○','المعلومات',merchantHref('details',s)],['▤','الصور',merchantHref('photos',s)]]:s?[['▦','لوحتي',merchantHref('overview',s)],['▤','المنتجات',merchantHref('products',s)],['▧','الطلبات الواردة',merchantHref('orders',s)]]:[['⌂','الرئيسية','#home'],...(!managing?[['⌖','خريطة داريا','#map']]:[]),...(managing?[['▤','الإدارة','#dashboard'],['○','حسابي','#account']]:[['♡','المحفوظات','#saved'],['☰','المزيد','#more']])];
+ const items=s&&typeof directoryIsInfo==='function'&&directoryIsInfo(s)?[['overview','لوحتي',merchantHref('overview',s)],['details','المعلومات',merchantHref('details',s)],['photos','الصور',merchantHref('photos',s)]]:s?[['overview','لوحتي',merchantHref('overview',s)],['products','المنتجات',merchantHref('products',s)],['orders','الطلبات الواردة',merchantHref('orders',s)]]:[['⌂','الرئيسية','#home'],...(!managing?[['⌖','خريطة داريا','#map']]:[]),...(managing?[['▤','الإدارة','#dashboard'],['○','حسابي','#account']]:[['♡','المحفوظات','#saved'],['☰','المزيد','#more']])];
  const lang=window.ShahinI18n?.language||'ar';
- const html=items.map(([icon,label,href])=>'<a href="'+href+'"'+(location.hash===href?' aria-current="page"':'')+' data-no-translate><span aria-hidden="true">'+icon+'</span><span>'+(labels[lang]?.[label]||label)+'</span></a>').join('');
+ const html=items.map(([icon,label,href])=>'<a href="'+href+'"'+(location.hash===href?' aria-current="page"':'')+' data-no-translate><span aria-hidden="true">'+(s?(window.DarayaDashboardIcon?window.DarayaDashboardIcon(icon):({overview:'⌂',details:'ℹ',photos:'📷',products:'📦',orders:'📋'}[icon]||icon)):icon)+'</span><span>'+(labels[lang]?.[label]||label)+'</span></a>').join('');
  bottom.style.gridTemplateColumns='repeat('+(items.length)+',minmax(0,1fr))';
  if(bottom.dataset.navigationMarkup!==html){bottom.innerHTML=html;bottom.dataset.navigationMarkup=html;}if(refresh){const target=menu.querySelector('#customer-account')?.closest('.side-menu-group')||menu;if(refresh.parentElement!==target)target.append(refresh);}
  refreshLabel();

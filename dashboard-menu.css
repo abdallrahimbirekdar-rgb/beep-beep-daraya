@@ -40,3 +40,7 @@
  .dashboard-menu-layout .merchant-top{display:block!important}
  .dashboard-menu-home .merchant-actions{margin-top:8px!important}
 }
+
+.dashboard-menu-layout .dashboard-menu-card>[data-dashboard-icon]{width:36px!important;height:36px;display:flex!important;align-items:center;justify-content:center;flex-shrink:0}
+.dashboard-menu-card [data-dashboard-icon] svg{display:block;width:34px;height:34px}
+#mobile-navigation> a>span:first-child svg{display:block;width:28px;height:28px;margin:auto}
