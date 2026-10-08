@@ -44,3 +44,8 @@
 .dashboard-menu-layout .dashboard-menu-card>[data-dashboard-icon]{width:36px!important;height:36px;display:flex!important;align-items:center;justify-content:center;flex-shrink:0}
 .dashboard-menu-card [data-dashboard-icon] svg{display:block;width:34px;height:34px}
 #mobile-navigation> a>span:first-child svg{display:block;width:28px;height:28px;margin:auto}
+
+/* Colorful, familiar symbols with no extra image downloads. */
+.dashboard-menu-layout .dashboard-menu-card>[data-dashboard-icon]{width:48px!important;height:48px}
+.dashboard-color-icon{display:inline-flex;align-items:center;justify-content:center;font-family:"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif;font-size:38px;line-height:1.15;font-weight:400;filter:drop-shadow(0 3px 2px #173b3512)}
+#mobile-navigation .dashboard-color-icon{font-size:29px;min-height:34px}
