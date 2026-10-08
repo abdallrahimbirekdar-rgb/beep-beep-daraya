@@ -41,6 +41,7 @@
  const homeBase=renderHome;
  renderHome=function(){
   homeBase.apply(this,arguments);
+  document.querySelector('#app')?.classList.toggle('search-results-view',Boolean(search.trim()));
   const hero=document.querySelector('.shahin-hero');if(!hero)return;
   document.querySelector('.welcome-guide')?.remove();
   const input=document.querySelector('#search');
@@ -91,7 +92,7 @@
    }
    if(browseFavorites){document.querySelector('#browse>.filters')?.setAttribute('hidden','');document.querySelector('.community-search')?.remove();document.querySelector('.mosques-entry')?.remove();}
   }
-  if(sectionOpen||filter!=='all'||browseFavorites){const b=document.createElement('button');b.type='button';b.className='outline simple-back';label(b,['العودة إلى القائمة الرئيسية','Back to main menu','Zurück zum Hauptmenü']);b.onclick=mainMenu;document.querySelector('#browse')?.prepend(b);}
+  if(sectionOpen||filter!=='all'||browseFavorites||search){const b=document.createElement('button');b.type='button';b.className='outline simple-back';label(b,['العودة إلى القائمة الرئيسية','Back to main menu','Zurück zum Hauptmenü']);b.onclick=mainMenu;document.querySelector('#browse')?.prepend(b);}
  };
  let previousScroll=0;
  document.addEventListener('click',e=>{if(e.target.closest('header .brand')){sectionOpen=false;filter='all';search='';browseFavorites=false;if(location.hash==='#home')renderHome();}if(e.target.closest('.card a[href^="#store/"]'))previousScroll=window.scrollY;
