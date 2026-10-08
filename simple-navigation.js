@@ -16,7 +16,7 @@
   const apps=groups.find(g=>g.querySelector('[data-android-download]'));
   const about=groups.find(g=>g.querySelector('a[href="#about"]'));
   const join=groups.find(g=>g.querySelector('a[href="#shop-owner"]'));
-  [account,language,apps,about,join,...groups].filter((g,i,a)=>g&&a.indexOf(g)===i).forEach(g=>menu.append(g));
+  [account,groups.find(g=>g.querySelector('a[href="#map"]')),join,language,apps,about,...groups].filter((g,i,a)=>g&&a.indexOf(g)===i).forEach(g=>menu.append(g));
   label(account?.querySelector('h2'),['الحساب والطلبات','Account and orders','Konto und Bestellungen']);
   label(language?.querySelector('h2'),['اللغة','Language','Sprache']);
   label(apps?.querySelector('.side-menu-toggle'),['تحميل التطبيق','Get the app','App installieren']);
