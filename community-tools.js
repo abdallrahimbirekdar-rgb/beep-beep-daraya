@@ -40,7 +40,7 @@ renderHome=function(){
   const showNote=message=>{const current=$('[data-location-note]');if(current)current.textContent=message;};
   const unavailable=()=>ct('تعذر تحديد موقعك. يمكنك اختيار المنطقة يدويًا.','Could not find your location. You can choose an area.','Standort konnte nicht ermittelt werden. Wähle ein Viertel.');
   if(!navigator.geolocation){showNote(unavailable());return;}
-  const request=++communityState.locationRequest;
+if(window.DarayaPrivacyConsent&&!window.DarayaPrivacyConsent('near'))return;  const request=++communityState.locationRequest;
   communityState.locating=true;nearButton.disabled=true;
   showNote(ct('جاري تحديد موقعك…','Finding your location…','Dein Standort wird ermittelt…'));
   const finish=()=>{if(request!==communityState.locationRequest||!communityState.locating)return false;clearTimeout(communityState.locationTimer);communityState.locating=false;const button=$('[data-near-me]');if(button)button.disabled=false;return true;};
