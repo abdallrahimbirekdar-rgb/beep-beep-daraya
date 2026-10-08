@@ -25,7 +25,7 @@
  function intro(target,owner=false){const h=document.createElement('h2');h.className='dashboard-menu-title';h.dataset.noTranslate='';h.textContent=owner?say('القائمة الرئيسية لمتجري','My shop menu','Mein Geschäftsmenü'):say('القائمة الرئيسية للإدارة','Admin menu','Verwaltungsmenü');const p=document.createElement('p');p.className='dashboard-menu-hint';p.dataset.noTranslate='';p.textContent=say('اختر قسمًا لفتحه','Choose a section to open','Wähle einen Bereich');target.prepend(h,p);}
  const previousMerchant=merchantDashboard;
  merchantDashboard=function(ms,s,section){
-  const tools=section==='workspace-tools';previousMerchant.call(this,ms,s,tools?'overview':section);
+  const tools=section==='workspace-tools',stats=section==='statistics';previousMerchant.call(this,ms,s,tools||stats?'overview':section);
   if(!s)return;const layout=app.querySelector('.merchant-layout'),sidebar=app.querySelector('.merchant-sidebar'),nav=app.querySelector('.merchant-nav'),content=app.querySelector('.merchant-content');
   if(!layout||!sidebar||!nav||!content)return;
   const home=!section||section==='overview'||section==='stores';
@@ -38,6 +38,7 @@
    // Move original links instead of copying them, preserving feature handlers and locks.
    const links=[...nav.querySelectorAll('a')];links.forEach(a=>nav.append(a));nav.querySelectorAll('details').forEach(d=>d.remove());
    links.forEach(a=>{const key=Object.keys(icons).find(k=>a.getAttribute('href')===merchantHref(k,s));if(a.getAttribute('href')===merchantHref('overview',s)){a.remove();return;}card(a,key);});
+   const statsLink=link(merchantHref('statistics',s),say('إحصاءات متجري','My shop stats','Meine Geschäftsstatistik'));card(statsLink,'statistics');nav.append(statsLink);
    const toolLink=link(merchantHref('workspace-tools',s),say('حالة المتجر والتجهيز والباقات','Shop status, setup and plan','Geschäftsstatus, Einrichtung und Tarif'));card(toolLink,'workspace-tools');nav.append(toolLink);
    const guide=top?.querySelector('a[href^="#merchant-help/"]');if(guide){card(guide,'help');nav.append(guide);}
    const refresh=top?.querySelector('#merchant-refresh');if(refresh){refresh.classList.add('dashboard-menu-refresh');sidebar.append(refresh);}
@@ -45,6 +46,7 @@
   }else{
    sidebar.hidden=true;content.hidden=false;layout.before(back(merchantHref('overview',s),true));
    top?.querySelector('.merchant-actions')?.setAttribute('hidden','');
+   if(stats)renderMerchantPageStats(s);
    if(tools){content.querySelector('.merchant-daily')?.remove();content.querySelectorAll('details.merchant-extra,details.setup-review').forEach(d=>d.open=true);}
   }
   startAtTop();
