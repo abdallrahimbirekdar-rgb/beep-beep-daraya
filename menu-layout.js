@@ -8,10 +8,10 @@
   if(!owner||!home)return;
   const get=selector=>menu.querySelector(selector);
   const join=block('كن جزءًا من سوق داريا','side-menu-join');move(owner,join,'▣');move(home,join,'⌂');
-  const account=block('حسابك','side-menu-account');move(get('#customer-account'),account,'○');move(get('#dashboard-link'),account,'▦');move(get('#account'),account,'▦');move(get('#driver-code-entry'),account,'↗');move(get('#driver-code-signout'),account,'↪');
+  const account=block('الحساب والطلبات','side-menu-account');move(get('#customer-account'),account,'○');move(get('#dashboard-link'),account,'▦');move(get('#account'),account,'▦');move(get('#driver-code-entry'),account,'↗');move(get('#driver-code-signout'),account,'↪');
   const discover=block('اكتشف داريا','side-menu-discover');move(get('a[href="#map"]'),discover,'⌖');
-  const about=block('عن المشروع','side-menu-about',true);move(get('a[href="#who-we-are"]'),about,'◈');move(get('a[href="#about"]'),about,'؟');move(get('a[href^="mailto:"]'),about,'✉');
-  const apps=block('تطبيق الموقع','side-menu-apps',true);menu.querySelectorAll('[data-android-download],[data-ios-install]').forEach(node=>{if(node.matches('a[data-android-download]')){node.hidden=false;node.textContent='تحميل تطبيق أندرويد';}move(node,apps,'↓');});
+  const about=block('المساعدة وعن الموقع','side-menu-about',true);move(get('a[href="#who-we-are"]'),about,'◈');move(get('a[href="#about"]'),about,'؟');move(get('a[href^="mailto:"]'),about,'✉');
+  const apps=block('تحميل التطبيق','side-menu-apps',true);menu.querySelectorAll('[data-android-download],[data-ios-install]').forEach(node=>{if(node.matches('a[data-android-download]')){node.hidden=false;node.textContent='تحميل تطبيق أندرويد';}move(node,apps,'↓');});
   const language=block('اللغة','side-menu-language');move(get('.language-switch'),language);
 
   // Preserve dynamically supplied controls and their click handlers.
