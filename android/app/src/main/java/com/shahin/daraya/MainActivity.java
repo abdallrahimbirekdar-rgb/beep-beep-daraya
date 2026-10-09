@@ -113,6 +113,30 @@ public class MainActivity extends Activity {
             }
         });
         web.setDownloadListener((url,ua,cd,mime,len) -> { if(url.startsWith("https://")) { try { startActivity(new Intent(Intent.ACTION_VIEW,Uri.parse(url))); } catch(android.content.ActivityNotFoundException ignored) {} } });
+        if(androidx.webkit.WebViewFeature.isFeatureSupported(androidx.webkit.WebViewFeature.WEB_MESSAGE_LISTENER)) {
+            java.util.Set<String> origins=new java.util.HashSet<>(java.util.Arrays.asList("https://damascus-shop.com","https://www.damascus-shop.com"));
+            androidx.webkit.WebViewCompat.addWebMessageListener(web,"DarayaImageShare",origins,(view,message,sourceOrigin,isMainFrame,reply)->{
+                if(!isMainFrame||!isSiteUrl(sourceOrigin))return;
+                try {
+                    org.json.JSONObject body=new org.json.JSONObject(message.getData());
+                    String encoded=body.getString("png");
+                    if(encoded.length()>8*1024*1024)throw new IllegalArgumentException("Image too large");
+                    byte[] bytes=android.util.Base64.decode(encoded,android.util.Base64.DEFAULT);
+                    byte[] signature={(byte)137,80,78,71,13,10,26,10};
+                    if(bytes.length<8||bytes.length>6*1024*1024)throw new IllegalArgumentException("Invalid PNG");
+                    for(int i=0;i<8;i++)if(bytes[i]!=signature[i])throw new IllegalArgumentException("Invalid PNG");
+                    java.io.File folder=new java.io.File(getCacheDir(),"promo-shares");folder.mkdirs();
+                    java.io.File[] old=folder.listFiles();if(old!=null)for(java.io.File f:old)if(f.lastModified()<System.currentTimeMillis()-86400000L)f.delete();
+                    java.io.File file=java.io.File.createTempFile("daraya-",".png",folder);
+                    try(java.io.FileOutputStream out=new java.io.FileOutputStream(file)){out.write(bytes);}
+                    Uri image=androidx.core.content.FileProvider.getUriForFile(this,getPackageName()+".promo-files",file);
+                    Intent share=new Intent(Intent.ACTION_SEND);share.setType("image/png");share.putExtra(Intent.EXTRA_STREAM,image);
+                    String text=body.optString("text","");if(text.length()>6000)text=text.substring(0,6000);share.putExtra(Intent.EXTRA_TEXT,text);
+                    share.setClipData(android.content.ClipData.newRawUri("Product image",image));share.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    startActivity(Intent.createChooser(share,"مشاركة صورة الإعلان"));reply.postMessage("{\"ok\":true}");
+                }catch(Exception e){reply.postMessage("{\"ok\":false,\"error\":\"Could not share image\"}");}
+            });
+        }
         String destination = destination(getIntent());
         if(destination != null) web.loadUrl(freshUrl(destination));
         else if(state == null || web.restoreState(state) == null) web.loadUrl(freshUrl(SITE+"#home"));
@@ -188,3 +212,4 @@ public class MainActivity extends Activity {
     @Override protected void onSaveInstanceState(Bundle state) { web.saveState(state); super.onSaveInstanceState(state); }
     @Override protected void onDestroy() { if(fileCallback!=null) fileCallback.onReceiveValue(null); if(locationCallback!=null)locationCallback.invoke(locationOrigin,false,false); web.destroy(); super.onDestroy(); }
 }
+

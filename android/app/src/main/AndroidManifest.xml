@@ -19,5 +19,7 @@
     <data android:scheme="daraya" android:host="store"/>
    </intent-filter>
   </activity>
+  <provider android:name="androidx.core.content.FileProvider" android:authorities="${applicationId}.promo-files" android:exported="false" android:grantUriPermissions="true"><meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/promo_paths"/></provider>
  </application>
 </manifest>
+

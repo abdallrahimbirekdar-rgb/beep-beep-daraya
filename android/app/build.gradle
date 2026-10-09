@@ -7,7 +7,7 @@ if (gradle.startParameter.taskNames.any { it.toLowerCase().contains('release') }
 android {
  namespace 'com.souqdaraya.app'
  compileSdk 36
- defaultConfig { applicationId 'com.souqdaraya.app'; minSdk 24; targetSdk 36; versionCode releaseCode; versionName '1.4.2' }
+ defaultConfig { applicationId 'com.souqdaraya.app'; minSdk 24; targetSdk 36; versionCode releaseCode; versionName '1.4.3' }
  signingConfigs {
   release {
    if (signingReady) {
@@ -21,3 +21,6 @@ android {
  buildTypes { release { minifyEnabled false; debuggable false; signingConfig signingConfigs.release } }
  compileOptions { sourceCompatibility JavaVersion.VERSION_17; targetCompatibility JavaVersion.VERSION_17 }
 }
+
+
+dependencies { implementation 'androidx.webkit:webkit:1.12.1'; implementation 'androidx.core:core:1.15.0' }
