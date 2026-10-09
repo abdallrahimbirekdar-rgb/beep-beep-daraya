@@ -131,7 +131,7 @@ public class MainActivity extends Activity {
                     try(java.io.FileOutputStream out=new java.io.FileOutputStream(file)){out.write(bytes);}
                     Uri image=androidx.core.content.FileProvider.getUriForFile(this,getPackageName()+".promo-files",file);
                     Intent share=new Intent(Intent.ACTION_SEND);share.setType("image/png");share.putExtra(Intent.EXTRA_STREAM,image);
-                    String text=body.optString("text","");if(text.length()>6000)text=text.substring(0,6000);share.putExtra(Intent.EXTRA_TEXT,text);
+                    String shareText=body.optString("text","");if(shareText.length()>6000)shareText=shareText.substring(0,6000);share.putExtra(Intent.EXTRA_TEXT,shareText);
                     share.setClipData(android.content.ClipData.newRawUri("Product image",image));share.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                     startActivity(Intent.createChooser(share,"مشاركة صورة الإعلان"));reply.postMessage("{\"ok\":true}");
                 }catch(Exception e){reply.postMessage("{\"ok\":false,\"error\":\"Could not share image\"}");}
