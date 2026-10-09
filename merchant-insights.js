@@ -58,7 +58,7 @@ function merchantInsightHTML(d,s){
  const metrics=[
   ['👀',ct('زيارات صفحتي','My page visits','Meine Seitenbesuche'),c.view,ct('مرة لكل جلسة متصفح في اليوم، وليست عدد أشخاص.','Once per browser session per day, not a person count.','Einmal je Browsersitzung und Tag, keine Personenzahl.'),merchantInsightChange(c.view,prev.view)],
   ['📞',ct('ضغطات الاتصال','Call button taps','Telefon-Klicks'),c.call,ct('جلسات ضغطت الاتصال؛ لا تؤكد حدوث مكالمة.','Sessions that tapped call; no confirmed calls.','Sitzungen mit Telefon-Klick; keine bestätigten Anrufe.'),merchantInsightChange(c.call,prev.call)],
-  ['💬',ct('ضغطات واتساب','WhatsApp taps','WhatsApp-Klicks'),c.whatsapp,ct('جلسات فتحت رابط واتساب؛ لا تؤكد إرسال رسالة.','Sessions opening WhatsApp; no confirmed messages.','Sitzungen mit WhatsApp-Klick; keine bestätigten Nachrichten.'),merchantInsightChange(c.whatsapp,prev.whatsapp)],
+  ['💬',ct('فتح روابط واتساب','WhatsApp link opens','WhatsApp-Linköffnungen'),c.whatsapp,ct('تشمل روابط التواصل ومشاركة الصفحة؛ لا تؤكد إرسال رسالة.','Includes contact and page sharing links; no confirmed messages.','Umfasst Kontakt- und Teilen-Links; keine bestätigten Nachrichten.'),merchantInsightChange(c.whatsapp,prev.whatsapp)],
   ['🗺️',ct('ضغطات رابط الخريطة','Map link taps','Kartenlink-Klicks'),interest.directions,ct('فتح رابط الوصول؛ لا يعني زيارة المحل فعليًا.','Opening a map link does not confirm a shop visit.','Ein Kartenlink bestätigt keinen Besuch im Geschäft.')],
   ['📸',ct('فتح صور المنتجات','Product photo opens','Geöffnete Produktbilder'),interest.photo_open,ct('فتح معرض صور المنتج، وليس عدد الصور التي رآها الزائر.','Product gallery opens, not individual photo views.','Öffnungen der Produktgalerie, keine einzelnen Bildaufrufe.')]
  ];
