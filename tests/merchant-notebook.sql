@@ -1,0 +1,38 @@
+begin;
+do $$
+declare sid uuid;mail text;created jsonb;note_id uuid;denied boolean;listed jsonb;comparison jsonb;today date=(now() at time zone 'Asia/Damascus')::date;
+begin
+ select id,owner_email into sid,mail from stores where deleted_at is null and length(owner_email)>0 limit 1;
+ if sid is null then raise exception 'No store fixture available';end if;
+ perform set_config('request.jwt.claims','{}',true);
+ denied=false;begin perform list_merchant_notes(sid,false);exception when others then denied=true;end;
+ if not denied then raise exception 'Anonymous read allowed';end if;
+ perform set_config('request.jwt.claims',jsonb_build_object('sub',gen_random_uuid(),'email','unrelated@notebook-test.invalid')::text,true);
+ denied=false;begin perform save_merchant_note(sid,null,today,'Blocked','',0);exception when others then denied=true;end;
+ if not denied then raise exception 'Nonowner write allowed';end if;
+ perform set_config('request.jwt.claims',jsonb_build_object('sub',gen_random_uuid(),'email',mail)::text,true);
+ created=save_merchant_note(sid,null,today-8,'Notebook test','Changed product photo',0);note_id=(created->>'id')::uuid;
+ if note_id is null or (created->>'revision')::integer<>1 then raise exception 'Create failed';end if;
+ listed=list_merchant_notes(sid,false);
+ if not exists(select 1 from jsonb_array_elements(listed)n where n->>'id'=note_id::text) then raise exception 'Saved note not listed';end if;
+ created=save_merchant_note(sid,note_id,today-8,'Updated test','Preserved text',1);
+ if (created->>'revision')::integer<>2 then raise exception 'Update failed';end if;
+ denied=false;begin perform save_merchant_note(sid,note_id,today-8,'Lost update','',1);exception when others then denied=true;end;
+ if not denied then raise exception 'Stale revision accepted';end if;
+ comparison=merchant_note_comparison(sid,note_id);
+ if not (comparison->>'after_complete')::boolean or comparison->>'before_start'<>(today-15)::text or comparison->>'after_end'<>(today-2)::text then raise exception 'Comparison periods incorrect';end if;
+ perform archive_merchant_note(sid,note_id,2,true);
+ if exists(select 1 from jsonb_array_elements(list_merchant_notes(sid,false))n where n->>'id'=note_id::text) then raise exception 'Archive failed';end if;
+ perform archive_merchant_note(sid,note_id,3,false);
+ if not exists(select 1 from jsonb_array_elements(list_merchant_notes(sid,false))n where n->>'id'=note_id::text and n->>'body'='Preserved text') then raise exception 'Restore or text preservation failed';end if;
+ denied=false;begin perform save_merchant_note(sid,null,today+1,'Future','',0);exception when others then denied=true;end;
+ if not denied then raise exception 'Future date accepted';end if;
+ denied=false;begin perform save_merchant_note(sid,null,today,'Too long',repeat('x',2001),0);exception when others then denied=true;end;
+ if not denied then raise exception 'Oversized note accepted';end if;
+ perform set_config('request.jwt.claims',jsonb_build_object('sub',gen_random_uuid(),'email','unrelated@notebook-test.invalid')::text,true);
+ denied=false;begin perform merchant_note_comparison(sid,note_id);exception when others then denied=true;end;
+ if not denied then raise exception 'Nonowner comparison allowed';end if;
+ if has_table_privilege('anon','merchant_notes','SELECT') or has_table_privilege('authenticated','merchant_notes','SELECT') then raise exception 'Raw notes exposed';end if;
+end;$$;
+rollback;
+select 'PASS: create, read, edit, revision protection, archive, restore, exact comparison dates, input validation, owner-only access; test changes rolled back' as result;

@@ -80,6 +80,25 @@ function merchantInsightHTML(d,s){
  html+='<details class="merchant-insight-section"><summary>'+ct('📅 الزيارات يومًا بيوم','📅 Visits by day','📅 Besuche pro Tag')+'</summary>'+((d.daily||[]).map(row=>'<div class="merchant-insight-row"><span>'+esc(row.day)+'</span><strong>'+n(row.visits)+'</strong></div>').join('')||'<p>'+ct('لا توجد بيانات بعد.','No data yet.','Noch keine Daten.')+'</p>')+'</details>';
  return html;
 }
+function merchantWeeklySummaryHTML(d,s){
+ const current=d.current||{},previous=d.previous||{},orders=d.orders||{},n=merchantInsightNumber;
+ const best=[...(d.products||[])].filter(p=>Number(p.views)>0).sort((a,b)=>Number(b.views)-Number(a.views))[0];
+ const commercial=s.online_ordering!==false;
+ const points=[
+ ct('سُجّلت لصفحتك '+n(current.view)+' زيارة خلال آخر 7 أيام. ليست عدد أشخاص مختلفين.','Your page recorded '+n(current.view)+' visits in the last 7 days. This is not a count of different people.','Deine Seite verzeichnete '+n(current.view)+' Besuche in den letzten 7 Tagen. Keine Anzahl verschiedener Personen.'),
+ merchantInsightChange(current.view,previous.view),
+ ct('الاتصال: '+n(current.call)+' · روابط واتساب: '+n(current.whatsapp)+'. هذه ضغطات وليست مكالمات أو رسائل مؤكدة.','Call taps: '+n(current.call)+' · WhatsApp links: '+n(current.whatsapp)+'. These are taps, not confirmed calls or messages.','Telefon-Klicks: '+n(current.call)+' · WhatsApp-Links: '+n(current.whatsapp)+'. Keine bestätigten Anrufe oder Nachrichten.')
+ ];
+ if(commercial)points.push(ct('طلبات الموقع: '+n(orders.total)+'، منها '+n(orders.completed)+' مكتملة حسب حالة المتجر، و'+n(orders.cancelled)+' ملغاة.','Website orders: '+n(orders.total)+', including '+n(orders.completed)+' marked completed and '+n(orders.cancelled)+' cancelled.','Website-Bestellungen: '+n(orders.total)+', davon '+n(orders.completed)+' als abgeschlossen markiert und '+n(orders.cancelled)+' storniert.'));
+ if(best)points.push(ct('أكثر منتج ظهر للزوار: '+best.name+' ('+n(best.views)+').','Most visible product: '+best.name+' ('+n(best.views)+').','Am häufigsten sichtbares Produkt: '+best.name+' ('+n(best.views)+').'));
+ let tip;
+ if(Number(current.view)<10)tip=ct('البيانات قليلة بعد. شارك رابط محلك وتأكد من اكتمال الصورة والعنوان والوصف، ثم راجع الملخص لاحقًا.','There is little data yet. Share your shop link, check the photo, address and details, then review the summary later.','Noch wenige Daten. Teile deinen Geschäftslink, prüfe Bild, Adresse und Beschreibung und sieh später erneut nach.');
+ else if(best&&commercial&&Number(best.views)>=10&&Number(best.carts)===0)tip=ct('راجع صورة ووصف وسعر «'+best.name+'»: ظهر للزوار دون إضافة مسجّلة للسلة. هذا اقتراح للمراجعة، وليس تشخيصًا لسبب عدم الشراء.','Review the photo, details and price of '+best.name+': it was seen without recorded cart additions. This is a review suggestion, not a reason for missing purchases.','Prüfe Bild, Beschreibung und Preis von '+best.name+': sichtbar, aber ohne erfasste Warenkorb-Ergänzungen. Ein Vorschlag, keine Erklärung für fehlende Käufe.');
+ else if(best&&commercial&&Number(best.carts)>0)tip=ct('هناك اهتمام بـ«'+best.name+'». تأكد من توفره ومن وضوح سعره وصورته. الإضافة للسلة لا تعني شراءً مكتملًا.','There is interest in '+best.name+'. Check availability and clear price and photo. Cart additions are not completed purchases.','Interesse an '+best.name+'. Prüfe Verfügbarkeit, Preis und Bild. Warenkorb-Ergänzungen sind keine abgeschlossenen Käufe.');
+ else tip=ct('راجع معلومات صفحتك وصورتها ورقم التواصل. سجّل أي تغيير في دفتر ملاحظات المحل لتستطيع متابعة الأرقام حول تاريخه.','Review your page details, photo and contact number. Record changes in the notebook so you can check stats around their dates.','Prüfe Seitenangaben, Bild und Telefonnummer. Notiere Änderungen im Notizbuch, um die Statistik zu ihrem Datum zu prüfen.');
+ return '<section class="merchant-insight-section merchant-weekly-summary"><h3>'+ct('🗓️ ملخص محلي — آخر 7 أيام','🗓️ My shop summary — last 7 days','🗓️ Geschäftsübersicht — letzte 7 Tage')+'</h3><ul>'+points.map(p=>'<li>'+esc(p)+'</li>').join('')+'</ul><h4>'+ct('💡 خطوة مقترحة','💡 Suggested step','💡 Vorschlag')+'</h4><p>'+esc(tip)+'</p><p>'+ct('يتحدث الملخص عند فتح الإحصاءات أو تحديثها. يعتمد على الأرقام المسجّلة؛ بيانات المنتجات الجديدة تبدأ من تفعيلها.','Updated when you open or refresh stats, using recorded numbers. New product data starts when tracking is enabled.','Aktualisiert beim Öffnen oder Neuladen, anhand erfasster Zahlen. Neue Produktdaten beginnen mit der Aktivierung.')+'</p><a class="button outline" href="'+esc(merchantHref('notebook',s))+'">'+ct('📝 افتح دفتر ملاحظات محلي','📝 Open my shop notebook','📝 Geschäftsnotizbuch öffnen')+'</a></section>';
+}
+
 renderMerchantPageStats=async function(s){
  const box=$('.merchant-content')||$('#dashboard-content');if(!box)return;
  box.dataset.noTranslate='';
@@ -88,7 +107,7 @@ renderMerchantPageStats=async function(s){
  let serial=0;
  const update=async()=>{
   const request=++serial;button.disabled=true;target.textContent=ct('جاري تحميل الأرقام…','Loading numbers…','Zahlen werden geladen…');
-  try{const r=await api.rpc('merchant_insights',{p_store:s.id,p_days:Number(select.value)});if(r.error)throw r.error;if(!r.data)throw Error('Missing statistics');if(target.isConnected&&request===serial)target.innerHTML=merchantInsightHTML(r.data,s);}
+  try{const days=Number(select.value);const [r,weekly]=await Promise.all([api.rpc('merchant_insights',{p_store:s.id,p_days:days}),days===7?Promise.resolve(null):api.rpc('merchant_insights',{p_store:s.id,p_days:7})]);if(r.error)throw r.error;if(!r.data)throw Error('Missing statistics');const w=weekly||r;const weeklyHTML=w.error||!w.data?'<p>'+ct('تعذر تحميل الملخص الأسبوعي. حاول التحديث.','Weekly summary could not load. Try refresh.','Wochenübersicht konnte nicht geladen werden. Bitte aktualisieren.')+'</p>':merchantWeeklySummaryHTML(w.data,s);if(target.isConnected&&request===serial)target.innerHTML=weeklyHTML+merchantInsightHTML(r.data,s);}
   catch(err){if(target.isConnected&&request===serial)target.textContent=ct('تعذر تحميل الإحصاءات. حاول التحديث؛ هذه ليست نتيجة صفر.','Stats could not load. Try refresh; this is not a zero result.','Statistik konnte nicht geladen werden. Aktualisiere erneut; dies ist kein Null-Ergebnis.');}
   finally{if(request===serial)button.disabled=false;}
  };
