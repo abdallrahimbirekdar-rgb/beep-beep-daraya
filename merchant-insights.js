@@ -49,8 +49,9 @@ function merchantInsightChange(now,before){
  return difference===0?ct('مثل الفترة السابقة','Same as the previous period','Wie im vorherigen Zeitraum'):
  (difference>0?ct('ارتفع','Up','Gestiegen'):ct('انخفض','Down','Gesunken'))+' '+merchantInsightNumber(percent)+'% '+ct('مقارنة بالفترة السابقة','from the previous period','gegenüber dem vorherigen Zeitraum');
 }
+function merchantInsightOrderRatio(orders,visits){return Number(visits)>0?Math.round(Number(orders||0)/Number(visits)*1000)/10:null;}
 function merchantInsightCard(icon,title,value,note,change=''){
- return '<article class="merchant-insight-card"><span aria-hidden="true">'+icon+'</span><h3>'+esc(title)+'</h3><strong>'+merchantInsightNumber(value)+'</strong><p>'+esc(note)+'</p>'+(change?'<small>'+esc(change)+'</small>':'')+'</article>';
+ return '<article class="merchant-insight-card"><span aria-hidden="true">'+icon+'</span><h3>'+esc(title)+'</h3><strong>'+(value===null?ct('غير متاح','Not available','Nicht verfügbar'):merchantInsightNumber(value))+'</strong><p>'+esc(note)+'</p>'+(change?'<small>'+esc(change)+'</small>':'')+'</article>';
 }
 function merchantInsightHTML(d,s){
  const n=merchantInsightNumber,c=d.current||{},prev=d.previous||{},interest=d.interest||{},o=d.orders||{};
@@ -63,6 +64,7 @@ function merchantInsightHTML(d,s){
   ['📸',ct('فتح صور المنتجات','Product photo opens','Geöffnete Produktbilder'),interest.photo_open,ct('فتح معرض صور المنتج، وليس عدد الصور التي رآها الزائر.','Product gallery opens, not individual photo views.','Öffnungen der Produktgalerie, keine einzelnen Bildaufrufe.')]
  ];
  if(commercial)metrics.push(['🛒',ct('إضافة للسلة','Added to cart','In den Warenkorb'),interest.cart_add,ct('تُحسب الإضافة الناجحة مرة لكل منتج وجلسة في اليوم، وليست طلبًا.','Successful additions, once per product and session per day; not orders.','Erfolgreiche Ergänzungen, einmal je Produkt und Sitzung pro Tag; keine Bestellungen.')],['📋',ct('الطلبات المسجّلة','Recorded orders','Erfasste Bestellungen'),o.total,ct('كل الطلبات، بما فيها المفتوحة والملغاة.','All orders, including open and cancelled.','Alle Bestellungen, auch offene und stornierte.'),merchantInsightChange(o.total,d.previous_orders)]);
+ if(commercial)metrics.push(['📊',ct('طلبات لكل 100 زيارة','Orders per 100 visits','Bestellungen je 100 Besuche'),merchantInsightOrderRatio(o.total,c.view),ct('مؤشر إجمالي، وليس نسبة أشخاص اشتروا. يشمل الطلبات الملغاة، ولا يربط الزائر بطلبه. لا يُحسب عند غياب الزيارات.','An overall indicator, not the share of people who bought. Includes cancelled orders, without linking visitors to orders. Not calculated when visits are missing.','Gesamtindikator, kein Anteil kaufender Personen. Enthält stornierte Bestellungen, ohne Besucher mit Bestellungen zu verknüpfen. Ohne Besuche nicht berechenbar.')]);
  let html='<div class="merchant-insight-grid">'+metrics.map(x=>merchantInsightCard(...x)).join('')+'</div>';
  if(commercial)html+='<section class="merchant-insight-section"><h3>'+ct('ماذا حدث للطلبات؟','What happened to orders?','Was wurde aus den Bestellungen?')+'</h3><div class="merchant-insight-grid">'+[
   ['✅',ct('مكتملة','Completed','Abgeschlossen'),o.completed,ct('حسب الحالة التي سجلها المتجر؛ لا تؤكد تحصيل الدفع.','Based on the shop status; does not confirm payment.','Nach Geschäftsstatus; bestätigt keine Zahlung.')],
