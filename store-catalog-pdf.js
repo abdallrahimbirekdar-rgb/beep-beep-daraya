@@ -29,6 +29,7 @@
  }
  async function create(s,ps,now=new Date()){
   await document.fonts.ready;
+  const brand=await new Promise(resolve=>{const image=new Image(),timer=setTimeout(()=>resolve(null),6000);image.onload=()=>{clearTimeout(timer);resolve(image);};image.onerror=()=>{clearTimeout(timer);resolve(null);};image.src=new URL('daraya-logo-gold.webp?v=gold-logo-36',location.href).href;});
   const photos=new Array(ps.length);let next=0;await Promise.all(Array.from({length:Math.min(4,ps.length)},async()=>{while(next<ps.length){const i=next++;photos[i]=await productPhoto(ps[i]);}}));
   const lang=window.ShahinI18n?.language||'ar',rtl=lang==='ar',locale=rtl?'ar-SY':lang==='de'?'de-DE':'en-GB';
   const date=now.toLocaleString(locale,{year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});
@@ -36,7 +37,7 @@
   const translated=value=>window.ShahinI18n?.translate?.(String(value||''))||String(value||'');
   function draw(value,x,yy,width,font,color='#173b35',align=rtl?'right':'left'){ctx.font=font;ctx.fillStyle=color;ctx.textAlign=align;ctx.direction=rtl?'rtl':'ltr';const ls=lines(ctx,value,width);ls.forEach((l,i)=>ctx.fillText(l,x,yy+i*42));return ls.length*42;}
   function finish(){
-   ctx.fillStyle='#173b35';ctx.fillRect(0,1650,1240,104);ctx.font='24px Cairo, sans-serif';ctx.textAlign='center';ctx.direction='ltr';ctx.fillStyle='#fffaf0';ctx.fillText('damascus-shop.com',620,1690);ctx.fillText(String(page),620,1726);
+   ctx.fillStyle='#ffffff';ctx.fillRect(0,1640,1240,114);if(brand){const w=240,h=w*brand.naturalHeight/brand.naturalWidth;ctx.drawImage(brand,80,1650,w,h);}ctx.font='bold 25px Cairo, sans-serif';ctx.textAlign='center';ctx.direction=rtl?'rtl':'ltr';ctx.fillStyle='#173b35';ctx.fillText(t('سوق داريا الإلكتروني','Daraya Online Market','Daraya Online-Markt'),700,1678);ctx.font='23px Cairo, sans-serif';ctx.direction='ltr';ctx.fillText('damascus-shop.com',700,1716);ctx.fillText(String(page),1140,1716);
    const raw=atob(canvas.toDataURL('image/jpeg',0.9).split(',')[1]);pages.push(Uint8Array.from(raw,c=>c.charCodeAt(0)));
   }
   function start(){
