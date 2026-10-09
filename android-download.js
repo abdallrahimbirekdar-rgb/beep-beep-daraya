@@ -48,7 +48,6 @@
   // Unknown versions cannot establish that an update is needed.
   if(!Number.isSafeInteger(installed)||installed<1){document.querySelector('#apk-update-notice')?.remove();return;}
   let checking=false,lastCheck=0;
-  const words=(ar,en,de)=>({ar,en,de}[window.ShahinI18n?.language||'ar']||ar);
   async function checkApk(){
     if(document.hidden||checking||Date.now()-lastCheck<21600000)return;
     checking=true;lastCheck=Date.now();
@@ -68,7 +67,7 @@
       const message=document.createElement('strong');
       message.textContent='تتوفر نسخة جديدة من تطبيق سوق داريا الإلكتروني';
       message.setAttribute('role','status');message.style.cssText='flex:1 1 200px;font-size:14px';
-      const download=document.createElement('a');download.className='button';download.href=asset.browser_download_url;
+      const download=document.createElement('a');download.className='button';download.href='https://play.google.com/store/apps/details?id=com.souqdaraya.app';
       download.textContent='تحديث التطبيق';
       download.style.cssText='min-height:44px;padding:8px 12px;font-size:14px';
       const later=document.createElement('button');later.type='button';later.className='outline';
