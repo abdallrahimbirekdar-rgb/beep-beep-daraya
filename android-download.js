@@ -44,7 +44,9 @@
 
 (() => {
   if(!/ShahinAndroid\//.test(navigator.userAgent))return;
-  const installed=Number(navigator.userAgent.match(/DarayaVersion\/(\d+)/)?.[1]||0);
+  const installed=Number(navigator.userAgent.match(/DarayaVersion\/(\d+)/)?.[1]);
+  // Unknown versions cannot establish that an update is needed.
+  if(!Number.isSafeInteger(installed)||installed<1){document.querySelector('#apk-update-notice')?.remove();return;}
   let checking=false,lastCheck=0;
   const words=(ar,en,de)=>({ar,en,de}[window.ShahinI18n?.language||'ar']||ar);
   async function checkApk(){
@@ -60,17 +62,17 @@
       try{if(sessionStorage.getItem('daraya-apk-dismissed')===String(code))return;}catch(_){}
       if(document.querySelector('#apk-update-notice'))return;
       const panel=document.createElement('aside');
-      panel.id='apk-update-notice';panel.dataset.noTranslate='';
-      panel.setAttribute('aria-label',words('تحديث التطبيق','App update','App-Update'));
+      panel.id='apk-update-notice';
+      panel.setAttribute('aria-label','تحديث التطبيق');
       panel.style.cssText='margin:10px 14px;padding:12px;border:1px solid #c6a347;border-radius:12px;background:#fff5d7;color:#173b35;display:flex;flex-wrap:wrap;align-items:center;gap:10px';
       const message=document.createElement('strong');
-      message.textContent=words('تتوفر نسخة جديدة من تطبيق سوق داريا الإلكتروني','A new app version is ready','Eine neue App-Version ist verfügbar');
+      message.textContent='تتوفر نسخة جديدة من تطبيق سوق داريا الإلكتروني';
       message.setAttribute('role','status');message.style.cssText='flex:1 1 200px;font-size:14px';
       const download=document.createElement('a');download.className='button';download.href=asset.browser_download_url;
-      download.textContent=words('تحديث التطبيق','Update app','App aktualisieren');
+      download.textContent='تحديث التطبيق';
       download.style.cssText='min-height:44px;padding:8px 12px;font-size:14px';
       const later=document.createElement('button');later.type='button';later.className='outline';
-      later.textContent=words('لاحقًا','Later','Später');
+      later.textContent='لاحقًا';
       later.style.cssText='min-height:44px;padding:8px 12px;font-size:14px';
       later.onclick=()=>{try{sessionStorage.setItem('daraya-apk-dismissed',String(code));}catch(_){}panel.remove();};
       panel.append(message,download,later);document.querySelector('#app')?.before(panel);
