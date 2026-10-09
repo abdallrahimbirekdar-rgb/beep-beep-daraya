@@ -35,3 +35,16 @@ html[dir="ltr"] .guide-topic-arrow{transform:rotate(180deg)}
 .merchant-help .help-contents a:hover{background:#fff6db;border-color:#d4b86c}
 .merchant-help .help-contents a:focus-visible{outline:3px solid #b28b38;outline-offset:3px}
 @media(max-width:600px){.guide-topic-group{padding:16px}.guide-topic-group h2{font-size:18px}.guide-topic-grid{grid-template-columns:1fr;gap:10px}.merchant-help .help-contents .guide-topic-grid a{font-size:16px;min-height:64px;padding:12px 14px}}
+
+/* The global mobile nav limit must not constrain the guide contents. */
+.merchant-help .help-contents{width:100%;max-width:none;min-width:0;align-items:stretch;justify-content:stretch;box-sizing:border-box}
+.merchant-help .guide-topic-group{width:100%;max-width:none;box-sizing:border-box}
+.merchant-help .guide-topic-grid a>span:nth-child(2){flex:1;min-width:0;overflow-wrap:normal;word-break:normal}
+@media(max-width:600px){
+ .merchant-help{width:100%;max-width:100%;min-width:0;box-sizing:border-box}
+ .merchant-help .help-contents{grid-template-columns:minmax(0,1fr)}
+ .merchant-help .guide-topic-grid{grid-template-columns:minmax(0,1fr)}
+ .merchant-help .help-contents .guide-topic-grid a{min-height:58px;gap:10px;padding:10px 12px;font-size:15px;line-height:1.5}
+ .merchant-help .guide-topic-icon{font-size:24px;flex-basis:28px}
+ .merchant-help .guide-topic-arrow{flex:0 0 12px;font-size:22px}
+}
