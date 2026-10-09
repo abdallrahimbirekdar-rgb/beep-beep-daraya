@@ -65,5 +65,6 @@
   }catch{toast(t('تعذر تجهيز الملف. حاول مرة أخرى.','Could not create the file. Please try again.','Die Datei konnte nicht erstellt werden. Bitte versuche es erneut.'));}finally{button.disabled=false;button.textContent=old;}
  }
  const base=renderStore;renderStore=function(id){base.apply(this,arguments);const s=stores.find(x=>x.id===id&&x.active&&!x.deleted_at);if(!s||directoryIsInfo(s))return;const ps=products.filter(p=>p.store_id===id&&p.available);if(!ps.length)return;const host=document.querySelector('.store-banner');if(!host)return;const b=document.createElement('button');b.type='button';b.className='outline';b.dataset.noTranslate='';b.dataset.catalogPdf='';b.style.cssText='margin:12px 0;min-height:44px';b.textContent=t('📄 تحميل المنتجات والأسعار PDF','📄 Download products and prices PDF','📄 Produkte und Preise als PDF');b.onclick=()=>save(s,ps,b);host.after(b);};
+ new MutationObserver(()=>{document.querySelectorAll('[data-catalog-pdf]').forEach(b=>{if(!b.disabled)b.textContent=t('📄 تحميل المنتجات والأسعار PDF','📄 Download products and prices PDF','📄 Produkte und Preise als PDF');});}).observe(document.documentElement,{attributes:true,attributeFilter:['lang']});
  window.DarayaCatalogPdf={create,pdf};
 })();
