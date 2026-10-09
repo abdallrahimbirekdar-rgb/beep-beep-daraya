@@ -22,3 +22,16 @@
 .merchant-book-icon{width:24px;height:24px;flex-shrink:0;vertical-align:middle;margin-inline-end:8px}.merchant-actions a[href^="#merchant-help/"],.form-help a[href^="#merchant-help/"]{display:inline-flex;align-items:center}.merchant-book-cover{float:inline-end;color:#f5ce76;margin-inline-start:20px}.merchant-book-cover .merchant-book-icon{width:88px;height:88px;margin:0}.guide-plan-note{padding:16px 20px;background:#fff8e6;border:1px solid #ead8a8;border-radius:14px;line-height:1.8;margin:0 0 20px}.help-action{color:#80591e}.help-lesson>div{min-width:0}.help-lesson p{overflow-wrap:anywhere}@media(max-width:600px){.merchant-book-cover .merchant-book-icon{width:60px;height:60px}.help-contents a{max-width:100%;overflow-wrap:anywhere}}
 
 .merchant-help .help-hero h1{color:#fff}.merchant-help .help-hero .section-kicker{color:#f5ce76}
+
+/* Group the owner guide into ordered, equal-width topic cards. */
+.merchant-help .help-contents{display:grid;grid-template-columns:1fr;gap:20px;width:100%;margin:0 0 28px}
+.guide-topic-group{min-width:0;padding:20px;border:1px solid #e5ddc9;border-radius:20px;background:#fffdf7}
+.guide-topic-group h2{display:flex;align-items:center;gap:10px;margin:0 0 16px;color:#193f35;font-size:20px;line-height:1.5}
+.guide-topic-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.merchant-help .help-contents .guide-topic-grid a{display:flex;align-items:center;gap:12px;box-sizing:border-box;width:100%;max-width:none;min-width:0;min-height:72px;margin:0;padding:14px 16px;border-radius:15px;background:#fff;border:1px solid #e1e7e2;color:#193f35;text-align:start;font-size:16px;line-height:1.6;text-decoration:none}
+.guide-topic-icon{font-size:26px;flex:0 0 34px;text-align:center}
+.guide-topic-arrow{margin-inline-start:auto;color:#a78335;font-size:26px}
+html[dir="ltr"] .guide-topic-arrow{transform:rotate(180deg)}
+.merchant-help .help-contents a:hover{background:#fff6db;border-color:#d4b86c}
+.merchant-help .help-contents a:focus-visible{outline:3px solid #b28b38;outline-offset:3px}
+@media(max-width:600px){.guide-topic-group{padding:16px}.guide-topic-group h2{font-size:18px}.guide-topic-grid{grid-template-columns:1fr;gap:10px}.merchant-help .help-contents .guide-topic-grid a{font-size:16px;min-height:64px;padding:12px 14px}}
