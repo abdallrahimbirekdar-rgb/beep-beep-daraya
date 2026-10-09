@@ -5,16 +5,19 @@
  const words={all:['الكل','All','Alle'],restaurant:['مطاعم ومقاهٍ','Food and cafés','Restaurants und Cafés'],shop:['متاجر وبقاليات','Shops and food stores','Läden und Lebensmittel'],apparel:['ملابس وتسوق','Clothes','Kleidung'],mobile:['جوالات وإكسسوارات','Phones','Handys und Zubehör'],services:['حرفيون وخدمات','Local services','Handwerk und Dienste'],doctor:['أطباء وعيادات','Doctors','Ärzte und Praxen'],pharmacy:['صيدليات','Pharmacies','Apotheken'],school:['مدارس','Schools','Schulen'],mosque:['مساجد','Mosques','Moscheen'],lawyer:['محامون','Lawyers','Anwälte']};
  const icons={all:'▦',restaurant:'🍽️',shop:'🛒',apparel:'👕',mobile:'📱',services:'🛠️',doctor:'🩺',pharmacy:'✚',school:'📚',mosque:'🕌',lawyer:'⚖️'};
  function label(node,words){if(!node)return;if(!node.hasAttribute('data-no-translate'))node.dataset.noTranslate='';const value=text(...words);if(node.textContent!==value)node.textContent=value;}
- let menuLanguage=null;
+ let menuLanguage=null,menuAppsNode=null,menuAboutNode=null;
  function menuLabels(){
   const languageKey=window.ShahinI18n?.language||'ar';
-  if(menuLanguage===languageKey)return;
+  const appsNode=menu.querySelector('.side-menu-apps .side-menu-toggle');
+  const aboutNode=menu.querySelector('.side-menu-about .side-menu-toggle');
+  if(menuLanguage===languageKey&&menuAppsNode===appsNode&&menuAboutNode===aboutNode)return;
+  menuAppsNode=appsNode;menuAboutNode=aboutNode;
   menuLanguage=languageKey;
   const groups=[...menu.querySelectorAll('.side-menu-group')];
   const account=groups.find(g=>g.querySelector('#customer-account'));
   const language=groups.find(g=>g.querySelector('#language'));
-  const apps=groups.find(g=>g.querySelector('[data-android-download]'));
-  const about=groups.find(g=>g.querySelector('a[href="#about"]'));
+  const apps=menu.querySelector('.side-menu-apps')||groups.find(g=>g.querySelector('[data-android-download]'));
+  const about=menu.querySelector('.side-menu-about')||groups.find(g=>g.querySelector('a[href="#about"]'));
   const join=groups.find(g=>g.querySelector('a[href="#shop-owner"]'));
   [account,groups.find(g=>g.querySelector('a[href="#map"]')),join,language,apps,about,...groups].filter((g,i,a)=>g&&a.indexOf(g)===i).forEach(g=>menu.append(g));
   label(account?.querySelector('h2'),['الحساب والطلبات','Account and orders','Konto und Bestellungen']);
@@ -113,6 +116,7 @@
  };
  const storeBase=renderStore;
  renderStore=function(){storeBase.apply(this,arguments);const back=document.querySelector('#app > .topline a[href="#home"]');if(back){label(back,['العودة إلى قائمة الأماكن','Back to places','Zurück zur Liste']);back.onclick=e=>{e.preventDefault();location.hash='#home';requestAnimationFrame(()=>requestAnimationFrame(()=>window.scrollTo(0,previousScroll)));};}};
+ new MutationObserver(menuLabels).observe(menu,{childList:true,subtree:true});
  new MutationObserver(menuLabels).observe(document.documentElement,{attributes:true,attributeFilter:['lang']});
  menuLabels();
 })();
