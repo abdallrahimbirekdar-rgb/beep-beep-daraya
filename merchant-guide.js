@@ -39,10 +39,10 @@ renderMerchantHelp=function(id){
  const lesson=location.hash.match(/\/(lesson-\d+)$/)?.[1];
  const selected=lesson&&document.getElementById(lesson);
  if(selected){
-  document.querySelector('.help-contents').hidden=true;
-  document.querySelector('.guide-plan-note').hidden=true;
-  document.querySelector('.help-hero').hidden=true;
-  document.querySelectorAll('.help-lesson').forEach(article=>{article.hidden=article!==selected;});
+  document.querySelector('.help-contents').remove();
+  document.querySelector('.guide-plan-note').remove();
+  document.querySelector('.help-hero').remove();
+  document.querySelectorAll('.help-lesson').forEach(article=>{if(article!==selected)article.remove();});
   selected.insertAdjacentHTML('beforebegin',`<a class="button outline" href="${base}">${merchantGuideText('العودة إلى مواضيع الدليل','Back to guide topics','Zurück zu den Themen')}</a>`);
   requestAnimationFrame(()=>window.scrollTo(0,0));
  }
