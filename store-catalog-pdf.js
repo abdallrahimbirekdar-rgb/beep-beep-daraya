@@ -22,8 +22,14 @@
   return new Blob(parts,{type:'application/pdf'});
  }
  function lines(ctx,value,width){const result=[];let line='';for(const word of String(value||'').split(/\s+/)){const next=line?line+' '+word:word;if(ctx.measureText(next).width>width&&line){result.push(line);line=word;}else line=next;}if(line)result.push(line);return result;}
+ async function productPhoto(p){
+  const url=typeof safeImage==='function'?safeImage(p.image):p.image;if(!url)return null;
+  const src=typeof thumbnailForImage==='function'?thumbnailForImage(url):url;
+  return new Promise(resolve=>{const img=new Image();let done=false;const finish=value=>{if(done)return;done=true;clearTimeout(timer);img.onload=img.onerror=null;resolve(value);};const timer=setTimeout(()=>finish(null),6000);img.crossOrigin='anonymous';img.onload=()=>{try{const c=document.createElement('canvas');c.width=c.height=160;const x=c.getContext('2d');x.fillStyle='#ffffff';x.fillRect(0,0,160,160);const scale=Math.min(160/img.naturalWidth,160/img.naturalHeight),w=img.naturalWidth*scale,h=img.naturalHeight*scale;x.drawImage(img,(160-w)/2,(160-h)/2,w,h);c.toDataURL('image/jpeg',0.75);finish(c);}catch{finish(null);}};img.onerror=()=>finish(null);img.src=src;});
+ }
  async function create(s,ps,now=new Date()){
   await document.fonts.ready;
+  const photos=new Array(ps.length);let next=0;await Promise.all(Array.from({length:Math.min(4,ps.length)},async()=>{while(next<ps.length){const i=next++;photos[i]=await productPhoto(ps[i]);}}));
   const lang=window.ShahinI18n?.language||'ar',rtl=lang==='ar',locale=rtl?'ar-SY':lang==='de'?'de-DE':'en-GB';
   const date=now.toLocaleString(locale,{year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});
   const pages=[];let canvas,ctx,y,page=0;
@@ -44,12 +50,13 @@
    y+=12;ctx.fillStyle='#ebd89d';ctx.fillRect(70,y,1100,60);draw(t('المنتج','Product','Produkt'),rtl?1140:90,y+40,760,'bold 28px Cairo, sans-serif');draw(t('السعر','Price','Preis'),rtl?90:1140,y+40,240,'bold 28px Cairo, sans-serif','#173b35',rtl?'left':'right');y+=76;
   }
   start();
-  for(const p of ps){
-   ctx.font='30px Cairo, sans-serif';const name=translated(p.name),nameLines=lines(ctx,name,740),height=Math.max(74,nameLines.length*42+24);
+  for(let i=0;i<ps.length;i++){const p=ps[i],image=photos[i];
+   ctx.font='30px Cairo, sans-serif';const name=translated(p.name),nameLines=lines(ctx,name,560),height=Math.max(144,nameLines.length*42+24);
    if(y+height>1550){finish();start();}
-   draw(name,rtl?1140:90,y+38,740,'30px Cairo, sans-serif');
+   const imageX=rtl?1020:90;ctx.fillStyle='#f0eadb';ctx.fillRect(imageX,y+12,120,120);if(image)ctx.drawImage(image,imageX,y+12,120,120);else{ctx.fillStyle='#896820';ctx.font='22px Cairo, sans-serif';ctx.textAlign='center';ctx.fillText(t('بلا صورة','No image','Kein Bild'),imageX+60,y+80);}
+   draw(name,rtl?990:240,y+Math.max(38,(height-nameLines.length*42)/2+30),560,'30px Cairo, sans-serif');
    const price=p.price!==null&&p.price!==''&&Number.isFinite(Number(p.price))?Number(p.price).toLocaleString(locale)+(rtl?' ل.س':' SYP'):t('غير محدد','Not set','Nicht angegeben');
-   draw(price,rtl?90:1140,y+38,270,'bold 27px Cairo, sans-serif','#896820',rtl?'left':'right');
+   draw(price,rtl?90:1140,y+height/2+10,270,'bold 27px Cairo, sans-serif','#896820',rtl?'left':'right');
    y+=height;ctx.strokeStyle='#dfd7bd';ctx.beginPath();ctx.moveTo(80,y);ctx.lineTo(1160,y);ctx.stroke();
   }
   draw(t('الأسعار حسب المعلومات المنشورة وقت التحميل وقد تتغيّر.','Prices reflect the published information at download time and may change.','Preise entsprechen den Angaben beim Download und können sich ändern.'),620,1600,1080,'22px Cairo, sans-serif','#65716b','center');finish();return pdf(pages);
