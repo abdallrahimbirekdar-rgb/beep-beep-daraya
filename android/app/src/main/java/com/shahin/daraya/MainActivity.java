@@ -138,6 +138,26 @@ public class MainActivity extends Activity {
                 }catch(Exception e){reply.postMessage("{\"ok\":false,\"error\":\"Could not share image\"}");}
             });
         }
+        if(androidx.webkit.WebViewFeature.isFeatureSupported(androidx.webkit.WebViewFeature.WEB_MESSAGE_LISTENER)) {
+            java.util.Set<String> authOrigins=java.util.Collections.singleton("https://damascus-shop.com");
+            androidx.webkit.WebViewCompat.addWebMessageListener(web,"DarayaAuth",authOrigins,(view,message,sourceOrigin,isMainFrame,reply)->{
+                if(!isMainFrame||!"https://damascus-shop.com".equals(sourceOrigin.toString()))return;
+                try {
+                    Uri uri=Uri.parse(message.getData());
+                    if(!"https".equals(uri.getScheme())||!"nxnqsudwccjlvyepuxfg.supabase.co".equals(uri.getHost())||
+                       !"/auth/v1/authorize".equals(uri.getPath())||!"google".equals(uri.getQueryParameter("provider"))||
+                       !"com.souqdaraya.app://auth/callback".equals(uri.getQueryParameter("redirect_to"))||
+                       !"s256".equalsIgnoreCase(uri.getQueryParameter("code_challenge_method"))||
+                       uri.getQueryParameter("code_challenge")==null)throw new IllegalArgumentException();
+                    getSharedPreferences("daraya_oauth",MODE_PRIVATE).edit().putLong("started",System.currentTimeMillis()).apply();
+                    startActivity(new Intent(Intent.ACTION_VIEW,uri).addCategory(Intent.CATEGORY_BROWSABLE));
+                    reply.postMessage("{\"ok\":true}");
+                }catch(Exception e){
+                    getSharedPreferences("daraya_oauth",MODE_PRIVATE).edit().remove("started").apply();
+                    reply.postMessage("{\"ok\":false}");
+                }
+            });
+        }
         String destination = destination(getIntent());
         if(destination != null) web.loadUrl(freshUrl(destination));
         else if(state == null || web.restoreState(state) == null) web.loadUrl(freshUrl(SITE+"#home"));
@@ -163,9 +183,20 @@ public class MainActivity extends Activity {
     private static boolean isSiteUrl(Uri uri) {
         return "https".equals(uri.getScheme()) && ("damascus-shop.com".equals(uri.getHost()) || "www.damascus-shop.com".equals(uri.getHost()));
     }
-    private static String destination(Intent intent) {
+    private String destination(Intent intent) {
         Uri uri = intent == null ? null : intent.getData();
         if(uri == null) return null;
+        if("com.souqdaraya.app".equals(uri.getScheme()) && "auth".equals(uri.getHost()) && "/callback".equals(uri.getPath())) {
+            android.content.SharedPreferences prefs=getSharedPreferences("daraya_oauth",MODE_PRIVATE);
+            long started=prefs.getLong("started",0);
+            prefs.edit().remove("started").apply();
+            String code=uri.getQueryParameter("code");
+            if(started==0||System.currentTimeMillis()-started>600000L||code==null||!code.matches("[0-9a-fA-F-]{36}")){
+                Toast.makeText(this,"لم يكتمل تسجيل الدخول. حاول مجددًا / Sign-in failed. Please try again.",Toast.LENGTH_LONG).show();
+                return SITE+"#account";
+            }
+            return Uri.parse(SITE).buildUpon().appendQueryParameter("code",code).fragment("account").build().toString();
+        }
         if(isSiteUrl(uri)) return uri.toString();
         if("daraya".equals(uri.getScheme()) && "store".equals(uri.getHost())) {
             String id = uri.getLastPathSegment();
