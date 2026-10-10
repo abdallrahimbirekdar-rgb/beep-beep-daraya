@@ -1,19 +1,8 @@
 'use strict';
 (() => {
 
- const pinCategories=[
- ['restaurant','#e76f20','مطاعم ومقاهٍ','Restaurants and cafés','Restaurants und Cafés'],
- ['shop','#25834b','متاجر','Shops','Geschäfte'],
- ['apparel','#bd3c89','ألبسة وتسوق','Clothing','Bekleidung'],
- ['mobile','#1976d2','جوالات','Phone shops','Handygeschäfte'],
- ['doctor','#d73848','أطباء وعيادات','Doctors and clinics','Ärzte und Kliniken'],
- ['pharmacy','#00a38c','صيدليات','Pharmacies','Apotheken'],
- ['services','#8056bd','مهن وخدمات','Services','Dienstleistungen'],
- ['school','#c08700','مدارس','Schools','Schulen'],
- ['mosque','#187b87','مساجد','Mosques','Moscheen'],
- ['lawyer','#625246','محامون','Lawyers','Anwälte']];
- pinCategories.push(...(window.DARAYA_SECTORS||[]).map(x=>[x[0],x[5],x[1],x[2],x[3]]));
- function pinCategory(s){const kind=directoryKind(s);if(kind==='shop'){if(matchesCategory(s,'apparel'))return 'apparel';if(matchesCategory(s,'mobile'))return 'mobile';}return kind;}
+ const pinCategories=(window.DARAYA_SECTORS||[]).map(x=>[x[0],x[5],x[1],x[2],x[3]]);
+ function pinCategory(s){const kind=directoryKind(s);return kind;}
  window.darayaMapPin=function(s){const color=(pinCategories.find(x=>x[0]===pinCategory(s))||pinCategories[1])[1];return L.divIcon({className:'daraya-color-pin',html:'<svg xmlns="http://www.w3.org/2000/svg" width="30" height="42" viewBox="0 0 30 42" aria-hidden="true"><path d="M15 40C12 35 2 24 2 15a13 13 0 0 1 26 0c0 9-10 20-13 25Z" fill="'+color+'" stroke="white" stroke-width="2"/><circle cx="15" cy="15" r="5" fill="white"/></svg>',iconSize:[30,42],iconAnchor:[15,40],popupAnchor:[0,-38],tooltipAnchor:[0,-34]});};
  function pinLegend(rows){const kinds=new Set(rows.filter(s=>storeCoordinates(s)).map(pinCategory));return '<div class="daraya-map-legend" aria-label="'+text('ألوان الأقسام','Category colors','Kategoriefarben')+'" style="display:flex;flex-wrap:wrap;gap:6px 12px;margin:8px 0;font-size:12px">'+pinCategories.filter(x=>kinds.has(x[0])).map(x=>'<span style="display:inline-flex;align-items:center;gap:5px"><i aria-hidden="true" style="width:10px;height:10px;border-radius:50%;background:'+x[1]+'"></i>'+esc(text(x[2],x[3],x[4]))+'</span>').join('')+'</div>';}
 
