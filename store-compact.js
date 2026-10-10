@@ -20,5 +20,6 @@ const info=document.createElement('details');info.className='shop-info-drawer';c
 const layout=document.querySelector('.store-layout');if(layout){const tools=[...banner.parentElement.children].filter(x=>x!==banner&&x!==layout&&(x.classList.contains('store-customer-tools')||x.classList.contains('community-offer-grid')));const downloads=[...banner.parentElement.children].filter(x=>x.tagName==='BUTTON'&&!x.classList.contains('simple-back'));downloads.forEach(x=>{x.classList.add('shop-catalog-download');toolbar.append(x);});let anchor=layout;tools.forEach(x=>{anchor.after(x);anchor=x;});}
 if(typeof directoryIsInfo==='function'&&directoryIsInfo(s)){const first=nav.querySelector('button');if(first){info.open=true;first.click();}}
 }
+function alignBack(){if(!document.querySelector('.store-banner.store-compact'))return;const back=document.querySelector('#app>.simple-back'),top=document.querySelector('#app>.topline');if(!back||!top)return;const row=document.createElement('div');row.className='shop-back-row';back.before(row);row.append(back,top);}new MutationObserver(alignBack).observe(document.querySelector('#app'),{childList:true});
 const previous=renderStore;renderStore=function(id){previous.apply(this,arguments);compact(id);};
 })();
