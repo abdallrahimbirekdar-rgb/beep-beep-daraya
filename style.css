@@ -62,3 +62,20 @@ html[dir="ltr"] .hero-copy h1{font-size:clamp(36px,4vw,62px);letter-spacing:-1.5
 .card-cover .card-image,.identity-image{object-fit:contain!important;object-position:center!important}
 .card:hover .card-cover .card-image{transform:none}
 @media(max-width:600px){#app .store-banner img.store-image{max-height:240px!important}}
+
+/* Portrait storefronts: complete photo alongside the business details. */
+#app .card.portrait-store-card>a{display:grid!important;grid-template-columns:minmax(120px,36%) minmax(0,1fr);align-items:stretch}
+#app .portrait-store-card .card-cover{height:auto!important;min-height:220px;background:#f5ecd9}
+#app .portrait-store-card .card-cover img.card-image{width:100%;height:100%!important;position:absolute;inset:0;object-fit:contain!important;transform:none!important}
+#app .portrait-store-card .card-body{min-width:0;padding:18px!important;display:flex;flex-direction:column;justify-content:center}
+#app .portrait-store-card .card-title h3{font-size:22px;line-height:1.45;overflow-wrap:break-word}
+#app .portrait-store-card .card-bottom{gap:8px;flex-wrap:wrap}
+@media(max-width:600px){
+ #app .card.portrait-store-card>a{grid-template-columns:minmax(105px,36%) minmax(0,1fr)}
+ #app .portrait-store-card .card-cover{min-height:205px}
+ #app .portrait-store-card .card-body{padding:14px 12px!important}
+ #app .portrait-store-card .card-title h3{font-size:19px!important;line-height:1.45}
+ #app .portrait-store-card .card-category{font-size:10px}
+ #app .portrait-store-card .store-summary{font-size:12px;line-height:1.6}
+ #app .portrait-store-card .card-bottom{padding-top:10px;margin-top:10px}
+}
