@@ -4,6 +4,7 @@
  const menu=document.querySelector('#site-menu'),toggle=document.querySelector('#menu-toggle');
  const words={all:['الكل','All','Alle'],restaurant:['مطاعم ومقاهٍ','Food and cafés','Restaurants und Cafés'],shop:['متاجر وبقاليات','Shops and food stores','Läden und Lebensmittel'],apparel:['ملابس وتسوق','Clothes','Kleidung'],mobile:['جوالات وإكسسوارات','Phones','Handys und Zubehör'],services:['حرفيون وخدمات','Local services','Handwerk und Dienste'],doctor:['أطباء وعيادات','Doctors','Ärzte und Praxen'],pharmacy:['صيدليات','Pharmacies','Apotheken'],school:['مدارس','Schools','Schulen'],mosque:['مساجد','Mosques','Moscheen'],lawyer:['محامون','Lawyers','Anwälte']};
  const icons={all:'▦',restaurant:'🍽️',shop:'🛒',apparel:'👕',mobile:'📱',services:'🛠️',doctor:'🩺',pharmacy:'✚',school:'📚',mosque:'🕌',lawyer:'⚖️'};
+ for(const x of window.DARAYA_SECTORS||[]){words[x[0]]=[x[1],x[2],x[3]];icons[x[0]]=x[4];}
  function label(node,words){if(!node)return;if(!node.hasAttribute('data-no-translate'))node.dataset.noTranslate='';const value=text(...words);if(node.textContent!==value)node.textContent=value;}
  let menuLanguage=null,menuAppsNode=null,menuAboutNode=null;
  function menuLabels(){
