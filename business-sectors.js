@@ -11,13 +11,15 @@ window.DARAYA_SECTORS=[["restaurant","مطاعم ومقاهٍ وحلويات","F
   if(/صيدل/.test(name)||original==='pharmacy')return 'pharmacy';
   if(/طبيب|عيادة|دكتور/.test(name)||original==='doctor')return 'doctor';
   if(/مسجد|جامع/.test(name)||original==='mosque')return 'mosque';
+  if(/فرشات|بياضات|عصرونية/.test(name))return 'household';
+  if(/عقارات/.test(name))return 'services';
   if(/مكتبة|قرطاسية|طباعة|العاب|اطفال|طفولة|عصافير|اسماك|فون|جوال|هاتف|موبايل|تلفون|ملابس|البسة|عرائس|عرايس|اراكيل/.test(name))return 'shop';
   if(/مدرسة|مدارس|معهد|تعليم/.test(name)||original==='school')return 'school';
   if(/سيارات|دراجات|ميكانيك|كراج/.test(name))return 'vehicles';
   if(/عقاري|معقب|معاملات|محام|مديرية|مناسبات|نجار|نجارة|المنيوم|بديل خشب|بديل رخام|جبسن|البايسون|اكساء|حلاقة|صالون|تجميل|بخاخ/.test(name))return 'services';
   if(/مفروشات|موبيليا|سجاد|موكيت|فرشات|بياضات|ادوات المنزلية|ادوات منزلية|كهربائيات|منظمات الكهربائية|تدفئة مركزية/.test(name))return 'household';
-  if(/بقال|بزوري|غذائي|غذائيات|محمصة|خضراوات|خضروات|خضار|فواكه|المؤسسة السورية للتجارة/.test(name))return 'grocery';
-  if(/مطعم|مشاوي|مشوي|فلافل|فول|فروج|لحم|فرن|مخبز|حلويات|بوظة|باتيسيري|فطاير|فطائر|برغر|شيكن|كافتيريا|مقهى/.test(name))return 'restaurant';
+  if(/بقال|بزوري|غذائي|غذائيات|محمصة|البان|اجبان|سوبر ماركت|سوبرماركت|خضراوات|خضروات|خضار|فواكه|المؤسسة السورية للتجارة/.test(name))return 'grocery';
+  if(/مطعم|مشاوي|مشوي|فلافل|فول|فروج|لحم|فرن|مخبز|حلويات|بوظة|باتيسيري|فطاير|فطائر|برغر|شيكن|تشيكن|كافتيريا|كافيه|مقهى|عصائر|كوكتيلات|شاورما|قهوة|ماكولات|معجنات|تنور/.test(name))return 'restaurant';
   const fallback=window.darayaSectorKey(saved||original);
   return directoryKinds.some(x=>x[0]===fallback)?fallback:'shop';
  };
