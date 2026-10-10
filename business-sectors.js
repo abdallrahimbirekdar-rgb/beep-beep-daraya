@@ -1,9 +1,9 @@
 'use strict';
-window.DARAYA_SECTORS=[["restaurant","مطاعم ومقاهٍ وحلويات","Food, cafés and sweets","Restaurants, Cafés und Süßwaren","🍽️","#e76f20"],["grocery","بقاليات وخضار","Groceries and vegetables","Lebensmittel und Gemüse","🛒","#25834b"],["shop","ملابس وقرطاسية وتسوق","Clothes, stationery and shopping","Kleidung, Schreibwaren und Einkauf","🛍️","#bd3c89"],["mobile","جوالات وإكسسوارات","Phones and accessories","Handys und Zubehör","📱","#1976d2"],["household","منزل ومفروشات","Home and furniture","Haushalt und Möbel","🛋️","#a4693e"],["services","مهن وخدمات","Trades and services","Handwerk und Dienstleistungen","🛠️","#8056bd"],["vehicles","سيارات ودراجات","Cars and bikes","Autos und Fahrräder","🚗","#52647d"],["doctor","أطباء وعيادات","Doctors and clinics","Ärzte und Praxen","🩺","#d73848"],["pharmacy","صيدليات","Pharmacies","Apotheken","💊","#00a38c"],["school","مدارس وتعليم","Schools and education","Schulen und Bildung","🎓","#c08700"],["mosque","مساجد","Mosques","Moscheen","🕌","#187b87"]];
+window.DARAYA_SECTORS=[["restaurant","مطاعم ومقاهٍ وحلويات","Food, cafés and sweets","Restaurants, Cafés und Süßwaren","🍽️","#e76f20"],["grocery","بقاليات وخضار","Groceries and vegetables","Lebensmittel und Gemüse","🛒","#25834b"],["apparel","ملابس وأزياء","Clothing and fashion","Kleidung und Mode","👗","#bd3c89"],["stationery","مكتبات وقرطاسية","Books and stationery","Bücher und Schreibwaren","📚","#795548"],["toys","ألعاب ومستلزمات أطفال","Toys and children’s supplies","Spielzeug und Kinderbedarf","🧸","#e39b24"],["beauty","عطور ومستحضرات تجميل","Perfumes and cosmetics","Parfüm und Kosmetik","🌸","#c4549a"],["pets","حيوانات أليفة ومستلزماتها","Pets and pet supplies","Haustiere und Tierbedarf","🐾","#6b8e23"],["shop","متاجر أخرى","Other shops","Weitere Geschäfte","🏪","#64748b"],["mobile","جوالات وإكسسوارات","Phones and accessories","Handys und Zubehör","📱","#1976d2"],["household","منزل ومفروشات","Home and furniture","Haushalt und Möbel","🛋️","#a4693e"],["services","مهن وخدمات","Trades and services","Handwerk und Dienstleistungen","🛠️","#8056bd"],["vehicles","سيارات ودراجات","Cars and bikes","Autos und Fahrräder","🚗","#52647d"],["doctor","أطباء وعيادات","Doctors and clinics","Ärzte und Praxen","🩺","#d73848"],["pharmacy","صيدليات","Pharmacies","Apotheken","💊","#00a38c"],["school","مدارس وتعليم","Schools and education","Schulen und Bildung","🎓","#c08700"],["mosque","مساجد","Mosques","Moscheen","🕌","#187b87"]];
 (() => {
  const previous=directoryKind;
  const norm=v=>String(v||'').replace(/[أإآ]/g,'ا').replace(/[ًٌٍَُِّْـ]/g,'');
- const aliases={bakery:'restaurant',produce:'grocery',furniture:'household',construction:'services',personal:'services',stationery:'shop',property:'services',leisure:'shop',public:'services',lawyer:'services',apparel:'shop'};
+ const aliases={bakery:'restaurant',produce:'grocery',furniture:'household',construction:'services',personal:'services',property:'services',leisure:'shop',public:'services',lawyer:'services'};
  window.darayaSectorKey=key=>aliases[key]||key;
  directoryKinds.splice(0,directoryKinds.length,...window.DARAYA_SECTORS.map(x=>[x[0],x[1]]));
  directoryKind=function(s){
@@ -15,7 +15,11 @@ window.DARAYA_SECTORS=[["restaurant","مطاعم ومقاهٍ وحلويات","F
   if(/عقارات/.test(name))return 'services';
   if(/تنور|معجنات|شاورما|مطعم/.test(name))return 'restaurant';
   if(/فون|جوال|هاتف|هواتف|موبايل|تلفون|اتصالات/.test(name))return 'mobile';
-  if(/مكتبة|قرطاسية|طباعة|العاب|اطفال|طفولة|عصافير|اسماك|ملابس|البسة|عرائس|عرايس|اراكيل/.test(name))return 'shop';
+  if(/مكتبة|قرطاسية|طباعة/.test(name))return 'stationery';
+  if(/عصافير|اسماك|حيوانات اليفة|مستلزمات الحيوانات/.test(name))return 'pets';
+  if(/عطور|عطر|مستحضرات|كوزمتك|كوزماتيك/.test(name))return 'beauty';
+  if(/العاب|اطفال|طفولة/.test(name))return 'toys';
+  if(/ملابس|البسة|ازياء|عرائس|عرايس/.test(name)||name==='تريند ستور')return 'apparel';
   if(/مدرسة|مدارس|معهد|تعليم/.test(name)||original==='school')return 'school';
   if(/سيارات|دراجات|ميكانيك|كراج/.test(name))return 'vehicles';
   if(/عقاري|معقب|معاملات|محام|مديرية|مناسبات|نجار|نجارة|المنيوم|بديل خشب|بديل رخام|جبسن|البايسون|اكساء|حلاقة|صالون|تجميل|بخاخ/.test(name))return 'services';
