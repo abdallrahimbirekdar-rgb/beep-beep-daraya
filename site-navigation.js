@@ -1,6 +1,7 @@
 (()=>{
 const menu=document.querySelector('#site-menu'),toggle=document.querySelector('#menu-toggle'),bottom=document.querySelector('#mobile-navigation');
 const refresh=document.querySelector('#android-refresh');
+const compactBottom=document.createElement('style');compactBottom.textContent='@media(max-width:900px){body #mobile-navigation{height:calc(60px + env(safe-area-inset-bottom))!important;min-height:0!important;max-height:calc(60px + env(safe-area-inset-bottom))!important;padding:3px 8px calc(3px + env(safe-area-inset-bottom))!important;box-sizing:border-box!important;align-items:center!important}body #mobile-navigation a{height:52px!important;min-height:44px!important;max-height:52px!important;padding:4px 5px!important;margin:0!important;gap:2px!important;font-size:11px!important;line-height:1.15!important}body #mobile-navigation a>span:first-child{font-size:22px!important;width:26px!important;height:24px!important;line-height:24px!important}body #mobile-navigation a>span:last-child{font-size:11px!important;line-height:15px!important;white-space:nowrap!important}body{padding-bottom:calc(70px + env(safe-area-inset-bottom))!important}}';document.head.append(compactBottom);
 const close=()=>{menu.hidden=true;toggle.setAttribute('aria-expanded','false');};
 toggle.onclick=()=>{menu.hidden=!menu.hidden;toggle.setAttribute('aria-expanded',String(!menu.hidden));};
 document.addEventListener('click',e=>{if(!e.target.closest('header'))close();});
