@@ -79,3 +79,6 @@ html[dir="ltr"] .hero-copy h1{font-size:clamp(36px,4vw,62px);letter-spacing:-1.5
  #app .portrait-store-card .store-summary{font-size:12px;line-height:1.6}
  #app .portrait-store-card .card-bottom{padding-top:10px;margin-top:10px}
 }
+
+#app .portrait-store-card .store-summary{min-height:0!important}
+#app .portrait-store-card .store-summary:empty{display:none!important}
