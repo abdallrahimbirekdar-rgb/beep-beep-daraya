@@ -90,3 +90,5 @@ html[dir="ltr"] .professional-home .shahin-hero:before{clip-path:ellipse(30% 100
 #app .simple-back{background:#ae752d!important;color:#fff!important;border:1px solid #c69b50!important;box-shadow:none!important}
 .professional-home .mosques-entry>.button{background:#fff!important;color:#173b35!important;border:1px solid #dbe1dc!important;box-shadow:none!important}
 #app .simple-back:focus-visible,.professional-home .mosques-entry>.button:focus-visible{outline:3px solid #173b35;outline-offset:3px}
+
+.delivery-pending-note{display:block;font-size:12px!important;font-weight:700;line-height:1.6;color:#67501b;margin-top:3px;white-space:normal}
