@@ -20,7 +20,7 @@
   const apps=menu.querySelector('.side-menu-apps')||groups.find(g=>g.querySelector('[data-android-download]'));
   const about=menu.querySelector('.side-menu-about')||groups.find(g=>g.querySelector('a[href="#about"]'));
   const join=groups.find(g=>g.querySelector('a[href="#shop-owner"]'));
-  [account,groups.find(g=>g.querySelector('a[href="#map"]')),join,language,apps,about,...groups].filter((g,i,a)=>g&&a.indexOf(g)===i).forEach(g=>menu.append(g));
+  [join,account,groups.find(g=>g.querySelector('a[href="#map"]')),language,apps,about,...groups].filter((g,i,a)=>g&&a.indexOf(g)===i).forEach(g=>menu.append(g));
   label(account?.querySelector('h2'),['الحساب والطلبات','Account and orders','Konto und Bestellungen']);
   label(language?.querySelector('h2'),['اللغة','Language','Sprache']);
   label(apps?.querySelector('.side-menu-toggle'),['تحميل التطبيق','Get the app','App installieren']);
