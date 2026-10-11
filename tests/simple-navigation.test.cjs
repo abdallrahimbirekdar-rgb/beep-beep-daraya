@@ -4,7 +4,7 @@ function harness(){
  const toggle={textContent:'',dataset:{},hasAttribute:()=>true,setAttribute(){writes++;}};
  const menu={querySelectorAll:()=>[],querySelector:()=>null};
  const window={ShahinI18n:{language:'ar'}};
- const ctx={window,document:{querySelector:s=>s==='#site-menu'?menu:s==='#menu-toggle'?toggle:null,addEventListener(){}},MutationObserver:class{constructor(f){callback=f;}observe(){}},renderHome(){},renderStore(){},render(){}};
+ const ctx={window,document:{head:{append(){}},createElement:()=>({}),querySelector:s=>s==='#site-menu'?menu:s==='#menu-toggle'?toggle:null,addEventListener(){}},MutationObserver:class{constructor(f){callback=f;}observe(){}},renderHome(){},renderStore(){},render(){}};
  vm.runInNewContext(fs.readFileSync('simple-navigation.js','utf8'),ctx);
  return {window,toggle,run:()=>callback(),writes:()=>writes};
 }
@@ -26,11 +26,11 @@ test('Android refresh stays in its menu group across translation callbacks',()=>
  const toggle={setAttribute(){},focus(){}};
  const bottom={style:{},dataset:{},innerHTML:''};
  const refresh={parentElement:group,classList:{contains:()=>false},textContent:'تحديث العرض',setAttribute(){}};
- const document={documentElement:{},querySelector:s=>({'#site-menu':menu,'#menu-toggle':toggle,'#mobile-navigation':bottom,'#android-refresh':refresh,'#app':{}}[s]||null),addEventListener(){}};
+ const document={head:{append(){}},createElement:()=>({}),documentElement:{},querySelector:s=>({'#site-menu':menu,'#menu-toggle':toggle,'#mobile-navigation':bottom,'#android-refresh':refresh,'#app':{}}[s]||null),addEventListener(){}};
  vm.runInNewContext(fs.readFileSync('site-navigation.js','utf8'),{document,window:{ShahinI18n:{language:'ar'},addEventListener(){}},location:{hash:'#home'},admin:false,MutationObserver:class{constructor(f){observers.push(f);}observe(){}}});
  for(let i=0;i<100;i++)observers.forEach(f=>f());
  assert.equal(moves,0);assert.equal(refresh.parentElement,group);
- assert.equal(bottom.style.gridTemplateColumns,'repeat(4,minmax(0,1fr))');
+ assert.equal(bottom.style.gridTemplateColumns,'repeat(3,minmax(0,1fr))');
 });
 
 test('saved places use a focused route and main-menu return resets it',()=>{
@@ -41,10 +41,23 @@ test('saved places use a focused route and main-menu return resets it',()=>{
  const menu={querySelectorAll:()=>[],querySelector:()=>null};
  const toggle={textContent:'',dataset:{},hasAttribute:()=>true,setAttribute(){}};
  const nodes={'#site-menu':menu,'#menu-toggle':toggle,'.shahin-hero':hero,'#browse':browse,'#browse h2':heading,'.featured-places':{remove(){removed++;}}};
- const document={querySelector:s=>nodes[s]||null,querySelectorAll:()=>[],addEventListener:(name,fn)=>events[name]=fn,createElement:()=>({dataset:{},hasAttribute:()=>true})};
+ const document={head:{append(){}},querySelector:s=>nodes[s]||null,querySelectorAll:()=>[],addEventListener:(name,fn)=>events[name]=fn,createElement:()=>({dataset:{},hasAttribute:()=>true})};
  const ctx={document,window:{scrollTo(){},ShahinI18n:{language:'ar'}},location:{hash:'#home'},filter:'all',search:'',browseFavorites:false,MutationObserver:class{observe(){}},renderHome(){},renderStore(){},render(){this.renderHome();}};
  vm.runInNewContext(fs.readFileSync('simple-navigation.js','utf8'),ctx);
  events.click({target:{closest:s=>s==='#mobile-navigation a'?{hash:'#saved'}:null},preventDefault(){}});
  assert.equal(ctx.location.hash,'#saved');ctx.renderHome();
  assert.equal(hidden,true);assert.equal(removed,1);assert.equal(heading.textContent,'محلاتي المحفوظة');
+ assert.equal(ctx.window.darayaHomeShowsResults(),true);
+ ctx.browseFavorites=false;ctx.filter='all';ctx.search='shoe';ctx.renderHome();assert.equal(ctx.window.darayaHomeShowsResults(),true);
+});
+
+test('homepage does not render store cards until results are requested',()=>{
+ const appSource=fs.readFileSync('app.js','utf8');
+ const start=appSource.indexOf('function renderHome(){'),end=appSource.indexOf('function showStoreAddress(',start);
+ const app={innerHTML:''},input={};let shuffled=0,show=false;
+ const ctx={window:{darayaHomeShowsResults:()=>show},stores:[{id:'shop',name:'Unique shop name',active:true,category:'shop',description:'',online_ordering:false}],heroStores:[],products:[],filter:'all',search:'',browseFavorites:false,
+ shuffleStoresWithinCategories:stores=>{shuffled++;return stores;},matchesCategory:()=>true,matchesStore:()=>true,esc:s=>String(s),photo:()=>'',storeCover:()=>'',isStoreOpen:()=>true,storeStatus:()=>'',storeService:()=>'',money:()=>'',URL,location:{href:'https://damascus-shop.com/'},document:{querySelectorAll:()=>[]},$:s=>s==='#app'?app:input};
+ vm.createContext(ctx);vm.runInContext(appSource.slice(start,end),ctx);
+ ctx.renderHome();assert.doesNotMatch(app.innerHTML,/Unique shop name/);assert.equal(shuffled,0);
+ show=true;ctx.renderHome();assert.match(app.innerHTML,/Unique shop name/);assert.equal(shuffled,1);
 });
