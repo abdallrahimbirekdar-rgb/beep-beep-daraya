@@ -17,7 +17,7 @@
   // Preserve dynamically supplied controls and their click handlers.
   for(const node of [...menu.children])if(node.matches('a,button'))move(node,account);
   menu.querySelectorAll(':scope>.side-menu-group').forEach(node=>node.remove());
-  menu.append(account);if(discover.querySelector('a'))menu.append(discover);menu.append(join,language);if(apps.querySelector('a,button'))menu.append(apps);menu.append(about);const support=menu.querySelector('[data-support-links]');if(support)menu.append(support);
+  menu.append(join,account);if(discover.querySelector('a'))menu.append(discover);menu.append(language);if(apps.querySelector('a,button'))menu.append(apps);menu.append(about);const support=menu.querySelector('[data-support-links]');if(support)menu.append(support);
  }
  organize();
  new MutationObserver(records=>{if(records.some(r=>[...r.addedNodes].some(n=>n.nodeType===1&&n.matches('a,button'))))organize();}).observe(menu,{childList:true});
