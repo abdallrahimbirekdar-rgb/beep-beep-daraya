@@ -32,6 +32,8 @@
   toggle.setAttribute('aria-label',text('فتح المزيد','Open more','Mehr öffnen'));
  }
  let sectionOpen=false;
+ let requestedResults=false;
+ window.darayaHomeShowsResults=()=>requestedResults;
  let sectionToolsOpen=false;
  const compactStyle=document.createElement('style');
  compactStyle.textContent='.professional-home .section-tools{margin:8px 0!important;padding:0!important;border:0!important;background:transparent!important}.section-tools>summary{display:flex;align-items:center;justify-content:center;width:max-content;max-width:100%;min-height:44px;padding:6px 14px;box-sizing:border-box;border:1px solid #d8c58b;border-radius:10px;color:#173b35;background:#fff9e7;font-size:14px;cursor:pointer;list-style:none}.section-tools>summary::-webkit-details-marker{display:none}.section-tools>summary:focus-visible{outline:3px solid #173b35;outline-offset:2px}.professional-home .section-tools:not([open]) .community-controls,.professional-home .section-tools:not([open])>p{display:none!important}.professional-home .section-tools[open]{padding:10px!important;border:1px solid #e4dcc7!important;border-radius:12px!important}.section-tools[open]>summary{margin-bottom:8px}.professional-home .section-tools .community-controls>a{display:none!important}';
@@ -44,6 +46,7 @@
  function mainMenu(){sectionOpen=false;filter='all';search='';browseFavorites=false;if(location.hash!=='#home')location.hash='#home';else renderHome();window.scrollTo(0,0);}
  const homeBase=renderHome;
  renderHome=function(){
+  requestedResults=Boolean(sectionOpen||browseFavorites||search.trim()||filter!=='all');
   homeBase.apply(this,arguments);
   document.querySelector('#app')?.classList.toggle('search-results-view',Boolean(search.trim()));
   const hero=document.querySelector('.shahin-hero');if(!hero)return;
@@ -96,6 +99,7 @@
    }
    if(browseFavorites){document.querySelector('#browse>.filters')?.setAttribute('hidden','');document.querySelector('.community-search')?.remove();document.querySelector('.mosques-entry')?.remove();}
   }
+  if(!window.darayaHomeShowsResults()){document.querySelectorAll('#browse>.grid,#browse>.browse-heading,.community-search,.featured-places,.brand-note').forEach(n=>n.remove());}
   if(sectionOpen||filter!=='all'||browseFavorites||search){const b=document.createElement('button');b.type='button';b.className='outline simple-back';label(b,['العودة إلى القائمة الرئيسية','Back to main menu','Zurück zum Hauptmenü']);b.onclick=mainMenu;document.querySelector('#browse')?.prepend(b);}
  };
  let previousScroll=0;
