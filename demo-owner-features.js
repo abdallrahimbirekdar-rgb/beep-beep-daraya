@@ -2,7 +2,7 @@
 (()=>{
  const allFeatures=[
  ['identity','الاسم والوصف وصورة الواجهة والشعار','Name, description, cover and logo','Name, Beschreibung, Titelbild und Logo'],
- ['location','عنوان مكتوب وموقع GPS واتجاهات الوصول','Address, GPS and directions','Adresse, GPS und Wegbeschreibung'],
+ ['location','موقع المحل على خريطة الموقع وعنوان GPS واتجاهات الوصول','Shop location on our map, address, GPS and directions','Geschäftsstandort auf unserer Karte, Adresse, GPS und Wegbeschreibung'],
  ['contact','رقم الهاتف وطرق التواصل','Phone and contact options','Telefon und Kontaktmöglichkeiten'],
  ['social','فيسبوك وإنستغرام وواتساب وتيليجرام وتيك توك ويوتيوب وموقعك','Facebook, Instagram, WhatsApp, Telegram, TikTok, YouTube and website','Facebook, Instagram, WhatsApp, Telegram, TikTok, YouTube und Website'],
  ['video','رابط فيديو مع تشغيل عند الطلب','Video link with playback on demand','Videolink mit Wiedergabe auf Wunsch'],
