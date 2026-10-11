@@ -17,3 +17,8 @@
  .full-map-section .field-hint{font-size:11px!important;line-height:1.5!important;margin:6px 0!important}
  .full-map-section [data-mosques-map-status]:empty{display:none}
 }
+
+.daraya-map-legend{display:flex;align-items:end;gap:8px;margin:8px 0}.daraya-map-legend label{flex:1;font-size:12px}.daraya-map-legend select{width:100%;height:40px;padding:5px 10px;font-size:14px}.daraya-map-legend button{height:40px;padding:5px 12px}
+.daraya-cluster span{display:grid;place-items:center;width:42px;height:42px;background:#173f35;color:#fff;border:3px solid #e7ce86;border-radius:50%;font-size:16px;font-weight:700;box-shadow:0 2px 8px #0003}
+.map-place-card{display:flex;gap:10px;position:relative;padding:12px;margin-top:8px;border:1px solid #d5bc83;border-radius:12px;background:#fffdf6}.map-place-card[hidden]{display:none}.map-place-card img{width:64px;height:74px;object-fit:contain;border-radius:8px}.map-place-card>div{flex:1;min-width:0}.map-place-card strong,.map-place-card small{display:block}.map-place-card small{font-size:12px;color:#666}.map-place-actions{display:flex;gap:6px;margin-top:8px}.map-place-actions .button{font-size:12px!important;padding:8px!important;min-height:34px!important}.map-place-card>[data-close-place]{position:absolute;inset-inline-end:4px;top:2px;padding:3px 8px;background:transparent;color:#173f35}.map-group-list{max-height:160px;overflow:auto;display:grid;gap:4px}
+@media(max-width:760px){.full-map-section .mosques-map{height:65svh;min-height:360px}.full-map-section .daraya-map-legend{font-size:12px}.full-map-section .daraya-map-legend select{font-size:13px!important;min-height:40px!important}.full-map-section .mosques-list{max-height:260px}.full-map-section .field-hint{display:none}}
