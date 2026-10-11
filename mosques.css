@@ -40,3 +40,5 @@
 .daraya-map-categories button:focus-visible,.daraya-map-view button:focus-visible{outline:3px solid #b58b35;outline-offset:2px}
 .full-map-section .list-view .mosques-list{max-height:none;overflow:visible;grid-template-columns:repeat(auto-fit,minmax(250px,1fr))}
 @media(max-width:760px){.full-map-section .mosques-map{height:46svh;min-height:280px;max-height:440px}.full-map-section .daraya-map-legend select{font-size:14px!important}.full-map-section .daraya-map-help{font-size:12px}.full-map-section .mosques-controls{margin:8px 0!important}.full-map-section .list-view .mosques-list{grid-template-columns:1fr}.full-map-section .mosque-row{padding:12px}.full-map-section .mosque-row strong{font-size:16px}}
+
+.map-group-list{margin-top:12px;max-height:280px;gap:8px}.map-group-list button{text-align:start;min-height:44px;white-space:normal;line-height:1.6;padding:10px 12px}.map-place-card>div>strong{padding-inline-end:20px}
