@@ -2,7 +2,7 @@
 (()=>{
 let recording=false,statsLoading=false;
 async function record(){
- if(!api||!live||admin||document.visibilityState==='hidden'||/^#(?:dashboard|account|my-order|privacy|data-requests)/.test(location.hash)||recording)return;
+ if(!api||!live||admin||document.visibilityState==='hidden'||/^#(?:dashboard|account|my-order|privacy|data-requests|shop-cards|shop-card|purchase-card|redeem-card)/.test(location.hash)||recording)return;
  let saved;try{saved=JSON.parse(sessionStorage.getItem('daraya-visit-session')||'null');}catch{}
  let visitor;try{visitor=localStorage.getItem('daraya-visitor-id');if(!/^[0-9a-f-]{36}$/i.test(visitor||'')){visitor=crypto.randomUUID();localStorage.setItem('daraya-visitor-id',visitor);}}catch{visitor=crypto.randomUUID();}
  const now=Date.now();
