@@ -56,5 +56,5 @@
  new MutationObserver(()=>{const route=location.hash.split('/');if(route[0]==='#store')storeOffers(route[1]);}).observe(document.querySelector('#app'),{childList:true,subtree:true});
  const baseAccount=renderCustomerAccount;renderCustomerAccount=function(){baseAccount.apply(this,arguments);if(user){const box=$('.account-shortcuts');box?.insertAdjacentHTML('beforeend','<a class="button outline" data-no-translate href="#followed-offers">'+t('العروض التي أتابعها','Offers I follow','Abonnierte Angebote')+'</a>');}};
  const menu=document.querySelector('#site-menu');if(menu){const link=document.createElement('a');link.href='#followed-offers';link.dataset.noTranslate='';link.textContent=t('العروض التي أتابعها','Offers I follow','Abonnierte Angebote');menu.append(link);document.querySelector('#language')?.addEventListener('change',()=>{link.textContent=t('العروض التي أتابعها','Offers I follow','Abonnierte Angebote');});}
- document.querySelector('#modal')?.addEventListener('close',clearCard);window.addEventListener('hashchange',clearCard);
+ document.querySelector('#modal')?.addEventListener('close',clearCard);window.addEventListener('hashchange',()=>{clearCard();if(['#followed-offers','#my-shop-offers','#published-shop-offers','#offer-review'].includes(location.hash))render();});
 })();
