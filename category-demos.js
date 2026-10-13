@@ -13,7 +13,7 @@
  const publicDemoStoreId='a5e8abe7-974a-416c-a570-858d6fd03572';
  matchesCategory=function(s,key=filter){if(s.is_example&&s.id!==publicDemoStoreId&&directoryKind(s)!=='mosque')return false;return baseMatch(s,key);};
  const baseStore=renderStore;
- renderStore=function(id){const s=stores.find(x=>x.id===id);if(s?.is_example&&directoryKind(s)!=='mosque'&&sector(directoryKind(s))){show(directoryKind(s));return;}return baseStore.apply(this,arguments);};
+ renderStore=function(id){const s=stores.find(x=>x.id===id);if(s?.is_example&&s.id!==publicDemoStoreId&&directoryKind(s)!=='mosque'&&sector(directoryKind(s))){show(directoryKind(s));return;}return baseStore.apply(this,arguments);};
  function index(){
   $('#app').classList.remove('professional-home','search-results-view');
   $('#app').innerHTML='<section class="demo-page" data-no-translate><a class="button outline" href="#home">'+t('العودة إلى الرئيسية','Back to home','Zurück zur Startseite')+'</a><h1>'+t('اكتشف أمثلة صفحات الأنشطة','Explore example business pages','Beispielseiten entdecken')+'</h1><p>'+t('مثال واحد لكل قسم يوضح ما يمكنك عرضه في صفحتك. جميع الأسماء والأسعار والعناوين افتراضية.','One example per category shows what your page can include. All names, prices and addresses are fictional.','Ein Beispiel pro Bereich zeigt die Möglichkeiten deiner Seite. Namen, Preise und Adressen sind fiktiv.')+'</p><div class="demo-index">'+sectors().map(s=>'<a href="'+path(s[0])+'">'+image(heroes[s[0]]||items[s[0]][0][5],title(s))+'<strong>'+esc(title(s))+'</strong></a>').join('')+'</div></section>';
