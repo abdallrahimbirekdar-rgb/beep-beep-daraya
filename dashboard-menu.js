@@ -62,7 +62,7 @@
   app.dataset.dashboardSection=home?'home':tab;
   app.dataset.dashboardRoute=location.hash;
   const workspace=app.querySelector('.admin-workspace');workspace?.classList.add('dashboard-single-layout');
-  const extra=[['#dashboard/reports',say('التقارير ومراجعة المتاجر','Reports and shop review','Berichte und Geschäftsprüfung'),'reports'],['#dashboard/statistics',say('الزيارات والإحصاءات','Visits and statistics','Besuche und Statistik'),'statistics'],['#dashboard/plans',say('باقات الاشتراك','Subscription plans','Tarife'),'plans'],['#banned-ad-accounts',say('الحسابات المحظورة من الإعلانات','Accounts blocked from ads','Für Anzeigen gesperrte Konten'),'bans'],['#dashboard/tools',say('أدوات الإدارة وتحديث البيانات','Admin tools and refresh','Werkzeuge und Aktualisieren'),'tools']];
+  const extra=[['#dashboard/place-reports',say('بلاغات الأماكن','Place reports','Ortsmeldungen'),'place-reports'],['#dashboard/reports',say('التقارير ومراجعة المتاجر','Reports and shop review','Berichte und Geschäftsprüfung'),'reports'],['#dashboard/statistics',say('الزيارات والإحصاءات','Visits and statistics','Besuche und Statistik'),'statistics'],['#dashboard/plans',say('باقات الاشتراك','Subscription plans','Tarife'),'plans'],['#banned-ad-accounts',say('الحسابات المحظورة من الإعلانات','Accounts blocked from ads','Für Anzeigen gesperrte Konten'),'bans'],['#dashboard/tools',say('أدوات الإدارة وتحديث البيانات','Admin tools and refresh','Werkzeuge und Aktualisieren'),'tools']];
   extra.forEach(([href,title,key])=>{if(![...tabs.querySelectorAll('a')].some(a=>a.getAttribute('href')===href)){const a=link(href,title);a.dataset.dashboardMenuKey=key;tabs.append(a);}});
   const request=heading.querySelector('a[href="#data-requests"]');if(request)tabs.append(request);
   const planButtons=[...heading.querySelectorAll(':scope > button')];const tools=heading.querySelector('.admin-tools');
@@ -73,6 +73,12 @@
   }else{
    content.hidden=false;if(sidebar)sidebar.hidden=true;else tabs.hidden=true;
    heading.after(back('#dashboard'));
+   if(tab==='place-reports'){
+    content.innerHTML='<section class="panel" data-no-translate><h2>'+say('بلاغات الأماكن','Place reports','Ortsmeldungen')+'</h2><p>'+say('راجع بلاغات الزوار عن معلومات الأماكن ومحتواها، ثم علّم البلاغ بعد معالجته.','Review visitor reports about place details and content, then mark them reviewed.','Prüfe Besuchermeldungen zu Ortsangaben und Inhalten und markiere sie anschließend als geprüft.')+'</p><button type="button" class="outline" data-refresh-place-reports>'+say('تحديث البلاغات','Refresh reports','Meldungen aktualisieren')+'</button><div data-place-reports-list role="status"></div></section>';
+    const box=content.querySelector('[data-place-reports-list]');
+    const refresh=()=>{box.textContent=say('جاري تحميل البلاغات…','Loading reports…','Meldungen werden geladen…');communityAdminReports(box).catch(()=>{if(box.isConnected)box.textContent=say('تعذر تحميل البلاغات. حاول مجددًا.','Could not load reports. Try again.','Meldungen konnten nicht geladen werden. Versuche es erneut.');});};
+    content.querySelector('[data-refresh-place-reports]').onclick=refresh;refresh();
+   }
    if(tab==='statistics'){content.replaceChildren();const h=document.createElement('h2');h.textContent=say('الزيارات والإحصاءات','Visits and statistics','Besuche und Statistik');h.dataset.noTranslate='';content.append(h);const stats=app.querySelector(':scope > .stats');if(stats)content.append(stats);}
    if(tab==='plans'||tab==='tools'){
     content.replaceChildren();const panel=document.createElement('section');panel.className='panel dashboard-tools-panel';const h=document.createElement('h2');h.dataset.noTranslate='';h.textContent=tab==='plans'?say('باقات الاشتراك','Subscription plans','Tarife'):say('أدوات الإدارة','Admin tools','Verwaltungswerkzeuge');panel.append(h);
