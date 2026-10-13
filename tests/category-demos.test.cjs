@@ -24,6 +24,11 @@ test('all demo pages render with fictional address, correct QR URL and no real c
 test('existing example listings are hidden but real stores and mosques stay available',()=>{
  const {c}=setup();assert.equal(c.matchesCategory({kind:'apparel',is_example:true},'apparel'),false);assert.equal(c.matchesCategory({kind:'apparel',is_example:false},'apparel'),true);assert.equal(c.matchesCategory({kind:'mosque',is_example:true},'mosque'),true);
 });
+test('the review demo shop is discoverable while other demo shops remain hidden',()=>{
+ const {c}=setup();
+ assert.equal(c.matchesCategory({id:'a5e8abe7-974a-416c-a570-858d6fd03572',kind:'restaurant',is_example:true},'restaurant'),true);
+ assert.equal(c.matchesCategory({id:'another-demo',kind:'restaurant',is_example:true},'restaurant'),false);
+});
 test('category banner links to exactly one demo and leaves mosque section unchanged',()=>{
  const {c,banners}=setup();c.renderHome();assert.equal(banners.length,1);assert.equal(banners[0].href,'#example/restaurant');
  c.filter='mosque';c.renderHome();assert.equal(banners.length,1);
