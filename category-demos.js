@@ -10,13 +10,13 @@
  const path=key=>'#example/'+key;
  const image=(src,alt)=>photo(new URL(src,location.href).href,alt,'demo-image');
  window.DarayaDemoOfferCatalog=()=>[
-  ['restaurant',0,65000,'image'],['apparel',1,140000,'image'],['stationery',2,75000,'image'],['services',0,240000,'text']
+  ['restaurant',0,65000,'image'],['apparel',1,140000,'image'],['stationery',2,75000,'image'],['services',0,240000,'text'],['toys',0,50000,'image']
  ].map(([key,index,price,kind])=>{const entry=items[key][index],group=sector(key);return {
   id:'demo-offer-'+key,demo:true,store_id:'demo-'+key,user_id:null,status:'approved',
-  shop_name:title(group),shop_route:path(key),title:t('عرض تجريبي: ','Demo offer: ','Beispielangebot: ')+entry[language()],
+  shop_name:title(group),shop_route:path(key),shop_logo:new URL(heroes[key]||entry[5],location.href).href,title:t('عرض تجريبي: ','Demo offer: ','Beispielangebot: ')+entry[language()],
   address:address(t),price,ends_at:'2026-10-21T21:59:00Z',
-  details:JSON.stringify({type:'daraya-shop-offer-v1',exclusive:false,kind,original:entry[3],image:new URL(entry[5],location.href).href,
-   benefit:t('مثال على تخفيض السعر لعرض طريقة ظهور العروض.','An example price cut to show how offers look.','Beispiel einer Preissenkung zur Vorschau der Angebote.'),
+  details:JSON.stringify({type:'daraya-shop-offer-v1',exclusive:false,kind,video_link:key==='toys'?'https://www.youtube.com/watch?v=aqz-KE-bpKQ':'',original:entry[3],image:new URL(entry[5],location.href).href,
+   benefit:key==='toys'?t('مثال لرابط فيديو يوتيوب: فيلم Big Buck Bunny من Blender، للتجربة فقط وليس إعلانًا للمحل.','YouTube link demo: Big Buck Bunny by Blender. A test video, not a shop ad.','YouTube-Link-Beispiel: Big Buck Bunny von Blender. Testvideo, keine Geschäftswerbung.'):t('مثال على تخفيض السعر لعرض طريقة ظهور العروض.','An example price cut to show how offers look.','Beispiel einer Preissenkung zur Vorschau der Angebote.'),
    terms:t('للتوضيح فقط. المحل والسعر والعنوان تجريبيون، ولا يمكن شراء هذا العرض.','For display only. The shop, price and address are fictional. This offer cannot be bought.','Nur zur Veranschaulichung. Geschäft, Preis und Adresse sind fiktiv. Dieses Angebot ist nicht kaufbar.')})
  };});
  const baseMatch=matchesCategory;
