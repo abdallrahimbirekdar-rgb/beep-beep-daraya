@@ -7,6 +7,9 @@ function setup(cluster=false){
  vm.createContext(c);vm.runInContext(fs.readFileSync('mosques.js','utf8').replace(/\}\)\(\);\s*$/,'window.testMapRows=publicPlaces;})();'),c);return {c,nodes,categories,views,maps,markers};
 }
 const tick=()=>new Promise(r=>setImmediate(r));
+test('blocked shops are absent from map markers and its list',async()=>{
+ const {c,nodes,markers}=setup();c.window.DarayaShopModeration={isBlocked:id=>id==='hidden'};c.stores=[{id:'hidden',name:'Hidden shop',active:true,kind:'pharmacy',point:[33.45,36.23]},{id:'visible',name:'Visible shop',active:true,kind:'doctor',point:[33.46,36.24]}];c.render();await tick();assert.equal(c.window.testMapRows().length,1);assert.equal(markers.length,1);assert.doesNotMatch(nodes['#mosques-list'].innerHTML,/Hidden shop/);
+});
 test('opening map stays close to Daraya despite a remote record; invalid names are hidden',async()=>{
  const {c,maps}=setup();c.stores=[{id:'a',name:'صيدلية',active:true,kind:'pharmacy',point:[33.45,36.23]},{id:'b',name:'عيادة',active:true,kind:'doctor',point:[33.46,36.24]},{id:'remote',name:'مكان بعيد',active:true,kind:'doctor',point:[34,37]},{id:'bad',name:'N-A',active:true}];c.render();await tick();assert.equal(c.window.testMapRows().length,3);assert.equal(maps[0].views[0].z,16);assert.equal(maps[0].options.minZoom,15);assert.ok(maps[0].views[0].p[0]<33.49);assert.equal(maps[0].fits.length,0);
 });
