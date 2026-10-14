@@ -9,6 +9,16 @@
  const address=t=>t('داريا — شارع النموذج، مبنى ١٢. عنوان افتراضي للتوضيح فقط.','Daraya — Example Street, building 12. Fictional address for this demo.','Daraya — Beispielstraße, Haus 12. Fiktive Adresse für dieses Beispiel.');
  const path=key=>'#example/'+key;
  const image=(src,alt)=>photo(new URL(src,location.href).href,alt,'demo-image');
+ window.DarayaDemoOfferCatalog=()=>[
+  ['restaurant',0,65000,'image'],['apparel',1,140000,'image'],['stationery',2,75000,'image'],['services',0,240000,'text']
+ ].map(([key,index,price,kind])=>{const entry=items[key][index],group=sector(key);return {
+  id:'demo-offer-'+key,demo:true,store_id:'demo-'+key,user_id:null,status:'approved',
+  shop_name:title(group),shop_route:path(key),title:t('عرض تجريبي: ','Demo offer: ','Beispielangebot: ')+entry[language()],
+  address:address(t),price,ends_at:'2026-10-21T21:59:00Z',
+  details:JSON.stringify({type:'daraya-shop-offer-v1',exclusive:false,kind,original:entry[3],image:new URL(entry[5],location.href).href,
+   benefit:t('مثال على تخفيض السعر لعرض طريقة ظهور العروض.','An example price cut to show how offers look.','Beispiel einer Preissenkung zur Vorschau der Angebote.'),
+   terms:t('للتوضيح فقط. المحل والسعر والعنوان تجريبيون، ولا يمكن شراء هذا العرض.','For display only. The shop, price and address are fictional. This offer cannot be bought.','Nur zur Veranschaulichung. Geschäft, Preis und Adresse sind fiktiv. Dieses Angebot ist nicht kaufbar.')})
+ };});
  const baseMatch=matchesCategory;
  const publicDemoStoreId='a5e8abe7-974a-416c-a570-858d6fd03572';
  matchesCategory=function(s,key=filter){if(s.is_example&&s.id!==publicDemoStoreId&&directoryKind(s)!=='mosque')return false;return baseMatch(s,key);};
