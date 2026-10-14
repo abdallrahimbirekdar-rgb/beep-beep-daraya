@@ -1,0 +1,15 @@
+const test=require('node:test'),assert=require('node:assert/strict'),vm=require('node:vm'),fs=require('node:fs');
+function setup(supported=true){
+ const calls=[],stream={tracks:[{kind:'video',stop(){}}],getTracks(){return this.tracks},addTrack(track){this.tracks.push(track)}};
+ const video={videoWidth:720,videoHeight:1280,duration:30,currentTime:0,pause(){},load(){},removeAttribute(){},play(){queueMicrotask(()=>this.onended());return Promise.resolve()}};
+ Object.defineProperty(video,'src',{set(){queueMicrotask(()=>video.onloadedmetadata())}});
+ const canvas={captureStream:fps=>{calls.push(['fps',fps]);return stream},getContext:()=>({drawImage(){}})};
+ class Recorder{static isTypeSupported(){return supported}constructor(s,options){this.stream=s;this.options=options;this.state='inactive';calls.push(['encoder',options])}start(){this.state='recording'}stop(){this.state='inactive';this.ondataavailable({data:new Blob([new Uint8Array(1000)])});this.onstop()}}
+ class Audio{constructor(){this.state='running'}resume(){return Promise.resolve()}close(){return Promise.resolve()}createMediaStreamDestination(){return{stream:{getAudioTracks:()=>[{kind:'audio',stop(){}}]}}}createMediaElementSource(){return{connect(){calls.push('audio connected')},disconnect(){}}}}
+ class U extends URL{static createObjectURL(){return 'blob:test'}static revokeObjectURL(){calls.push('revoked')}}
+ const c={window:{MediaRecorder:Recorder,AudioContext:Audio},document:{hidden:false,createElement:type=>type==='canvas'?canvas:video,addEventListener(){},removeEventListener(){}},URL:U,Blob,File,setTimeout,clearTimeout,requestAnimationFrame:()=>1,cancelAnimationFrame(){},console};
+ vm.createContext(c);vm.runInContext(fs.readFileSync('video-compress.js','utf8'),c);return{c,calls,canvas,stream,prepare:c.window.DarayaVideo.prepare};
+}
+test('compression makes a smaller mobile video and includes audio without microphone access',async()=>{const h=setup(),file=new File([new Uint8Array(2000000)],'source.mp4',{type:'video/mp4'});const r=await h.prepare(file);assert.equal(r.compressed,true);assert.ok(r.file.size<file.size);assert.equal(h.canvas.width,360);assert.equal(h.canvas.height,640);assert.ok(h.stream.tracks.some(x=>x.kind==='audio'));assert.ok(h.calls.includes('audio connected'));assert.ok(h.calls.includes('revoked'));});
+test('unsupported encoding and already-small files preserve their original content',async()=>{const h=setup(false),file=new File([new Uint8Array(2000000)],'source.mp4',{type:'video/mp4'});const r=await h.prepare(file);assert.equal(r.file,file);assert.equal(r.compressed,false);const small=new File(['video'],'small.mp4',{type:'video/mp4'});assert.equal((await setup().prepare(small)).file,small);});
+test('a cancelled preparation never uploads an uncompressed fallback',async()=>{const h=setup(),file=new File([new Uint8Array(2000000)],'source.mp4',{type:'video/mp4'});await assert.rejects(h.prepare(file,{signal:{aborted:true,removeEventListener(){}}}));assert.ok(h.calls.includes('revoked'));});

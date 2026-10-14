@@ -61,6 +61,7 @@ public class MainActivity extends Activity {
         WebSettings settings = web.getSettings();
         settings.setJavaScriptEnabled(true);
         settings.setDomStorageEnabled(true);
+        settings.setMediaPlaybackRequiresUserGesture(false);
         settings.setGeolocationEnabled(true);
         settings.setAllowFileAccess(false);
         settings.setAllowContentAccess(true);
@@ -106,7 +107,12 @@ public class MainActivity extends Activity {
                 fileCallback = callback;
                 Intent picker = new Intent(Intent.ACTION_OPEN_DOCUMENT);
                 picker.addCategory(Intent.CATEGORY_OPENABLE);
-                picker.setType("image/*");
+                boolean acceptsVideo = false;
+                for (String type : params.getAcceptTypes()) {
+                    if (type != null && type.startsWith("video/")) acceptsVideo = true;
+                }
+                picker.setType(acceptsVideo ? "video/*" : "image/*");
+                if (acceptsVideo) picker.putExtra(Intent.EXTRA_MIME_TYPES, new String[]{"video/mp4", "video/webm"});
                 try { startActivityForResult(picker,PICK_FILE); }
                 catch (android.content.ActivityNotFoundException e) { fileCallback.onReceiveValue(null); fileCallback=null; }
                 return true;

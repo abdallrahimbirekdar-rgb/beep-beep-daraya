@@ -5,3 +5,7 @@ verify_jwt = false
 [functions.driver-code]
 verify_jwt = false
 # Auth user and store ownership are validated by the handler and binding RPC.
+
+[functions.cleanup-shop-reels]
+verify_jwt = false
+# This endpoint validates REELS_CLEANUP_SECRET before using the service role.
