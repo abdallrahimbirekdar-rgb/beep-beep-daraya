@@ -13,9 +13,21 @@
     } catch { return null; }
   }
   function linkMarkup(raw) {
-    const item = link(raw);
-    return item ? '<a class="button outline" href="'+esc(item.url)+'" target="_blank" rel="noopener noreferrer">'+t('▶ شاهد الفيديو على ', '▶ Watch video on ', '▶ Video ansehen auf ')+esc(item.provider)+'</a>' : '';
+    const item = link(raw); if(!item)return '';
+    let embedded=false;try{embedded=typeof parsePlaceVideo==='function'&&parsePlaceVideo(item.url)?.kind==='embed';}catch{}
+    return (embedded?'<button type="button" class="button" data-offer-play="'+esc(item.url)+'">'+t('▶ تشغيل الفيديو هنا','▶ Play video here','▶ Video hier abspielen')+'</button>':'')+'<a class="button outline" href="'+esc(item.url)+'" target="_blank" rel="noopener noreferrer">'+t('فتح على ','Open on ','Öffnen auf ')+esc(item.provider)+'</a>';
   }
+  function clearExternal(card){card.querySelector('.reel-video-stage')?.remove();card.classList.remove('has-external-video');const b=card.querySelector('[data-offer-play]');if(b)b.textContent=t('▶ تشغيل الفيديو هنا','▶ Play video here','▶ Video hier abspielen');}
+  document.addEventListener('click',e=>{
+    const b=e.target.closest?.('[data-offer-play]');if(!b)return;
+    const card=b.closest('.offer-reel,.shop-offer');if(!card)return;
+    if(card.querySelector('.reel-video-stage')){clearExternal(card);return;}
+    const item=link(b.dataset.offerPlay);if(!item)return;
+    let info;try{info=parsePlaceVideo(item.url);}catch{return;}if(info?.kind!=='embed')return;
+    const src=new URL(info.src);src.searchParams.set('autoplay',info.provider==='Facebook'?'true':'1');
+    const stage=document.createElement('div');stage.className='reel-video-stage';
+    const frame=document.createElement('iframe');frame.src=src.href;frame.title=card.querySelector('h2,h3')?.textContent||t('فيديو العرض','Offer video','Angebotsvideo');frame.allow='autoplay; fullscreen; picture-in-picture; encrypted-media';frame.allowFullscreen=true;frame.referrerPolicy='strict-origin-when-cross-origin';stage.append(frame);card.prepend(stage);card.classList.add('has-external-video');b.textContent=t('⏹ إيقاف الفيديو','⏹ Stop video','⏹ Video stoppen');
+  });
   function isPublic(o) {
     if(o.demo) return Date.parse(o.ends_at)>Date.now();
     const m = window.DarayaOffers?.meta(o), s = stores.find(s => s.id === o.store_id);
@@ -44,8 +56,8 @@
     const demos=mode==='all'?(window.DarayaDemoOfferCatalog?.()||[]).filter(isPublic):[];
     let page = 0, done = false, loading = false, rows = [], following = null, current = null, mediaEpoch = 0, observer, expiryTimer;
     const release = video => { video.pause(); video.removeAttribute('src'); video.load(); };
-    stop = () => { mediaEpoch++; observer?.disconnect(); clearInterval(expiryTimer); track.querySelectorAll('video').forEach(release); document.removeEventListener('visibilitychange', visibility); window.removeEventListener('daraya-blocks-changed', checkExpiry); };
-    function visibility() { if (document.hidden) { mediaEpoch++; track.querySelectorAll('video').forEach(v => v.pause()); } }
+    stop = () => { mediaEpoch++; observer?.disconnect(); clearInterval(expiryTimer); track.querySelectorAll('video').forEach(release);track.querySelectorAll('.has-external-video').forEach(clearExternal); document.removeEventListener('visibilitychange', visibility); window.removeEventListener('daraya-blocks-changed', checkExpiry); };
+    function visibility() { if (document.hidden) { track.querySelectorAll('.has-external-video').forEach(clearExternal);mediaEpoch++; track.querySelectorAll('video').forEach(v => v.pause()); } }
     document.addEventListener('visibilitychange', visibility);
     if (mode === 'following') {
       if (!user) { track.innerHTML = '<p>' + t('سجل الدخول لرؤية عروض المحلات التي تتابعها.', 'Sign in to see offers from shops you follow.', 'Melde dich an, um Angebote abonnierter Geschäfte zu sehen.') + '</p><a class="button" href="#account">' + t('تسجيل الدخول', 'Sign in', 'Anmelden') + '</a>'; return; }
@@ -56,10 +68,11 @@
     }
     function activate(card) {
       if (!alive() || !card || card.hidden || current === card) return;
-      mediaEpoch++; current = card;
+      mediaEpoch++;track.querySelectorAll('.offer-reel').forEach(c=>{c.classList.remove('reel-current');if(c!==card)clearExternal(c);}); current = card;card.classList.add('reel-current');
       track.querySelectorAll('video').forEach(v => { if (v !== card.querySelector('video')) release(v); });
       const cards = [...track.querySelectorAll('.offer-reel')].filter(c => !c.hidden), index = cards.indexOf(card);
-      position.textContent = (index + 1) + ' / ' + cards.length;
+      position.textContent = t('العرض ','Offer ','Angebot ')+(index + 1) + ' / ' + cards.length;
+      let badge=card.querySelector('.reel-step-badge');if(!badge){badge=document.createElement('span');badge.className='reel-step-badge';card.append(badge);}badge.textContent=t('العرض ','Offer ','Angebot ')+(index+1)+' / '+cards.length;
       if (index >= cards.length - 3 && !done) loadMore();
     }
     function bind(card) {
@@ -103,7 +116,7 @@
       track.querySelectorAll('.offer-reel').forEach(card => {
         const row = rows.find(o => o.id === card.dataset.reelId);
         if (!row || !isPublic(row)) {
-          card.querySelectorAll('video').forEach(release); card.hidden = true;
+          clearExternal(card);card.querySelectorAll('video').forEach(release); card.hidden = true;
           if (card === current) { current = null; activate([...track.querySelectorAll('.offer-reel')].find(c => !c.hidden)); }
         }
       });
