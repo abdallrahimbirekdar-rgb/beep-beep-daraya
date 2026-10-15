@@ -18,7 +18,15 @@
   details:JSON.stringify({type:'daraya-shop-offer-v1',exclusive:false,kind,video_link:'https://www.youtube.com/watch?v=aqz-KE-bpKQ',original:entry[3],image:new URL(entry[5],location.href).href,
    benefit:t('مثال لرابط فيديو يوتيوب: فيلم Big Buck Bunny من Blender، للتجربة فقط وليس إعلانًا للمحل.','YouTube link demo: Big Buck Bunny by Blender. A test video, not a shop ad.','YouTube-Link-Beispiel: Big Buck Bunny von Blender. Testvideo, keine Geschäftswerbung.'),
    terms:t('للتوضيح فقط. المحل والسعر والعنوان تجريبيون، ولا يمكن شراء هذا العرض.','For display only. The shop, price and address are fictional. This offer cannot be bought.','Nur zur Veranschaulichung. Geschäft, Preis und Adresse sind fiktiv. Dieses Angebot ist nicht kaufbar.')})
- };});
+ };}).concat([{
+  id:'demo-offer-text-only',demo:true,store_id:'demo-text-only',user_id:null,status:'approved',
+  shop_name:t('خياطة داريا — مثال تجريبي','Daraya Tailor — Demo','Schneiderei Daraya — Beispiel'),
+  shop_route:path('services'),shop_logo:'',title:t('عرض نصّي تجريبي: خصم ٢٠٪ على تصليح الملابس','Text-only demo: 20% off clothing repairs','Textbeispiel: 20 % Rabatt auf Kleidungsreparaturen'),
+  address:address(t),price:40000,created_at:'2026-10-15T18:00:00Z',ends_at:'2026-10-21T21:59:00Z',
+  details:JSON.stringify({type:'daraya-shop-offer-v1',exclusive:false,kind:'text',video_link:'',image:'',original:50000,
+   benefit:t('تصليح وتقصير الملابس مقابل ٤٠٬٠٠٠ ل.س بدلًا من ٥٠٬٠٠٠ ل.س. عرض مكتوب فقط، دون صورة أو فيديو.','Clothing repairs and shortening for SYP 40,000 instead of SYP 50,000. A text-only offer, with no photo or video.','Kleidung reparieren und kürzen für 40.000 statt 50.000 SYP. Reines Textangebot ohne Foto oder Video.'),
+   terms:t('مثال توضيحي فقط، غير متاح للشراء. يشمل خدمة تصليح واحدة، ولا يشمل ثمن الأقمشة أو الإضافات. الاسم والعنوان والأسعار افتراضية.','Demo only, not for sale. Covers one repair, without fabric or extras. The name, address and prices are examples.','Nur ein Beispiel, nicht kaufbar. Gilt für eine Reparatur ohne Stoffe oder Extras. Name, Adresse und Preise sind fiktiv.')})
+ }]);
  const baseMatch=matchesCategory;
  const publicDemoStoreId='a5e8abe7-974a-416c-a570-858d6fd03572';
  matchesCategory=function(s,key=filter){if(s.is_example&&s.id!==publicDemoStoreId&&directoryKind(s)!=='mosque')return false;return baseMatch(s,key);};
