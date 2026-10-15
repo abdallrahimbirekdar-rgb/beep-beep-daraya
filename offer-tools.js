@@ -26,7 +26,19 @@
   const today=dayKey(value)===dayKey(now);
   return '<p class="offer-availability">✓ '+esc(today?t('أكّد المحل توفره اليوم','Shop confirmed it is available today','Geschäft hat Verfügbarkeit heute bestätigt'):t('آخر تأكيد من المحل: ','Last shop confirmation: ','Letzte Bestätigung: ')+communityDate(value))+'</p>';
  }
- function details(o){const m=window.DarayaOffers.meta(o),text=String(m.terms||'');if(m.kind==='text'&&!m.video_link)return '<section class="reel-details offer-expand-details"><h3>'+t('العروض والتفاصيل','Offers and details','Angebote und Details')+'</h3><p>'+esc(text)+'</p></section>'+(o.address?'<p class="reel-address">'+esc(o.address)+'</p>':'');return '<details class="reel-details offer-expand-details"><summary><span class="offer-details-preview">'+esc(text)+'</span><strong>'+t('تفاصيل العرض','Offer details','Angebotsdetails')+' ▾</strong></summary><p>'+esc(text)+'</p></details>'+(o.address?'<p class="reel-address">'+esc(o.address)+'</p>':'');}
+ function longTextMarkup(text){
+  const lines=text.split(/\r?\n/).map(line=>line.trim());
+  const format=items=>items.map((line,i)=>{
+   if(!line)return '<span class="offer-text-space" aria-hidden="true"></span>';
+   const bullet=/^[•●▪*\-]\s+/.test(line),heading=!bullet&&line.length<=75&&(i===0||!items[i-1])&&!!items[i+1]&&/^[•●▪*\-]\s+/.test(items[i+1]);
+   return '<span class="'+(bullet?'offer-text-item':heading?'offer-text-heading':'offer-text-note')+'">'+esc(bullet?line.replace(/^[•●▪*\-]\s+/,''):line)+'</span>';
+  }).join('');
+  let preview=lines.slice(0,8).join('\n');
+  if(preview.length>280)preview=preview.slice(0,280).replace(/\s+\S*$/,'')+'…';
+  else if(lines.length>8)preview+='\n…';
+  return '<section class="reel-details offer-long-text"><div class="offer-text-sheet-heading"><span aria-hidden="true">≡</span><h3>'+t('قائمة العروض والخصومات','Offers and discounts','Angebote und Rabatte')+'</h3></div><details class="offer-text-disclosure"><summary><span class="offer-text-preview">'+format(preview.split('\n'))+'</span><span class="offer-text-toggle"><span class="offer-text-show">'+t('عرض القائمة كاملة','Show full list','Vollständige Liste anzeigen')+' ↓</span><span class="offer-text-hide">'+t('طي القائمة','Show less','Weniger anzeigen')+' ↑</span></span></summary><div class="offer-text-full">'+format(lines)+'</div></details></section>';
+ }
+ function details(o){const m=window.DarayaOffers.meta(o),text=String(m.terms||'');if(m.kind==='text'&&!m.video_link&&(text.length>300||text.split(/\r?\n/).filter(line=>line.trim()).length>=7))return longTextMarkup(text)+(o.address?'<p class="reel-address">'+esc(o.address)+'</p>':'');if(m.kind==='text'&&!m.video_link)return '<section class="reel-details offer-expand-details"><h3>'+t('العروض والتفاصيل','Offers and details','Angebote und Details')+'</h3><p>'+esc(text)+'</p></section>'+(o.address?'<p class="reel-address">'+esc(o.address)+'</p>':'');return '<details class="reel-details offer-expand-details"><summary><span class="offer-details-preview">'+esc(text)+'</span><strong>'+t('تفاصيل العرض','Offer details','Angebotsdetails')+' ▾</strong></summary><p>'+esc(text)+'</p></details>'+(o.address?'<p class="reel-address">'+esc(o.address)+'</p>':'');}
  function badges(o,now=Date.now()){
   if(!Number.isFinite(Date.parse(o.ends_at))||Date.parse(o.ends_at)<=now)return '';
   const today=dayKey(now),end=dayKey(o.ends_at),created=dayKey(o.created_at);
