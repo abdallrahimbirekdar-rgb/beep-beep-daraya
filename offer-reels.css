@@ -31,3 +31,20 @@
 
 /* Small cues mark the direction of available content. */
 .offer-edge-navigation{--offer-edge-bottom:80px;position:fixed;inset:0;pointer-events:none;z-index:85}.offer-edge-navigation>div{pointer-events:none;background:#fff5dbdf;color:#675021;border:1px solid #d3b56a70;box-shadow:0 2px 8px #49391710}.offer-edge-navigation [hidden]{display:none!important}.offer-edge-side{position:absolute;top:46%;width:24px;min-height:39px;padding:2px 0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0}.offer-edge-side>span{font-size:22px;line-height:20px;direction:ltr;unicode-bidi:isolate}.offer-edge-side>small{font-size:8px;line-height:13px;white-space:nowrap;font-weight:600}.offer-edge-side.edge-right{right:0;border-radius:9px 0 0 9px}.offer-edge-side.edge-left{left:0;border-radius:0 9px 9px 0}.offer-edge-up,.offer-edge-down{position:absolute;left:50%;transform:translateX(-50%);width:24px;height:24px;display:grid;place-items:center;border-radius:50%;font-size:17px;line-height:1}.offer-edge-down{bottom:var(--offer-edge-bottom)}.offer-edge-up{top:12px}body:has(dialog[open]) .offer-edge-navigation,body:has(#site-menu:not([hidden])) .offer-edge-navigation,body:has(.reel-video-stage iframe) .offer-edge-navigation{visibility:hidden}@media(min-width:768px){.offer-edge-side.edge-right{right:max(8px,calc((100vw - 760px)/2))}.offer-edge-side.edge-left{left:max(8px,calc((100vw - 760px)/2))}}
+
+/* Repeat a gentle direction cue, with a quiet pause between appearances. */
+.offer-edge-side.edge-right{--offer-cue-x:3px}
+.offer-edge-side.edge-left{--offer-cue-x:-3px}
+.offer-edge-up{--offer-cue-y:-3px}
+.offer-edge-down{--offer-cue-y:3px}
+@media(prefers-reduced-motion:no-preference){
+  .offer-edge-navigation>div{animation:offer-direction-cue 6s ease-in-out infinite}
+  @keyframes offer-direction-cue{
+    0%,12%,24%,36%,100%{opacity:1;translate:0 0}
+    6%,18%{opacity:1;translate:var(--offer-cue-x,0px) var(--offer-cue-y,0px)}
+    50%,85%{opacity:0;translate:0 0}
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  .offer-edge-navigation>div{animation:none;opacity:1;translate:0 0}
+}
