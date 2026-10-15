@@ -1,5 +1,5 @@
 const test=require('node:test'),assert=require('node:assert/strict'),vm=require('node:vm'),fs=require('node:fs');
-const c={merchantEditor(){},editStore(){},showStoreAddress(){}};vm.createContext(c);vm.runInContext(fs.readFileSync('public/store-location.js','utf8'),c);
+const c={merchantEditor(){},editStore(){},showStoreAddress(){}};vm.createContext(c);vm.runInContext(fs.readFileSync('store-location.js','utf8'),c);
 test('shop coordinates require a finite valid pair and support clearing',()=>{
 for(const s of [{},{latitude:'',longitude:''},{latitude:33,longitude:null},{latitude:91,longitude:36},{latitude:33,longitude:Infinity}])assert.equal(c.storeCoordinates(s),null);
 assert.equal(JSON.stringify(c.storeCoordinates({latitude:0,longitude:0})),'[0,0]');

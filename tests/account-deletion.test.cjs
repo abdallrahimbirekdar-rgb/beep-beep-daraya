@@ -9,7 +9,7 @@ function setup({guest=false,blocked=false,error=false,unconfirmed=false,logoutEr
  $:node,esc:s=>String(s),render(){},renderCustomerAccount(){},passwordRecovery:false,
  customerAuthPending:false,customerProfile:{address:'private'},customerLoadedFor:'own',admin:false,orders:[1],favoriteIds:[1],customerOrders:[1],cart:{p:1},cartStore:'s',
  remember:{set:(k,v)=>saved.push([k,v])},saveCart(){},updateCustomerNav(){},toast(){},marketOrderCompleted(){removed.push('pending-own');}});
- vm.runInContext(fs.readFileSync('public/account-deletion.js','utf8'),context);
+ vm.runInContext(fs.readFileSync('account-deletion.js','utf8'),context);
  const run=s=>vm.runInContext(s,context);
  return {elements,calls,removed,saved,run,async render(){run('render()');await new Promise(setImmediate);},async submit(value='DELETE'){const event={preventDefault(){},target:{confirmation:value},submitter:{disabled:false}};await elements['#delete-account-form'].onsubmit(event);return event;}};
 }
