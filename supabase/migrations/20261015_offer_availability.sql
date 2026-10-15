@@ -17,7 +17,7 @@ declare target_store uuid; stamp timestamptz;
 begin
  if auth.uid() is null then raise exception 'Sign in required';end if;
  select o.store_id into target_store from public.daily_offers o join public.stores s on s.id=o.store_id
- where o.id=p_offer and o.status='approved' and o.ends_at>now() and s.active
+ where o.id=p_offer and o.status='approved' and o.ends_at>now() and s.active and coalesce(to_jsonb(s)->>'deleted_at','')=''
  and not public.daraya_account_is_banned(o.user_id) and not public.daraya_publisher_hidden(o.user_id);
  if target_store is null or not (public.manages_store(target_store) or public.is_admin()) then raise exception 'Active offer owner required';end if;
  stamp=clock_timestamp();
@@ -31,10 +31,9 @@ grant execute on function public.confirm_daily_offer_availability(uuid) to authe
 do $fix$
 declare def text;
 begin
- if not exists(select 1 from information_schema.columns where table_schema='public' and table_name='stores' and column_name='deleted_at')
- and to_regprocedure('public.record_daily_offer_event(uuid,uuid,text)') is not null then
+ if to_regprocedure('public.record_daily_offer_event(uuid,uuid,text)') is not null then
   select pg_get_functiondef('public.record_daily_offer_event(uuid,uuid,text)'::regprocedure) into def;
-  if position('and s.deleted_at is null' in def)>0 then execute replace(def,'and s.deleted_at is null','');end if;
+  if position('and s.deleted_at is null' in def)>0 then execute replace(def,'and s.deleted_at is null',$guard$and coalesce(to_jsonb(s)->>'deleted_at','')=''$guard$);end if;
  end if;
 end;$fix$;
 notify pgrst,'reload schema';
