@@ -74,12 +74,21 @@
       if (!alive()) return;
       if (!following.length) { track.innerHTML = '<p>' + t('احفظ محلًا من صفحته لتظهر عروضه هنا.', 'Save a shop from its page to see its offers here.', 'Speichere ein Geschäft auf seiner Seite, um Angebote hier zu sehen.') + '</p>'; return; }
     }
+    let initialMobileOfferAligned=false;
     function groups(){return shopGroups([...track.querySelectorAll('.offer-reel')].filter(c=>!c.hidden));}
     function activate(card,refresh=false) {
       if(!alive()||!card||card.hidden||current===card&&!refresh)return;
       const previousShop=current?.dataset.storeId,shopId=card.dataset.storeId;mediaEpoch++;
       track.querySelectorAll('.offer-reel').forEach(c=>{const same=c.dataset.storeId===shopId&&!c.hidden;c.classList.toggle('reel-current',same);if(!same)clearExternal(c);});
       current=card;
+      // Open mobile browsing at the same card position used by shop navigation.
+      // Only align once: later loads and countdown updates must not move the reader.
+      if(!initialMobileOfferAligned&&matchMedia('(max-width: 767px)').matches){
+        initialMobileOfferAligned=true;
+        requestAnimationFrame(()=>requestAnimationFrame(()=>{
+          if(alive()&&current===card&&!card.hidden)card.scrollIntoView({behavior:'instant',block:'start'});
+        }));
+      }
       const all=groups(),index=all.findIndex(g=>g.id===shopId),selected=all[index];if(!selected)return;
       const groupRows=selected.cards.map(c=>rows.find(o=>o.id===c.dataset.reelId)).filter(Boolean),sample=groupRows[0],shop=sample?.demo?{demo:true,name:sample.shop_name}:stores.find(s=>s.id===shopId);
       const summary=app.querySelector('[data-shop-summary]');if(shop&&summary)summary.innerHTML='<span>'+esc(shop.name)+'</span><p>'+(window.DarayaOfferTools?.summary(shop,groupRows)||'')+'</p>';
