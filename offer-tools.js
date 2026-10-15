@@ -41,7 +41,11 @@
   }}catch{}
   const phone=String(s.contact_phone||'').trim(),validPhone=/^\+?[0-9 ()-]{6,25}$/.test(phone);
   const point=typeof storeCoordinates==='function'?storeCoordinates(s):null;
-  if(locationOnly)return point?'<div class="offer-contact-actions"><a class="button outline" data-offer-contact="'+esc(o.id)+'" href="https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(point.join(','))+'" target="_blank" rel="noopener noreferrer">'+t('موقع المحل','Shop location','Geschäftsstandort')+'</a></div>':'';
+  if(locationOnly){
+   const address=String(s.address||o.address||'').trim();
+   const destination=point?point.join(','):address?[s.name,address,'داريا','سوريا'].filter(Boolean).join('، '):'';
+   return destination?'<div class="offer-contact-actions offer-location-actions"><a class="button outline offer-location-link" data-offer-contact="'+esc(o.id)+'" href="https://www.google.com/maps/dir/?api=1&destination='+encodeURIComponent(destination)+'" target="_blank" rel="noopener noreferrer"><span aria-hidden="true">📍</span> '+t('الموقع والاتجاهات','Location & directions','Standort & Route')+'</a></div>':'';
+  }
   return wa?'<a class="button offer-ask" data-offer-contact="'+esc(o.id)+'" href="'+esc(wa)+'" target="_blank" rel="noopener noreferrer">'+t('اسأل عن العرض ↗','Ask about this offer ↗','Zum Angebot fragen ↗')+'</a>':validPhone?'<a class="button offer-ask" data-offer-contact="'+esc(o.id)+'" href="tel:'+esc(phone)+'">'+t('اسأل المحل ☎','Call the shop ☎','Geschäft anrufen ☎')+'</a>':'';
  }
  function summary(s,rows){const region=s.demo?t('عنوان تجريبي','Demo address','Beispieladresse'):typeof communityRegion==='function'?communityRegion(s):s.address||'';const category=typeof directoryKind==='function'&&!s.demo?window.DARAYA_SECTORS?.find(x=>x[0]===directoryKind(s)):null;const lang=typeof communityLang==='function'?communityLang():'ar';return '<strong>'+rows.length+' '+t('عروض سارية','active offers','gültige Angebote')+'</strong>'+ (category?' · '+esc(category[lang==='de'?3:lang==='en'?2:1]):'')+(region?' · '+esc(region):'');}
