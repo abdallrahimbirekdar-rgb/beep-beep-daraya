@@ -26,7 +26,8 @@ final class OfferReminders {
     private static final String CHANNEL = "daily_offers_v1";
     private static final int MAX = 6;
     private static final long CONFIG_LIFETIME = 7L * 24 * 60 * 60 * 1000;
-    private static final long WINDOW = 60L * 60 * 1000;
+    private static final long MAX_DELAY = 2L * 60 * 60 * 1000;
+    private static final String TEST_ACTION = "com.souqdaraya.app.TEST_SCHEDULED_OFFER";
 
     private static SharedPreferences prefs(Context c) {
         return c.getSharedPreferences("daraya_offer_reminders", Context.MODE_PRIVATE);
@@ -88,28 +89,44 @@ final class OfferReminders {
         SharedPreferences p=prefs(c);
         long now=System.currentTimeMillis();
         if(!p.getBoolean("consent",false)||!p.getBoolean("active",false)||!canNotify(c)||now-p.getLong("synced",0)>CONFIG_LIFETIME) {cancel(c);return;}
-        String signature=p.getString("times","[]");
+        String rawTimes=p.getString("times","[]");
+        String signature="idle-v2:"+rawTimes;
         // Preserve alarms waiting inside their delivery window when the app resumes or syncs.
         if(signature.equals(p.getString("scheduled_signature",""))) {
             boolean allPresent=true;
             try {
-                JSONArray times=new JSONArray(signature);
+                JSONArray times=new JSONArray(rawTimes);
                 for(int i=0;i<times.length();i++)if(alarm(c,i,0,false)==null)allPresent=false;
             } catch(Exception ignored) {allPresent=false;}
             if(allPresent)return;
         }
         cancel(c);
         try {
-            JSONArray times=new JSONArray(signature);
+            JSONArray times=new JSONArray(rawTimes);
             AlarmManager manager=c.getSystemService(AlarmManager.class);
             for(int i=0;i<Math.min(times.length(),MAX);i++) {
                 long due=ReminderTimes.next(now,times.getString(i));
-                manager.setWindow(AlarmManager.RTC_WAKEUP,due,WINDOW,alarm(c,i,due,true));
+                setLocalAlarm(manager,due,alarm(c,i,due,true));
+                p.edit().putLong("next_due_"+i,due).apply();
             }
             p.edit().putString("scheduled_signature",signature).apply();
         } catch (Exception ignored) { cancel(c); }
     }
+    private static void setLocalAlarm(AlarmManager manager,long due,PendingIntent pending) {
+        // Use the same OS scheduling path for daily reminders and the short diagnostic.
+        // No artificial one-hour window and no exact-alarm permission.
+        manager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP,due,pending);
+    }
     static void receive(Context c, Intent intent) {
+        if(TEST_ACTION.equals(intent.getAction())) {
+            SharedPreferences p=prefs(c);
+            long due=intent.getLongExtra("due",0),now=System.currentTimeMillis();
+            if(!p.getBoolean("consent",false)||!canNotify(c)||due<=0||now<due||now-due>MAX_DELAY)return;
+            if(p.getLong("test_due",0)!=due)return;
+            boolean sent=postNotification(c);
+            p.edit().remove("test_due").putLong("test_received",now).putBoolean("test_posted",sent).apply();
+            return;
+        }
         if(!ACTION.equals(intent.getAction())) {cancel(c);schedule(c);return;}
         SharedPreferences p=prefs(c);
         int slot=intent.getIntExtra("slot",-1);
@@ -119,13 +136,14 @@ final class OfferReminders {
             JSONArray times=new JSONArray(p.getString("times","[]"));
             if(slot>=times.length())return;
             long next=ReminderTimes.next(now,times.getString(slot));
-            c.getSystemService(AlarmManager.class).setWindow(AlarmManager.RTC_WAKEUP,next,WINDOW,alarm(c,slot,next,true));
+            setLocalAlarm(c.getSystemService(AlarmManager.class),next,alarm(c,slot,next,true));
+            p.edit().putLong("next_due_"+slot,next).apply();
         } catch(Exception ignored) {return;}
-        if(now<due||now-due>2*WINDOW)return;
+        if(now<due||now-due>MAX_DELAY)return;
         // Do not cancel another slot that is waiting for a delayed delivery.
         if(due<=p.getLong("last_due_"+slot,0))return;
         p.edit().putLong("last_due_"+slot,due).apply();
-        postNotification(c);
+        if(postNotification(c))p.edit().putLong("last_scheduled_posted",now).apply();
     }
     static void test(Activity a) {
         if(!prefs(a).getBoolean("consent",false)||!canNotify(a)) {
@@ -136,7 +154,7 @@ final class OfferReminders {
         postNotification(a);
         Toast.makeText(a,"أُرسل إشعار تجريبي. اسحب شريط الإشعارات لعرضه.",Toast.LENGTH_LONG).show();
     }
-    private static void postNotification(Context c) {
+    private static boolean postNotification(Context c) {
         channel(c);
         Intent open=new Intent(c,MainActivity.class).setAction(Intent.ACTION_VIEW)
             .setData(Uri.parse("https://damascus-shop.com/#offers"))
@@ -146,8 +164,8 @@ final class OfferReminders {
         Notification notification=builder.setSmallIcon(R.drawable.ic_offer_notification)
             .setContentTitle("سوق داريا الإلكتروني").setContentText("شاهد عروض اليوم")
             .setContentIntent(content).setAutoCancel(true).setCategory(Notification.CATEGORY_REMINDER).build();
-        try { c.getSystemService(NotificationManager.class).notify(610,notification); }
-        catch(SecurityException ignored) { }
+        try { c.getSystemService(NotificationManager.class).notify(610,notification);return true; }
+        catch(SecurityException ignored) {return false;}
     }
     private static void openSystemSettings(Activity a) {
         Intent intent;
@@ -162,7 +180,7 @@ final class OfferReminders {
         String times=p.getString("times","[]").replace("[","").replace("]","").replace("\"","");
         String status=p.getBoolean("consent",false)&&canNotify(a)?"مفعّل على هذا الهاتف":"متوقف على هذا الهاتف";
         new AlertDialog.Builder(a).setTitle("تذكير بعروض اليوم")
-            .setMessage(status+"\n\nنص الإشعار: شاهد عروض اليوم\nالأوقات بتوقيت داريا: "+times+"\n\nتحدد الإدارة العدد والأوقات. تتحدث عند فتح التطبيق واتصاله بالإنترنت. الوقت تقريبي وقد يتأخر حتى ساعة، أو أكثر مع توفير البطارية. يتوقف التذكير بعد أسبوع دون مزامنة لحين فتح التطبيق مجددًا.")
+            .setMessage(status+"\n\nنص الإشعار: شاهد عروض اليوم\nالأوقات بتوقيت داريا: "+times+"\n\nتحدد الإدارة العدد والأوقات. تتحدث عند فتح التطبيق واتصاله بالإنترنت. التذكيرات تعمل عبر مجدول أندرويد، وقد يؤخرها النظام أو توفير البطارية. يتوقف التذكير بعد أسبوع دون مزامنة لحين فتح التطبيق مجددًا.")
             .setPositiveButton("تفعيل التذكير",(d,w)->{
                 if(!p.getBoolean("configured",false)) { Toast.makeText(a,"اتصل بالإنترنت وافتح عروض اليوم لتحميل مواعيد التذكير أولًا.",Toast.LENGTH_LONG).show();return; }
                 p.edit().putBoolean("consent",true).apply();
@@ -174,7 +192,53 @@ final class OfferReminders {
                 else { schedule(a); Toast.makeText(a,"تم تفعيل تذكير عروض اليوم على هذا الهاتف",Toast.LENGTH_LONG).show(); }
             })
             .setNegativeButton("إيقاف التذكير",(d,w)->{p.edit().putBoolean("consent",false).apply();cancel(a);Toast.makeText(a,"تم إيقاف التذكير",Toast.LENGTH_SHORT).show();})
-            .setNeutralButton("إشعار تجريبي الآن",(d,w)->test(a)).show();
+            .setNeutralButton("اختبار الإشعارات",(d,w)->showTests(a)).show();
+    }
+    private static String stamp(long value) {
+        if(value<=0)return "لا يوجد";
+        java.text.SimpleDateFormat format=new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss",java.util.Locale.US);
+        format.setTimeZone(java.util.TimeZone.getTimeZone(ReminderTimes.ZONE));
+        return format.format(new java.util.Date(value));
+    }
+    private static void showTests(Activity a) {
+        new AlertDialog.Builder(a).setTitle("اختبار الإشعارات")
+            .setItems(new String[]{"إشعار تجريبي الآن","اختبار إشعار مجدول بعد دقيقة","عرض حالة الجدولة"},(d,w)->{
+                if(w==0)test(a);
+                else if(w==1)scheduledTest(a);
+                else showStatus(a);
+            }).setNegativeButton("إغلاق",null).show();
+    }
+    private static void scheduledTest(Activity a) {
+        if(!prefs(a).getBoolean("consent",false)||!canNotify(a)) {
+            Toast.makeText(a,"فعّل التذكير واسمح بالإشعارات أولًا",Toast.LENGTH_LONG).show();showSettings(a);return;
+        }
+        long due=System.currentTimeMillis()+60000L;
+        Intent intent=new Intent(a,OfferReminderReceiver.class).setAction(TEST_ACTION).putExtra("due",due);
+        PendingIntent pending=PendingIntent.getBroadcast(a,690,intent,PendingIntent.FLAG_UPDATE_CURRENT|PendingIntent.FLAG_IMMUTABLE);
+        try {
+            setLocalAlarm(a.getSystemService(AlarmManager.class),due,pending);
+            prefs(a).edit().putLong("test_due",due).remove("test_received").remove("test_posted").apply();
+            new AlertDialog.Builder(a).setTitle("تم حجز اختبار مجدول")
+                .setMessage("موعد الاختبار بتوقيت داريا: "+stamp(due)+"\n\nارجع للشاشة الرئيسية للهاتف وانتظر. الاختبار يستخدم مجدول أندرويد ومستقبل الإشعارات نفسه، ولا يغير مواعيد الإدارة. قد يتأخر بسبب قيود النظام. بعده افتح «عرض حالة الجدولة» لرؤية النتيجة.")
+                .setPositiveButton("حسنًا",null).show();
+        } catch(Exception e) {Toast.makeText(a,"لم يتم حجز الاختبار المجدول",Toast.LENGTH_LONG).show();}
+    }
+    private static void showStatus(Activity a) {
+        SharedPreferences p=prefs(a);
+        StringBuilder status=new StringBuilder("الأوقات التالية بتوقيت داريا\n");
+        status.append("آخر مزامنة: ").append(stamp(p.getLong("synced",0))).append("\n");
+        status.append("الإشعارات مسموحة: ").append(canNotify(a)?"نعم":"لا").append("\n");
+        status.append("التذكير مفعّل على الهاتف: ").append(p.getBoolean("consent",false)?"نعم":"لا").append("\n");
+        status.append("آخر إشعار يومي أرسله المجدول: ").append(stamp(p.getLong("last_scheduled_posted",0))).append("\n\n");
+        long received=p.getLong("test_received",0),pending=p.getLong("test_due",0);
+        if(received>0)status.append(p.getBoolean("test_posted",false)?"نجح الاختبار المجدول: النظام شغّل المهمة وأرسل الإشعار في ":"شغّل النظام المهمة لكن لم يسمح بإرسال الإشعار في ").append(stamp(received));
+        else if(pending>0)status.append("الاختبار المجدول بانتظار التنفيذ منذ الموعد: ").append(stamp(pending));
+        else status.append("لم يُنفّذ اختبار مجدول بعد.");
+        try {
+            JSONArray times=new JSONArray(p.getString("times","[]"));
+            if(p.getBoolean("consent",false)&&p.getBoolean("active",false))for(int i=0;i<times.length();i++)status.append("\nالتذكير ").append(i+1).append(": ").append(stamp(p.getLong("next_due_"+i,0)));
+        } catch(Exception ignored) { }
+        new AlertDialog.Builder(a).setTitle("حالة الجدولة على هذا الهاتف").setMessage(status.toString()).setPositiveButton("إغلاق",null).show();
     }
     static void permissionResult(Activity a) {
         if(canNotify(a)) { schedule(a); Toast.makeText(a,"تم تفعيل تذكير عروض اليوم",Toast.LENGTH_LONG).show(); }
