@@ -15,8 +15,8 @@
   id:'demo-offer-'+key+(key==='restaurant'&&index?'-'+index:''),demo:true,store_id:'demo-'+key,user_id:null,status:'approved',
   shop_name:title(group),shop_route:path(key),shop_logo:new URL(heroes[key]||entry[5],location.href).href,title:t('عرض تجريبي: ','Demo offer: ','Beispielangebot: ')+entry[language()],
   address:address(t),price,created_at:'2026-10-15T06:00:00Z',ends_at:key==='restaurant'&&index===2?'2026-10-15T20:59:00Z':'2026-10-21T21:59:00Z',
-  details:JSON.stringify({type:'daraya-shop-offer-v1',exclusive:false,kind,video_link:key==='toys'?'https://www.youtube.com/watch?v=aqz-KE-bpKQ':'',original:entry[3],image:new URL(entry[5],location.href).href,
-   benefit:key==='toys'?t('مثال لرابط فيديو يوتيوب: فيلم Big Buck Bunny من Blender، للتجربة فقط وليس إعلانًا للمحل.','YouTube link demo: Big Buck Bunny by Blender. A test video, not a shop ad.','YouTube-Link-Beispiel: Big Buck Bunny von Blender. Testvideo, keine Geschäftswerbung.'):t('مثال على تخفيض السعر لعرض طريقة ظهور العروض.','An example price cut to show how offers look.','Beispiel einer Preissenkung zur Vorschau der Angebote.'),
+  details:JSON.stringify({type:'daraya-shop-offer-v1',exclusive:false,kind,video_link:'https://www.youtube.com/watch?v=aqz-KE-bpKQ',original:entry[3],image:new URL(entry[5],location.href).href,
+   benefit:t('مثال لرابط فيديو يوتيوب: فيلم Big Buck Bunny من Blender، للتجربة فقط وليس إعلانًا للمحل.','YouTube link demo: Big Buck Bunny by Blender. A test video, not a shop ad.','YouTube-Link-Beispiel: Big Buck Bunny von Blender. Testvideo, keine Geschäftswerbung.'),
    terms:t('للتوضيح فقط. المحل والسعر والعنوان تجريبيون، ولا يمكن شراء هذا العرض.','For display only. The shop, price and address are fictional. This offer cannot be bought.','Nur zur Veranschaulichung. Geschäft, Preis und Adresse sind fiktiv. Dieses Angebot ist nicht kaufbar.')})
  };});
  const baseMatch=matchesCategory;
