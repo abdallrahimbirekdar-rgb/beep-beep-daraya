@@ -174,6 +174,32 @@ final class OfferReminders {
         else intent=new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,Uri.parse("package:"+a.getPackageName()));
         a.startActivity(intent);
     }
+    static void offerAtFirstOpen(Activity a) {
+        if(a.isFinishing()||a.isDestroyed())return;
+        SharedPreferences p=prefs(a);
+        // Preserve an existing user's explicit choice, including opt-out.
+        if(p.getBoolean("startup_offered",false)||p.contains("consent"))return;
+        p.edit().putBoolean("startup_offered",true).apply();
+        new AlertDialog.Builder(a).setTitle("تفعيل إشعارات عروض اليوم؟")
+            .setMessage("هل ترغب بتلقي تذكير: «شاهد عروض اليوم»؟ تحدد إدارة السوق عدد التذكيرات وأوقاتها. يمكنك تشغيلها أو إيقافها لاحقًا من قسم عروض اليوم. يمكنك استخدام التطبيق دون تفعيلها.")
+            .setPositiveButton("نعم، تفعيل الإشعارات",(d,w)->enableFromUser(a))
+            .setNegativeButton("ليس الآن",(d,w)->p.edit().putBoolean("consent",false).apply())
+            .show();
+    }
+    private static void enableFromUser(Activity a) {
+        channel(a);
+        SharedPreferences p=prefs(a);
+        p.edit().putBoolean("consent",true).apply();
+        if(Build.VERSION.SDK_INT>=33&&a.checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS)!=PackageManager.PERMISSION_GRANTED) {
+            if(p.getBoolean("permission_requested",false)&&!a.shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS)) {openSystemSettings(a);return;}
+            p.edit().putBoolean("permission_requested",true).apply();
+            a.requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS},PERMISSION_REQUEST);
+        } else if(!canNotify(a))openSystemSettings(a);
+        else {
+            schedule(a);
+            Toast.makeText(a,p.getBoolean("configured",false)?"تم تفعيل تذكير عروض اليوم":"تم السماح بالتذكير. تُحمّل المواعيد عند الاتصال بالإنترنت.",Toast.LENGTH_LONG).show();
+        }
+    }
     static void showSettings(Activity a) {
         channel(a);
         SharedPreferences p=prefs(a);
@@ -181,16 +207,7 @@ final class OfferReminders {
         String status=p.getBoolean("consent",false)&&canNotify(a)?"مفعّل على هذا الهاتف":"متوقف على هذا الهاتف";
         new AlertDialog.Builder(a).setTitle("تذكير بعروض اليوم")
             .setMessage(status+"\n\nنص الإشعار: شاهد عروض اليوم\nالأوقات بتوقيت داريا: "+times+"\n\nتحدد الإدارة العدد والأوقات. تتحدث عند فتح التطبيق واتصاله بالإنترنت. التذكيرات تعمل عبر مجدول أندرويد، وقد يؤخرها النظام أو توفير البطارية. يتوقف التذكير بعد أسبوع دون مزامنة لحين فتح التطبيق مجددًا.")
-            .setPositiveButton("تفعيل التذكير",(d,w)->{
-                if(!p.getBoolean("configured",false)) { Toast.makeText(a,"اتصل بالإنترنت وافتح عروض اليوم لتحميل مواعيد التذكير أولًا.",Toast.LENGTH_LONG).show();return; }
-                p.edit().putBoolean("consent",true).apply();
-                if(Build.VERSION.SDK_INT>=33&&a.checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS)!=PackageManager.PERMISSION_GRANTED) {
-                    if(p.getBoolean("permission_requested",false)&&!a.shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS)) { openSystemSettings(a);return; }
-                    p.edit().putBoolean("permission_requested",true).apply();
-                    a.requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS},PERMISSION_REQUEST);
-                } else if(!canNotify(a))openSystemSettings(a);
-                else { schedule(a); Toast.makeText(a,"تم تفعيل تذكير عروض اليوم على هذا الهاتف",Toast.LENGTH_LONG).show(); }
-            })
+            .setPositiveButton("تفعيل التذكير",(d,w)->enableFromUser(a))
             .setNegativeButton("إيقاف التذكير",(d,w)->{p.edit().putBoolean("consent",false).apply();cancel(a);Toast.makeText(a,"تم إيقاف التذكير",Toast.LENGTH_SHORT).show();})
             .setNeutralButton("اختبار الإشعارات",(d,w)->showTests(a)).show();
     }

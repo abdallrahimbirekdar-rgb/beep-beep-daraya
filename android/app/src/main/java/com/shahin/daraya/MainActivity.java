@@ -184,9 +184,11 @@ public class MainActivity extends Activity {
     }
     private void offerLocationPermission() {
         if(checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION)==android.content.pm.PackageManager.PERMISSION_GRANTED ||
-           checkSelfPermission(android.Manifest.permission.ACCESS_COARSE_LOCATION)==android.content.pm.PackageManager.PERMISSION_GRANTED)return;
+           checkSelfPermission(android.Manifest.permission.ACCESS_COARSE_LOCATION)==android.content.pm.PackageManager.PERMISSION_GRANTED) {
+            OfferReminders.offerAtFirstOpen(this);return;
+        }
         android.content.SharedPreferences preferences=getSharedPreferences("daraya_permissions",MODE_PRIVATE);
-        if(preferences.getBoolean("location_offered",false))return;
+        if(preferences.getBoolean("location_offered",false)) {OfferReminders.offerAtFirstOpen(this);return;}
         preferences.edit().putBoolean("location_offered",true).apply();
         new android.app.AlertDialog.Builder(this)
             .setTitle("الأماكن الأقرب إليك")
@@ -194,7 +196,8 @@ public class MainActivity extends Activity {
             .setPositiveButton("السماح بالموقع",(dialog,which)->requestPermissions(
                 new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION,android.Manifest.permission.ACCESS_COARSE_LOCATION},
                 STARTUP_LOCATION_PERMISSION))
-            .setNegativeButton("لاحقًا",null).show();
+            .setNegativeButton("لاحقًا",(dialog,which)->OfferReminders.offerAtFirstOpen(this))
+            .setOnCancelListener(dialog->OfferReminders.offerAtFirstOpen(this)).show();
     }
     private static String freshUrl(String url) {
         return Uri.parse(url).buildUpon().appendQueryParameter("app-open",Long.toString(System.currentTimeMillis())).build().toString();
@@ -243,6 +246,7 @@ public class MainActivity extends Activity {
             boolean granted=checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION)==android.content.pm.PackageManager.PERMISSION_GRANTED ||
                 checkSelfPermission(android.Manifest.permission.ACCESS_COARSE_LOCATION)==android.content.pm.PackageManager.PERMISSION_GRANTED;
             Toast.makeText(this,granted?"تم تفعيل الموقع. استخدم الأقرب إليك لعرض الأماكن القريبة.":"يمكنك متابعة التصفح وتفعيل الموقع لاحقًا من الأقرب إليك.",Toast.LENGTH_LONG).show();
+            OfferReminders.offerAtFirstOpen(this);
         }
         if(request==LOCATION_PERMISSION && locationCallback!=null) {
             boolean granted=checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION)==android.content.pm.PackageManager.PERMISSION_GRANTED || checkSelfPermission(android.Manifest.permission.ACCESS_COARSE_LOCATION)==android.content.pm.PackageManager.PERMISSION_GRANTED;

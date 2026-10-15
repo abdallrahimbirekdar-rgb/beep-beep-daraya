@@ -21,7 +21,7 @@
   window.DarayaOfferReminders.postMessage(JSON.stringify(body));return true;
  }
  async function sync(force=false){
-  if(!window.DarayaOfferReminders||syncing||!force&&Date.now()-lastSync<60000)return;
+  if(!window.DarayaOfferReminders||typeof api==='undefined'||!api||syncing||!force&&Date.now()-lastSync<60000)return;
   syncing=true;
   try { const config=await load();bridge({action:'sync',config});lastSync=Date.now(); }
   catch(_) { /* Keep the last valid device schedule. Never invent a successful sync. */ }
@@ -82,7 +82,7 @@
  };
  window.DarayaReminderSettings={normalize,renderAdmin,sync};
  let frame=0;
- const queue=()=>{if(!frame)frame=requestAnimationFrame(()=>{frame=0;attach();});};
+ const queue=()=>{if(!frame)frame=requestAnimationFrame(()=>{frame=0;attach();sync();});};
  new MutationObserver(queue).observe(document.querySelector('#app'),{childList:true,subtree:true});
  window.addEventListener('daraya-app-resume',()=>{sync(true);queue();});
  window.addEventListener('online',()=>sync(true));
