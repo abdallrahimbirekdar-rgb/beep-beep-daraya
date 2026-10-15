@@ -19,6 +19,7 @@
   }
   function clearExternal(card){card.querySelector('.reel-video-stage')?.remove();card.classList.remove('has-external-video');card.querySelectorAll('[data-offer-play]').forEach(b=>b.textContent=t('▶ تشغيل الفيديو هنا','▶ Play video here','▶ Video hier abspielen'));}
   document.addEventListener('click',e=>{
+    const add=e.target.closest?.('[data-post-reel]');if(add){e.preventDefault();window.DarayaOffers.edit();return;}
     const b=e.target.closest?.('[data-offer-play]');if(!b)return;
     const card=b.closest('.offer-reel,.shop-offer');if(!card)return;
     if(card.querySelector('.reel-video-stage')){clearExternal(card);return;}
@@ -55,7 +56,6 @@
     communityPublicHeader();
     const app = document.querySelector('#app'); app.classList.remove('professional-home');
     app.innerHTML = '<section class="offers-reels-page" data-no-translate><header class="reels-heading"><a class="button outline" href="#home">' + t('الرئيسية', 'Home', 'Startseite') + '</a><div class="reels-heading-copy"><span>'+t('عروض من محلات مدينتك','Offers from local shops','Angebote lokaler Geschäfte')+'</span><h1>' + t('عروض اليوم', 'Today’s offers', 'Heutige Angebote') + '</h1></div><button type="button" data-post-reel>' + t('＋ أضف عرضًا', '＋ Add offer', '＋ Angebot hinzufügen') + '</button></header>' + (window.DarayaOfferTools?.nav(mode)||'') + '<div class="offer-shop-summary" data-shop-summary></div><p class="reels-hint">' + t('اسحب للأعلى لرؤية بقية عروض المحل، ويمينًا أو يسارًا للانتقال إلى محل آخر. العروض متاحة للجميع.', 'Scroll down for more offers from this shop. Swipe left or right for another shop. Offers are open to everyone.', 'Scrolle nach unten für weitere Angebote dieses Geschäfts. Wische seitlich zum nächsten Geschäft. Angebote gelten für alle.') + '</p><div class="offer-reels-track" tabindex="0" aria-label="' + t('تصفح العروض', 'Browse offers', 'Angebote ansehen') + '"><p role="status">' + t('جاري تحميل العروض…', 'Loading offers…', 'Angebote werden geladen…') + '</p></div><div class="reels-navigation"><button type="button" data-reel-prev>' + t('المحل السابق →', 'Previous shop →', 'Vorheriges Geschäft →') + '</button><span data-reel-position></span><button type="button" data-reel-next>' + t('← المحل التالي', '← Next shop', '← Nächstes Geschäft') + '</button></div></section>';
-    app.querySelector('[data-post-reel]').onclick = () => window.DarayaOffers.edit();
     const track = app.querySelector('.offer-reels-track'), position = app.querySelector('[data-reel-position]');
     const dots=document.createElement('nav');dots.className='offer-shop-dots';dots.setAttribute('aria-label',t('اختيار المحل','Choose shop','Geschäft wählen'));app.querySelector('.reels-hint').before(dots);
     window.DarayaOfferTools?.guide(track);
