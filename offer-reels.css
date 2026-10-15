@@ -51,5 +51,5 @@
 
 /* Compact directions link inside each offer, without loading an embedded map. */
 .offer-contact-actions.offer-location-actions{margin-top:10px}
-.offer-contact-actions.offer-location-actions a.offer-location-link{display:inline-flex;align-items:center;justify-content:center;gap:4px;flex:0 1 auto;width:auto;min-height:36px;padding:6px 10px;font-size:12px;line-height:1.5;border-radius:8px;background:#fff7df;color:#57451f;border:1px solid #d7b96d;text-decoration:none;box-sizing:border-box}
+.offer-contact-actions.offer-location-actions .offer-location-link{display:inline-flex;align-items:center;justify-content:center;gap:4px;flex:0 1 auto;width:auto;min-height:36px;padding:6px 10px;font-size:12px;line-height:1.5;border-radius:8px;background:#fff7df;color:#57451f;border:1px solid #d7b96d;text-decoration:none;box-sizing:border-box}
 .offer-location-link:focus-visible{outline:2px solid #80602a;outline-offset:3px}
