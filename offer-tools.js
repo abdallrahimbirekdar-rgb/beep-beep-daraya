@@ -34,7 +34,8 @@
  }
  function savings(o){const m=window.DarayaOffers.meta(o),original=Number(m.original),price=Number(o.price);return m.original!=null&&o.price!=null&&Number.isFinite(original)&&Number.isFinite(price)&&original>price&&price>=0?'<p class="offer-savings">'+t('وفّر ','Save ','Spare ')+esc(money(original-price))+'</p>':'';}
  function contactLinks(o,s,locationOnly=false){
-  if(o.demo||!s)return '';
+  if(o.demo)return locationOnly?'<div class="offer-contact-actions offer-location-actions"><button type="button" class="button outline offer-location-link" data-offer-demo-location><span aria-hidden="true">📍</span> '+t('الموقع والاتجاهات','Location & directions','Standort & Route')+'</button></div>':'';
+  if(!s)return '';
   let wa='';try{const u=new URL(s.translations?._social_links?.whatsapp||'');if(u.protocol==='https:'&&!u.username&&!u.password&&['wa.me','api.whatsapp.com','www.whatsapp.com','whatsapp.com'].includes(u.hostname)){
    const offerUrl='https://damascus-shop.com/#offers/'+encodeURIComponent(o.id);
    u.searchParams.set('text',t('مرحبًا، أريد الاستفسار عن العرض: ','Hello, I would like to ask about: ','Hallo, ich habe eine Frage zum Angebot: ')+String(o.title||'')+'\n'+offerUrl);wa=u.href;
@@ -57,6 +58,8 @@
   try{const r=await api.rpc('record_daily_offer_event',{p_offer:o.id,p_session:session,p_kind:kind});if(r.error){sent.delete(key);if(r.error.code==='PGRST202'||r.error.code==='42883')metricsMissing=true;}}catch{sent.delete(key);}
  }
  function bind(card,o){
+  const demoLocation=card.querySelector('[data-offer-demo-location]');
+  if(demoLocation)demoLocation.onclick=()=>modal('<section data-no-translate><h2>'+t('الموقع والاتجاهات','Location & directions','Standort & Route')+'</h2><p>'+t('هذا عرض تجريبي بعنوان افتراضي، وليس موقع محل حقيقي. في العروض الحقيقية يفتح هذا الزر موقع المحل والاتجاهات إليه عبر خرائط جوجل.','This is a demo offer with an example address, not a real shop location. For real offers, this button opens the shop location and directions in Google Maps.','Dieses Beispielangebot hat eine fiktive Adresse, keinen echten Geschäftsstandort. Bei echten Angeboten öffnet diese Taste den Standort und die Route in Google Maps.')+'</p>'+(o.address?'<p>'+esc(o.address)+'</p>':'')+'</section>');
   const save=card.querySelector('[data-save-offer]');if(save)save.onclick=()=>{
    const uid=user?.id||null,rows=saved(),index=rows.findIndex(x=>x.id===o.id),s=stores.find(s=>s.id===o.store_id);
    if(index>=0)rows.splice(index,1);else{if(rows.length>=100){toast(t('يمكن حفظ ١٠٠ عرض. احذف عرضًا قديمًا أولًا.','You can save 100 offers. Remove an old one first.','Bis zu 100 Angebote. Entferne zuerst ein altes.'));return;}rows.unshift({id:o.id,title:o.title,store_id:o.store_id,shop_name:o.shop_name||s?.name||'',ends_at:o.ends_at,demo:!!o.demo,user_id:o.user_id||null});}
