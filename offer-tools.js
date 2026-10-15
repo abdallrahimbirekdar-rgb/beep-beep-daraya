@@ -26,7 +26,7 @@
   const today=dayKey(value)===dayKey(now);
   return '<p class="offer-availability">✓ '+esc(today?t('أكّد المحل توفره اليوم','Shop confirmed it is available today','Geschäft hat Verfügbarkeit heute bestätigt'):t('آخر تأكيد من المحل: ','Last shop confirmation: ','Letzte Bestätigung: ')+communityDate(value))+'</p>';
  }
- function details(o){const m=window.DarayaOffers.meta(o),text=String(m.terms||'');return '<details class="reel-details offer-expand-details"><summary><span class="offer-details-preview">'+esc(text)+'</span><strong>'+t('تفاصيل العرض','Offer details','Angebotsdetails')+' ▾</strong></summary><p>'+esc(text)+'</p></details>'+(o.address?'<p class="reel-address">'+esc(o.address)+'</p>':'');}
+ function details(o){const m=window.DarayaOffers.meta(o),text=String(m.terms||'');if(m.kind==='text'&&!m.video_link)return '<section class="reel-details offer-expand-details"><h3>'+t('العروض والتفاصيل','Offers and details','Angebote und Details')+'</h3><p>'+esc(text)+'</p></section>'+(o.address?'<p class="reel-address">'+esc(o.address)+'</p>':'');return '<details class="reel-details offer-expand-details"><summary><span class="offer-details-preview">'+esc(text)+'</span><strong>'+t('تفاصيل العرض','Offer details','Angebotsdetails')+' ▾</strong></summary><p>'+esc(text)+'</p></details>'+(o.address?'<p class="reel-address">'+esc(o.address)+'</p>':'');}
  function badges(o,now=Date.now()){
   if(!Number.isFinite(Date.parse(o.ends_at))||Date.parse(o.ends_at)<=now)return '';
   const today=dayKey(now),end=dayKey(o.ends_at),created=dayKey(o.created_at);
