@@ -58,13 +58,19 @@
     app.innerHTML = '<section class="offers-reels-page" data-no-translate><header class="reels-heading"><a class="button outline" href="#home">' + t('الرئيسية', 'Home', 'Startseite') + '</a><div class="reels-heading-copy"><span>'+t('عروض من محلات مدينتك','Offers from local shops','Angebote lokaler Geschäfte')+'</span><h1>' + t('عروض اليوم', 'Today’s offers', 'Heutige Angebote') + '</h1></div><button type="button" data-post-reel>' + t('＋ أضف عرضًا', '＋ Add offer', '＋ Angebot hinzufügen') + '</button></header>' + (window.DarayaOfferTools?.nav(mode)||'') + '<div class="offer-shop-summary" data-shop-summary></div><p class="reels-hint">' + t('اسحب للأعلى لرؤية بقية عروض المحل، ويمينًا أو يسارًا للانتقال إلى محل آخر. العروض متاحة للجميع.', 'Scroll down for more offers from this shop. Swipe left or right for another shop. Offers are open to everyone.', 'Scrolle nach unten für weitere Angebote dieses Geschäfts. Wische seitlich zum nächsten Geschäft. Angebote gelten für alle.') + '</p><div class="offer-reels-track" tabindex="0" aria-label="' + t('تصفح العروض', 'Browse offers', 'Angebote ansehen') + '"><p role="status">' + t('جاري تحميل العروض…', 'Loading offers…', 'Angebote werden geladen…') + '</p></div><div class="reels-navigation"><button type="button" data-reel-prev>' + t('المحل السابق →', 'Previous shop →', 'Vorheriges Geschäft →') + '</button><span data-reel-position></span><button type="button" data-reel-next>' + t('← المحل التالي', '← Next shop', '← Nächstes Geschäft') + '</button></div></section>';
     const track = app.querySelector('.offer-reels-track'), position = app.querySelector('[data-reel-position]');
     const dots=document.createElement('nav');dots.className='offer-shop-dots';dots.setAttribute('aria-label',t('اختيار المحل','Choose shop','Geschäft wählen'));app.querySelector('.reels-hint').before(dots);
+    const edges=document.createElement('div');edges.className='offer-edge-navigation';edges.setAttribute('aria-hidden','true');
+    edges.innerHTML='<div class="offer-edge-side" data-edge-prev hidden></div><div class="offer-edge-side" data-edge-next hidden></div><div class="offer-edge-down" data-edge-down hidden></div>';
+    app.querySelector('.offers-reels-page').append(edges);
+    let edgeFrame=0,nextOfferCard=null;
+    const queueEdges=()=>{if(!edgeFrame)edgeFrame=requestAnimationFrame(()=>{edgeFrame=0;updateEdges();});};
+    window.addEventListener('scroll',queueEdges,{passive:true});window.addEventListener('resize',queueEdges,{passive:true});
     window.DarayaOfferTools?.guide(track);
     const viewObserver=typeof IntersectionObserver==='undefined'?null:new IntersectionObserver(entries=>{for(const e of entries)if(e.isIntersecting&&(e.intersectionRatio>=.15||e.intersectionRect.height>=120)){const row=rows.find(o=>o.id===e.target.dataset.reelId);if(row&&isPublic(row))window.DarayaOfferTools?.record(row,'view');}},{threshold:[0,.15,.5]});
     const alive = () => token === epoch && track.isConnected && uid === user?.id;
     const demos=mode==='all'?(window.DarayaDemoOfferCatalog?.()||[]).filter(isPublic):[];
     let page = 0, done = false, loading = false, rows = [], following = null, current = null, mediaEpoch = 0, observer, expiryTimer;
     const release = video => { video.pause(); video.removeAttribute('src'); video.load(); };
-    stop = () => { mediaEpoch++; observer?.disconnect();viewObserver?.disconnect(); clearInterval(expiryTimer); track.querySelectorAll('video').forEach(release);track.querySelectorAll('.has-external-video').forEach(clearExternal); document.removeEventListener('visibilitychange', visibility); window.removeEventListener('daraya-blocks-changed', checkExpiry); };
+    stop = () => { window.removeEventListener('scroll',queueEdges);window.removeEventListener('resize',queueEdges);cancelAnimationFrame(edgeFrame);edges.remove();mediaEpoch++; observer?.disconnect();viewObserver?.disconnect(); clearInterval(expiryTimer); track.querySelectorAll('video').forEach(release);track.querySelectorAll('.has-external-video').forEach(clearExternal); document.removeEventListener('visibilitychange', visibility); window.removeEventListener('daraya-blocks-changed', checkExpiry); };
     function visibility() { if (document.hidden) { track.querySelectorAll('.has-external-video').forEach(clearExternal);mediaEpoch++; track.querySelectorAll('video').forEach(v => v.pause()); } }
     document.addEventListener('visibilitychange', visibility);
     if (mode === 'following') {
@@ -76,6 +82,29 @@
     }
     let initialMobileOfferAligned=false;
     function groups(){return shopGroups([...track.querySelectorAll('.offer-reel')].filter(c=>!c.hidden));}
+    function updateEdges(){
+      if(!alive())return;
+      const all=groups(),index=all.findIndex(g=>g.id===current?.dataset.storeId),selected=all[index];
+      const bounds=track.getBoundingClientRect(),height=window.innerHeight;
+      const visible=!!selected&&bounds.top<height*.85&&bounds.bottom>height*.25;
+      const rtl=getComputedStyle(track).direction==='rtl';
+      for(const [key,delta] of [['prev',-1],['next',1]]){
+        const button=edges.querySelector('[data-edge-'+key+']'),target=all[index+delta];
+        button.hidden=!visible||!target;if(!target)continue;
+        const right=(delta<0)===rtl;
+        button.classList.toggle('edge-right',right);button.classList.toggle('edge-left',!right);
+        const name=target.cards[0].querySelector('.reel-identity strong')?.textContent||'';
+        const label=t('اسحب','Swipe','Wischen');
+        button.innerHTML='<span aria-hidden="true">'+(right?'›':'‹')+'</span><small>'+label+'</small>';
+        button.title=label+' — '+name;
+      }
+      nextOfferCard=null;
+      if(selected){let shown=0;selected.cards.forEach((c,i)=>{if(c.getBoundingClientRect().top<=height*.35)shown=i;});nextOfferCard=selected.cards[shown+1]||null;}
+      const down=edges.querySelector('[data-edge-down]');down.hidden=!visible||!nextOfferCard;
+      if(nextOfferCard){const title=nextOfferCard.querySelector('h2')?.textContent||'';down.innerHTML='<span aria-hidden="true">↑</span><span><strong>'+t('اسحب للأعلى · عرض آخر','Swipe up · More offers','Nach oben wischen · Mehr Angebote')+'</strong><small>'+esc(title)+'</small></span>';}
+      const nav=document.querySelector('#mobile-navigation'),navBounds=nav?.getBoundingClientRect();
+      edges.style.setProperty('--offer-edge-bottom',(navBounds&&navBounds.height&&navBounds.top<height?height-navBounds.top+10:18)+'px');
+    }
     function activate(card,refresh=false) {
       if(!alive()||!card||card.hidden||current===card&&!refresh)return;
       const previousShop=current?.dataset.storeId,shopId=card.dataset.storeId;mediaEpoch++;
@@ -101,6 +130,7 @@
       app.querySelector('[data-reel-prev]').disabled=index<=0;
       app.querySelector('[data-reel-next]').disabled=done&&index>=all.length-1;
       if(index>=all.length-3&&!done)loadMore();
+      queueEdges();
       window.DarayaOfferTools?.updateCountdown(track);
       if(previousShop!==shopId&&!done)loadShop(shopId);
     }
