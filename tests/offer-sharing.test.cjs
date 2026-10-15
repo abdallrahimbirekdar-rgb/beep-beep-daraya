@@ -1,0 +1,4 @@
+const test=require('node:test'),assert=require('node:assert/strict'),vm=require('node:vm'),fs=require('node:fs');
+const c={window:{},ct:a=>a};vm.createContext(c);vm.runInContext(fs.readFileSync('offer-sharing.js','utf8'),c);const share=c.window.DarayaOfferSharing;
+test('card text wraps fully into the allowed lines and marks omitted text',()=>{const ctx={measureText:s=>({width:s.length})};assert.deepEqual(Array.from(share.wrap(ctx,'one two three four five six',10,2)),['one two','three fou…']);assert.deepEqual(Array.from(share.wrap(ctx,'short',10,2)),['short']);for(const line of share.wrap(ctx,'averylongwordanother words',8,2))assert.ok(line.length<=8)});
+test('QR targets one exact offer using a public URL without session or tracking data',()=>{assert.equal(share.url({id:'demo-offer-restaurant'}),'https://damascus-shop.com/#offers/demo-offer-restaurant');assert.equal(share.url({id:'bad/#?'}),'https://damascus-shop.com/#offers/bad%2F%23%3F')});

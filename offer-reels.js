@@ -47,7 +47,7 @@
     if(kind!=='text'||link(m.video_link))media='<div class="reel-visual">'+media+(discount>0?'<span class="offer-discount">'+t('خصم ','Save ','Rabatt ')+discount.toLocaleString(communityLang())+'%</span>':'')+'</div>';
     const logo=safeImage(o.demo?o.shop_logo:storeCover(s));
     const identity='<a class="reel-identity" href="'+esc(route)+'">'+(logo?'<img class="reel-shop-logo" src="'+esc(thumbnailForImage(logo))+'" alt="'+esc(s.name)+'" loading="lazy" decoding="async">':'<span class="reel-shop-logo reel-logo-fallback" aria-hidden="true">🏪</span>')+'<span><small>'+t('المحل','Shop','Geschäft')+'</small><strong>'+esc(s.name)+'</strong></span></a>';
-    return '<article class="offer-reel offer-reel-' + kind + '" data-no-translate data-publisher="' + esc(o.user_id) + '" data-store-id="' + esc(o.store_id) + '" data-reel-id="' + esc(o.id) + '">' + identity + media + '<div class="reel-copy">' + (o.demo ? '<strong class="reel-demo-note">'+t('عرض تجريبي — غير متاح للشراء','Demo offer — not for sale','Beispielangebot — nicht kaufbar')+'</strong>' : '') + (kind==='text'?'<span class="reel-format-label">'+t('عرض نصي','Text offer','Textangebot')+'</span>':'') + (window.DarayaOfferTools?.badges(o)||'') + '<h2>' + esc(o.title) + '</h2><p class="reel-benefit">' + esc(m.benefit) + '</p>' + '<div class="offer-price-panel">' + (o.price == null ? '' : '<p class="reel-price">' + (m.original == null ? '' : '<del>' + money(m.original) + '</del> ') + '<strong>' + money(o.price) + '</strong></p>') + (window.DarayaOfferTools?.savings(o)||'') + '</div>' + '<div class="reel-details"><h3>'+t('تفاصيل العرض','Offer details','Angebotsdetails')+'</h3><p>'+esc(m.terms)+'</p><p class="reel-address">'+esc(o.address)+'</p></div>' + (window.DarayaOfferTools?.countdown(o)||'') + (window.DarayaOfferTools?.contactLinks(o,s)||'') + '<div class="reel-actions">' + (window.DarayaOfferTools?.savedButton(o)||'') + linkMarkup(m.video_link) + '<a class="button" href="' + esc(route) + '">' + t('زيارة المحل', 'View shop', 'Geschäft ansehen') + '</a><button type="button" data-share-reel>' + t('مشاركة', 'Share', 'Teilen') + '</button>' + (o.demo?'':'<button type="button" class="outline" data-offer-report="' + esc(o.id) + '">' + t('إبلاغ', 'Report', 'Melden') + '</button>') + '</div></div></article>';
+    return '<article class="offer-reel offer-reel-' + kind + '" data-no-translate data-publisher="' + esc(o.user_id) + '" data-store-id="' + esc(o.store_id) + '" data-reel-id="' + esc(o.id) + '">' + identity + media + '<div class="reel-copy">' + (o.demo ? '<strong class="reel-demo-note">'+t('عرض تجريبي — غير متاح للشراء','Demo offer — not for sale','Beispielangebot — nicht kaufbar')+'</strong>' : '') + (kind==='text'?'<span class="reel-format-label">'+t('عرض نصي','Text offer','Textangebot')+'</span>':'') + (window.DarayaOfferTools?.badges(o)||'') + '<h2>' + esc(o.title) + '</h2><p class="reel-benefit">' + esc(m.benefit) + '</p>' + '<div class="offer-price-panel">' + (o.price == null ? '' : '<p class="reel-price">' + (m.original == null ? '' : '<del>' + money(m.original) + '</del> ') + '<strong>' + money(o.price) + '</strong></p>') + (window.DarayaOfferTools?.savings(o)||'') + (window.DarayaOfferTools?.contactLinks(o,s)||'') + '</div>' + (window.DarayaOfferTools?.availability(o)||'') + (window.DarayaOfferTools?.details(o)||'') + (window.DarayaOfferTools?.countdown(o)||'') + (window.DarayaOfferTools?.contactLinks(o,s,true)||'') + '<div class="reel-actions">' + (window.DarayaOfferTools?.savedButton(o)||'') + linkMarkup(m.video_link) + '<a class="button" href="' + esc(route) + '">' + t('زيارة المحل', 'View shop', 'Geschäft ansehen') + '</a><button type="button" data-share-reel>' + t('مشاركة', 'Share', 'Teilen') + '</button><button type="button" data-offer-share-image>'+t('بطاقة للمشاركة','Share image','Bild zum Teilen')+'</button>' + (o.demo?'':'<button type="button" class="outline" data-offer-report="' + esc(o.id) + '">' + t('إبلاغ', 'Report', 'Melden') + '</button>') + '</div></div></article>';
   }
   function teardown() { epoch++; stop(); stop = () => {}; }
   async function renderFeed(mode = 'all', focus = '') {
@@ -57,6 +57,7 @@
     app.innerHTML = '<section class="offers-reels-page" data-no-translate><header class="reels-heading"><a class="button outline" href="#home">' + t('الرئيسية', 'Home', 'Startseite') + '</a><div class="reels-heading-copy"><span>'+t('عروض من محلات مدينتك','Offers from local shops','Angebote lokaler Geschäfte')+'</span><h1>' + t('عروض اليوم', 'Today’s offers', 'Heutige Angebote') + '</h1></div><button type="button" data-post-reel>' + t('＋ أضف عرضًا', '＋ Add offer', '＋ Angebot hinzufügen') + '</button></header>' + (window.DarayaOfferTools?.nav(mode)||'') + '<div class="offer-shop-summary" data-shop-summary></div><p class="reels-hint">' + t('اسحب للأعلى لرؤية بقية عروض المحل، ويمينًا أو يسارًا للانتقال إلى محل آخر. العروض متاحة للجميع.', 'Scroll down for more offers from this shop. Swipe left or right for another shop. Offers are open to everyone.', 'Scrolle nach unten für weitere Angebote dieses Geschäfts. Wische seitlich zum nächsten Geschäft. Angebote gelten für alle.') + '</p><div class="offer-reels-track" tabindex="0" aria-label="' + t('تصفح العروض', 'Browse offers', 'Angebote ansehen') + '"><p role="status">' + t('جاري تحميل العروض…', 'Loading offers…', 'Angebote werden geladen…') + '</p></div><div class="reels-navigation"><button type="button" data-reel-prev>' + t('المحل السابق →', 'Previous shop →', 'Vorheriges Geschäft →') + '</button><span data-reel-position></span><button type="button" data-reel-next>' + t('← المحل التالي', '← Next shop', '← Nächstes Geschäft') + '</button></div></section>';
     app.querySelector('[data-post-reel]').onclick = () => window.DarayaOffers.edit();
     const track = app.querySelector('.offer-reels-track'), position = app.querySelector('[data-reel-position]');
+    const dots=document.createElement('nav');dots.className='offer-shop-dots';dots.setAttribute('aria-label',t('اختيار المحل','Choose shop','Geschäft wählen'));app.querySelector('.reels-hint').before(dots);
     window.DarayaOfferTools?.guide(track);
     const viewObserver=typeof IntersectionObserver==='undefined'?null:new IntersectionObserver(entries=>{for(const e of entries)if(e.isIntersecting&&(e.intersectionRatio>=.15||e.intersectionRect.height>=120)){const row=rows.find(o=>o.id===e.target.dataset.reelId);if(row&&isPublic(row))window.DarayaOfferTools?.record(row,'view');}},{threshold:[0,.15,.5]});
     const alive = () => token === epoch && track.isConnected && uid === user?.id;
@@ -83,6 +84,10 @@
       const groupRows=selected.cards.map(c=>rows.find(o=>o.id===c.dataset.reelId)).filter(Boolean),sample=groupRows[0],shop=sample?.demo?{demo:true,name:sample.shop_name}:stores.find(s=>s.id===shopId);
       const summary=app.querySelector('[data-shop-summary]');if(shop&&summary)summary.innerHTML='<span>'+esc(shop.name)+'</span><p>'+(window.DarayaOfferTools?.summary(shop,groupRows)||'')+'</p>';
       position.textContent=t('المحل ','Shop ','Geschäft ')+(index+1)+' / '+all.length;
+      const hint=app.querySelector('.reels-hint');hint.textContent=t('لهذا المحل '+selected.cards.length+' عروض — انزل لرؤيتها. اسحب جانبيًا لتغيير المحل.','This shop has '+selected.cards.length+' offers — scroll down to see them. Swipe sideways to change shops.','Dieses Geschäft hat '+selected.cards.length+' Angebote — scrolle nach unten. Seitlich zum nächsten Geschäft wischen.');
+      dots.innerHTML=all.map((g,i)=>'<button type="button" data-shop-dot="'+i+'" aria-label="'+esc(t('المحل ','Shop ','Geschäft ')+(i+1))+'" aria-current="'+(i===index?'true':'false')+'"><span aria-hidden="true"></span></button>').join('');
+      dots.querySelectorAll('button').forEach(b=>b.onclick=()=>{const next=all[Number(b.dataset.shopDot)]?.cards[0];if(next){activate(next);next.scrollIntoView({behavior:'auto',block:'start'});}});
+
       selected.cards.forEach((c,i)=>{let badge=c.querySelector('.reel-step-badge');if(!badge){badge=document.createElement('span');badge.className='reel-step-badge';c.append(badge);}badge.textContent=t('العرض ','Offer ','Angebot ')+(i+1)+' / '+selected.cards.length;});
       app.querySelector('[data-reel-prev]').disabled=index<=0;
       app.querySelector('[data-reel-next]').disabled=done&&index>=all.length-1;
@@ -93,6 +98,7 @@
     function bind(card) {
       const row = rows.find(o => o.id === card.dataset.reelId);
       window.DarayaOfferTools?.bind(card,row);viewObserver?.observe(card);
+      card.querySelector('[data-offer-share-image]').onclick=()=>window.DarayaOfferSharing?.open(row);
       card.querySelector('[data-share-reel]').onclick = async () => {
         const url = new URL(location.href); url.search = ''; url.hash = '#offers/' + row.id;
         try { if (navigator.share) await navigator.share({ title: row.title, text: window.DarayaOffers.meta(row).benefit, url: url.href }); else { await navigator.clipboard.writeText(url.href); toast(t('تم نسخ رابط العرض', 'Offer link copied', 'Angebotslink kopiert')); } } catch {}
@@ -105,7 +111,7 @@
       const timer=setTimeout(()=>controller.abort(),20000);
       try{
         for(let offset=0;alive()&&!controller.signal.aborted;offset+=30){
-          const r=await api.from('daily_offers').select('*').eq('store_id',id).eq('status','approved').gt('ends_at',new Date().toISOString()).order('created_at',{ascending:false}).order('id',{ascending:false}).range(offset,offset+29).abortSignal(controller.signal);
+          const r=await api.from('daily_offers').select('*,daily_offer_availability(confirmed_at)').eq('store_id',id).eq('status','approved').gt('ends_at',new Date().toISOString()).order('created_at',{ascending:false}).order('id',{ascending:false}).range(offset,offset+29).abortSignal(controller.signal);
           if(!alive()||controller.signal.aborted)return;if(r.error)throw r.error;
           const fresh=r.data.filter(isPublic).filter(o=>!rows.some(x=>x.id===o.id));rows.push(...fresh);
           for(const o of fresh){track.insertAdjacentHTML('beforeend',markup(o));bind(track.lastElementChild);}
@@ -123,7 +129,7 @@
       requestController=new AbortController();
       const requestTimeout=setTimeout(()=>requestController?.abort(),15000);
       try {
-        let q = api.from('daily_offers').select('*').eq('status', 'approved').gt('ends_at', new Date().toISOString()).order('created_at', { ascending: false }).order('id', { ascending: false }).range(page * 20, page * 20 + 19);
+        let q = api.from('daily_offers').select('*,daily_offer_availability(confirmed_at)').eq('status', 'approved').gt('ends_at', new Date().toISOString()).order('created_at', { ascending: false }).order('id', { ascending: false }).range(page * 20, page * 20 + 19);
         if (following) q = q.in('store_id', following);
         const r = await q.abortSignal(requestController.signal);
         if (!alive()) return;
@@ -165,7 +171,7 @@
     if (focus) {
       try {
         const demo=demos.find(o=>o.id===focus);
-        const r = demo?{data:demo}:await api.from('daily_offers').select('*').eq('id', focus).eq('status', 'approved').gt('ends_at', new Date().toISOString()).maybeSingle();
+        const r = demo?{data:demo}:await api.from('daily_offers').select('*,daily_offer_availability(confirmed_at)').eq('id', focus).eq('status', 'approved').gt('ends_at', new Date().toISOString()).maybeSingle();
         if (!alive()) return;
         if (!r.error && r.data && isPublic(r.data)) { rows.push(r.data); track.innerHTML = markup(r.data); bind(track.firstElementChild); observer?.observe(track.firstElementChild); activate(track.firstElementChild); }
         else track.innerHTML = '<p>' + t('انتهى هذا العرض أو لم يعد متاحًا.', 'This offer has ended or is unavailable.', 'Dieses Angebot ist abgelaufen oder nicht verfügbar.') + '</p>';
