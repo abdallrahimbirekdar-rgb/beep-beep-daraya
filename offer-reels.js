@@ -25,9 +25,11 @@
     const item=link(b.dataset.offerPlay);if(!item)return;
     let info;try{info=parsePlaceVideo(item.url);}catch{return;}if(info?.kind!=='embed')return;
     const src=new URL(info.src);src.searchParams.set('autoplay',info.provider==='Facebook'?'true':'1');
+    document.querySelectorAll('.offer-reel.has-external-video').forEach(other=>{if(other!==card)clearExternal(other);});
     const stage=document.createElement('div');stage.className='reel-video-stage';
     const frame=document.createElement('iframe');frame.src=src.href;frame.title=card.querySelector('h2,h3')?.textContent||t('فيديو العرض','Offer video','Angebotsvideo');frame.allow='autoplay; fullscreen; picture-in-picture; encrypted-media';frame.allowFullscreen=true;frame.referrerPolicy='strict-origin-when-cross-origin';stage.append(frame);const media=card.querySelector('.reel-photo,.reel-text-art');if(media)media.before(stage);else card.prepend(stage);card.classList.add('has-external-video');card.querySelectorAll('[data-offer-play]').forEach(button=>button.textContent=t('⏹ إيقاف الفيديو','⏹ Stop video','⏹ Video stoppen'));
   });
+  function shopGroups(cards){const result=[],byId=new Map();for(const card of cards){const id=card.dataset.storeId;if(!byId.has(id)){const group={id,cards:[]};byId.set(id,group);result.push(group);}byId.get(id).cards.push(card);}return result;}
   function isPublic(o) {
     if(o.demo) return Date.parse(o.ends_at)>Date.now();
     const m = window.DarayaOffers?.meta(o), s = stores.find(s => s.id === o.store_id);
@@ -50,7 +52,7 @@
     teardown(); const token = epoch, uid = user?.id;
     communityPublicHeader();
     const app = document.querySelector('#app'); app.classList.remove('professional-home');
-    app.innerHTML = '<section class="offers-reels-page" data-no-translate><header class="reels-heading"><a class="button outline" href="#home">' + t('الرئيسية', 'Home', 'Startseite') + '</a><h1>' + t('عروض اليوم', 'Today’s offers', 'Heutige Angebote') + '</h1><button type="button" data-post-reel>' + t('＋ أضف عرضًا', '＋ Add offer', '＋ Angebot hinzufügen') + '</button></header><nav class="reels-tabs"><a href="#offers" aria-current="' + (mode === 'all' ? 'page' : 'false') + '">' + t('كل العروض', 'All offers', 'Alle Angebote') + '</a><a href="#followed-offers" aria-current="' + (mode === 'following' ? 'page' : 'false') + '">' + t('محلات أتابعها', 'Shops I follow', 'Abonnierte Geschäfte') + '</a></nav><p class="reels-hint">' + t('اسحب يمينًا أو يسارًا للانتقال بين العروض. التفاصيل أسفل الصورة. العروض متاحة للجميع.', 'Swipe left or right between offers. Details are below the image. Offers are open to everyone.', 'Wische nach links oder rechts. Details stehen unter dem Bild. Angebote gelten für alle.') + '</p><div class="offer-reels-track" tabindex="0" aria-label="' + t('تصفح العروض', 'Browse offers', 'Angebote ansehen') + '"><p role="status">' + t('جاري تحميل العروض…', 'Loading offers…', 'Angebote werden geladen…') + '</p></div><div class="reels-navigation"><button type="button" data-reel-prev>' + t('السابق →', 'Previous →', 'Zurück →') + '</button><span data-reel-position></span><button type="button" data-reel-next>' + t('← التالي', '← Next', '← Weiter') + '</button></div></section>';
+    app.innerHTML = '<section class="offers-reels-page" data-no-translate><header class="reels-heading"><a class="button outline" href="#home">' + t('الرئيسية', 'Home', 'Startseite') + '</a><h1>' + t('عروض اليوم', 'Today’s offers', 'Heutige Angebote') + '</h1><button type="button" data-post-reel>' + t('＋ أضف عرضًا', '＋ Add offer', '＋ Angebot hinzufügen') + '</button></header><nav class="reels-tabs"><a href="#offers" aria-current="' + (mode === 'all' ? 'page' : 'false') + '">' + t('كل العروض', 'All offers', 'Alle Angebote') + '</a><a href="#followed-offers" aria-current="' + (mode === 'following' ? 'page' : 'false') + '">' + t('محلات أتابعها', 'Shops I follow', 'Abonnierte Geschäfte') + '</a></nav><p class="reels-hint">' + t('اسحب للأعلى لرؤية بقية عروض المحل، ويمينًا أو يسارًا للانتقال إلى محل آخر. العروض متاحة للجميع.', 'Scroll down for more offers from this shop. Swipe left or right for another shop. Offers are open to everyone.', 'Scrolle nach unten für weitere Angebote dieses Geschäfts. Wische seitlich zum nächsten Geschäft. Angebote gelten für alle.') + '</p><div class="offer-reels-track" tabindex="0" aria-label="' + t('تصفح العروض', 'Browse offers', 'Angebote ansehen') + '"><p role="status">' + t('جاري تحميل العروض…', 'Loading offers…', 'Angebote werden geladen…') + '</p></div><div class="reels-navigation"><button type="button" data-reel-prev>' + t('المحل السابق →', 'Previous shop →', 'Vorheriges Geschäft →') + '</button><span data-reel-position></span><button type="button" data-reel-next>' + t('← المحل التالي', '← Next shop', '← Nächstes Geschäft') + '</button></div></section>';
     app.querySelector('[data-post-reel]').onclick = () => window.DarayaOffers.edit();
     const track = app.querySelector('.offer-reels-track'), position = app.querySelector('[data-reel-position]');
     const alive = () => token === epoch && track.isConnected && uid === user?.id;
@@ -67,14 +69,19 @@
       if (!alive()) return;
       if (!following.length) { track.innerHTML = '<p>' + t('احفظ محلًا من صفحته لتظهر عروضه هنا.', 'Save a shop from its page to see its offers here.', 'Speichere ein Geschäft auf seiner Seite, um Angebote hier zu sehen.') + '</p>'; return; }
     }
-    function activate(card) {
-      if (!alive() || !card || card.hidden || current === card) return;
-      mediaEpoch++;track.querySelectorAll('.offer-reel').forEach(c=>{c.classList.remove('reel-current');if(c!==card)clearExternal(c);}); current = card;card.classList.add('reel-current');
-      track.querySelectorAll('video').forEach(v => { if (v !== card.querySelector('video')) release(v); });
-      const cards = [...track.querySelectorAll('.offer-reel')].filter(c => !c.hidden), index = cards.indexOf(card);
-      position.textContent = t('العرض ','Offer ','Angebot ')+(index + 1) + ' / ' + cards.length;
-      let badge=card.querySelector('.reel-step-badge');if(!badge){badge=document.createElement('span');badge.className='reel-step-badge';card.append(badge);}badge.textContent=t('العرض ','Offer ','Angebot ')+(index+1)+' / '+cards.length;
-      if (index >= cards.length - 3 && !done) loadMore();
+    function groups(){return shopGroups([...track.querySelectorAll('.offer-reel')].filter(c=>!c.hidden));}
+    function activate(card,refresh=false) {
+      if(!alive()||!card||card.hidden||current===card&&!refresh)return;
+      const previousShop=current?.dataset.storeId,shopId=card.dataset.storeId;mediaEpoch++;
+      track.querySelectorAll('.offer-reel').forEach(c=>{const same=c.dataset.storeId===shopId&&!c.hidden;c.classList.toggle('reel-current',same);if(!same)clearExternal(c);});
+      current=card;
+      const all=groups(),index=all.findIndex(g=>g.id===shopId),selected=all[index];if(!selected)return;
+      position.textContent=t('المحل ','Shop ','Geschäft ')+(index+1)+' / '+all.length;
+      selected.cards.forEach((c,i)=>{let badge=c.querySelector('.reel-step-badge');if(!badge){badge=document.createElement('span');badge.className='reel-step-badge';c.append(badge);}badge.textContent=t('العرض ','Offer ','Angebot ')+(i+1)+' / '+selected.cards.length;});
+      app.querySelector('[data-reel-prev]').disabled=index<=0;
+      app.querySelector('[data-reel-next]').disabled=done&&index>=all.length-1;
+      if(index>=all.length-3&&!done)loadMore();
+      if(previousShop!==shopId&&!done)loadShop(shopId);
     }
     function bind(card) {
       const row = rows.find(o => o.id === card.dataset.reelId);
@@ -83,8 +90,25 @@
         try { if (navigator.share) await navigator.share({ title: row.title, text: window.DarayaOffers.meta(row).benefit, url: url.href }); else { await navigator.clipboard.writeText(url.href); toast(t('تم نسخ رابط العرض', 'Offer link copied', 'Angebotslink kopiert')); } } catch {}
       };
     }
+    const loadedShops=new Set();let shopController=null;
+    async function loadShop(id){
+      if(id.startsWith('demo-')||loadedShops.has(id))return;
+      shopController?.abort();const controller=new AbortController();shopController=controller;
+      const timer=setTimeout(()=>controller.abort(),20000);
+      try{
+        for(let offset=0;alive()&&!controller.signal.aborted;offset+=30){
+          const r=await api.from('daily_offers').select('*').eq('store_id',id).eq('status','approved').gt('ends_at',new Date().toISOString()).order('created_at',{ascending:false}).order('id',{ascending:false}).range(offset,offset+29).abortSignal(controller.signal);
+          if(!alive()||controller.signal.aborted)return;if(r.error)throw r.error;
+          const fresh=r.data.filter(isPublic).filter(o=>!rows.some(x=>x.id===o.id));rows.push(...fresh);
+          for(const o of fresh){track.insertAdjacentHTML('beforeend',markup(o));bind(track.lastElementChild);}
+          if(current?.dataset.storeId===id)activate(current,true);
+          if(r.data.length<30){loadedShops.add(id);break;}
+        }
+      }catch{if(alive()&&!controller.signal.aborted)toast(t('تعذر تحميل بقية عروض المحل. افتح المحل مجددًا للمحاولة.','Could not load all shop offers. Open the shop again to retry.','Weitere Angebote konnten nicht geladen werden. Öffne das Geschäft erneut.'));}
+      finally{clearTimeout(timer);}
+    }
     let requestController=null;
-    const stopFeed=stop; stop=()=>{requestController?.abort();stopFeed();};
+    const stopFeed=stop; stop=()=>{requestController?.abort();shopController?.abort();stopFeed();};
     async function loadMore() {
       if (!alive() || done || loading) return;
       loading = true;
@@ -101,16 +125,16 @@
         if (page === 1 && !track.querySelector('.offer-reel')) track.innerHTML = '';
         for (const o of fresh) { track.insertAdjacentHTML('beforeend', markup(o)); const card = track.lastElementChild; bind(card); observer?.observe(card); }
         if (!rows.length && done) track.innerHTML = '<div class="reels-empty"><h2>' + t('أول العروض قريبًا', 'First offers coming soon', 'Die ersten Angebote kommen bald') + '</h2><p>' + t('يمكن لصاحب المحل إرسال صورة أو عرض مكتوب مع رابط فيديو اختياري للمراجعة.', 'Shop owners can send an image or text offer with an optional video link for review.', 'Inhaber können ein Bild oder Textangebot mit optionalem Videolink zur Prüfung senden.') + '</p><a class="button outline" href="#home">' + t('تصفح المحلات', 'Browse shops', 'Geschäfte ansehen') + '</a></div>';
-        if (!current && rows.length) activate(track.querySelector('.offer-reel'));
+        if(rows.length)activate(current||track.querySelector('.offer-reel'),true);
         if (!fresh.length && !done) { loading = false; return loadMore(); }
       } catch {
         if (alive()) { const retry = document.createElement('button'); retry.type = 'button'; retry.textContent = t('تعذر التحميل — أعد المحاولة', 'Could not load — retry', 'Laden fehlgeschlagen — erneut versuchen'); retry.onclick = () => { retry.remove(); loadMore(); }; track.append(retry); }
       } finally { clearTimeout(requestTimeout);loading = false; }
     }
     function move(delta) {
-      const cards=[...track.querySelectorAll('.offer-reel')].filter(c=>!c.hidden), index=Math.max(0,cards.indexOf(current));
-      const next=cards[Math.max(0,Math.min(cards.length-1,index+delta))];
-      if(next&&next!==current){track.dataset.direction=delta>0?'next':'prev';activate(next);next.scrollIntoView({behavior:'auto',block:'start'});}
+      const all=groups(),index=Math.max(0,all.findIndex(g=>g.id===current?.dataset.storeId));
+      const next=all[Math.max(0,Math.min(all.length-1,index+delta))]?.cards[0];
+      if(next&&next.dataset.storeId!==current?.dataset.storeId){track.dataset.direction=delta>0?'next':'prev';activate(next);next.scrollIntoView({behavior:'auto',block:'start'});}
     }
     app.querySelector('[data-reel-prev]').onclick=()=>move(-1);app.querySelector('[data-reel-next]').onclick=()=>move(1);
     track.addEventListener('keydown',e=>{if(e.target!==track)return;if(['ArrowLeft','ArrowRight'].includes(e.key)){e.preventDefault();const rtl=getComputedStyle(track).direction==='rtl';move((e.key==='ArrowLeft')===rtl?1:-1);}});
@@ -123,7 +147,7 @@
         const row = rows.find(o => o.id === card.dataset.reelId);
         if (!row || !isPublic(row)) {
           clearExternal(card);card.querySelectorAll('video').forEach(release); card.hidden = true;
-          if (card === current) { current = null; activate([...track.querySelectorAll('.offer-reel')].find(c => !c.hidden)); }
+          if(card===current){const same=[...track.querySelectorAll('.offer-reel')].find(c=>!c.hidden&&c.dataset.storeId===card.dataset.storeId);current=null;activate(same||[...track.querySelectorAll('.offer-reel')].find(c=>!c.hidden));}
         }
       });
     }
@@ -142,11 +166,11 @@
     if(demos.length){
       if(!track.querySelector('.offer-reel'))track.innerHTML='';
       for(const o of demos){if(rows.some(x=>x.id===o.id))continue;rows.push(o);track.insertAdjacentHTML('beforeend',markup(o));const card=track.lastElementChild;bind(card);observer?.observe(card);}
-      if(!current)activate(track.querySelector('.offer-reel'));
+      activate(current||track.querySelector('.offer-reel'),true);
     }
     await loadMore();
   }
-  window.DarayaReels = { render: renderFeed, isPublic, link, linkMarkup };
+  window.DarayaReels = { render: renderFeed, isPublic, link, linkMarkup, shopGroups };
   // Run after the existing route listeners. Cleanup must never cancel a newly rendered feed.
   window.addEventListener('hashchange',()=>{const parts=location.hash.split('/');if(parts[0]==='#offers')renderFeed('all',parts[1]||'');else if(parts[0]==='#followed-offers')renderFeed('following');else teardown();});
   const baseRender = render; render = function() { const parts = location.hash.split('/'); if (parts[0] === '#offers' && parts[1]) return window.DarayaReels.render('all', parts[1]); return baseRender.apply(this, arguments); };

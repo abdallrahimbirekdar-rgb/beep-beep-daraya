@@ -10,9 +10,9 @@
  const path=key=>'#example/'+key;
  const image=(src,alt)=>photo(new URL(src,location.href).href,alt,'demo-image');
  window.DarayaDemoOfferCatalog=()=>[
-  ['restaurant',0,65000,'image'],['apparel',1,140000,'image'],['stationery',2,75000,'image'],['services',0,240000,'text'],['toys',0,50000,'image']
+  ['restaurant',0,65000,'image'],['restaurant',1,35000,'image'],['restaurant',2,25000,'text'],['apparel',1,140000,'image'],['stationery',2,75000,'image'],['services',0,240000,'text'],['toys',0,50000,'image']
  ].map(([key,index,price,kind])=>{const entry=items[key][index],group=sector(key);return {
-  id:'demo-offer-'+key,demo:true,store_id:'demo-'+key,user_id:null,status:'approved',
+  id:'demo-offer-'+key+(key==='restaurant'&&index?'-'+index:''),demo:true,store_id:'demo-'+key,user_id:null,status:'approved',
   shop_name:title(group),shop_route:path(key),shop_logo:new URL(heroes[key]||entry[5],location.href).href,title:t('عرض تجريبي: ','Demo offer: ','Beispielangebot: ')+entry[language()],
   address:address(t),price,ends_at:'2026-10-21T21:59:00Z',
   details:JSON.stringify({type:'daraya-shop-offer-v1',exclusive:false,kind,video_link:key==='toys'?'https://www.youtube.com/watch?v=aqz-KE-bpKQ':'',original:entry[3],image:new URL(entry[5],location.href).href,

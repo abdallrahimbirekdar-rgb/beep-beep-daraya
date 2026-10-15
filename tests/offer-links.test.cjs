@@ -5,3 +5,5 @@ test('links open externally with safe attributes and no embeds',()=>{const html=
 test('editor has optional link and no direct video upload',()=>{const s=fs.readFileSync('daily-offers.js','utf8');assert.match(s,/name="video_link"/);assert.doesNotMatch(s,/DarayaReels\.upload|name="reel"|value="video"/)});
 
 test('supported video offers have an inline launch button without preloading iframe',()=>{c.parsePlaceVideo=()=>({kind:'embed',provider:'YouTube',src:'https://www.youtube-nocookie.com/embed/abcdefghijk'});const html=c.window.DarayaReels.linkMarkup('https://youtu.be/abcdefghijk');assert.match(html,/data-offer-play/);assert.doesNotMatch(html,/<iframe/)});
+
+test('offers from the same shop form one group in first appearance order',()=>{const cards=['a','b','a','c','b'].map(id=>({dataset:{storeId:id}}));const result=c.window.DarayaReels.shopGroups(cards);assert.deepEqual(Array.from(result,g=>g.id),['a','b','c']);assert.deepEqual(Array.from(result,g=>g.cards.length),[2,2,1]);assert.equal(result[0].cards[1],cards[2]);});
