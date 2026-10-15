@@ -53,3 +53,24 @@
 .offer-contact-actions.offer-location-actions{margin-top:10px}
 .offer-contact-actions.offer-location-actions .offer-location-link{display:inline-flex;align-items:center;justify-content:center;gap:4px;flex:0 1 auto;width:auto;min-height:36px;padding:6px 10px;font-size:12px;line-height:1.5;border-radius:8px;background:#fff7df;color:#57451f;border:1px solid #d7b96d;text-decoration:none;box-sizing:border-box}
 .offer-location-link:focus-visible{outline:2px solid #80602a;outline-offset:3px}
+
+/* A readable offer sheet for long text-only posts. */
+.offer-reel-text .offer-long-text{margin:16px 0 0;padding:0;border:1px solid #e5d3a3;border-radius:14px;background:#fffcf3;overflow:hidden}
+.offer-long-text .offer-text-sheet-heading{display:flex;align-items:center;gap:9px;padding:12px 14px;background:linear-gradient(110deg,#f5e5b5,#fff4d7);border-bottom:1px solid #eadbb8}
+.offer-long-text .offer-text-sheet-heading>span{display:grid;place-items:center;width:27px;height:27px;border-radius:7px;background:#fff9e8;color:#80602a;font-size:23px;line-height:1;flex-shrink:0}
+.offer-long-text .offer-text-sheet-heading h3{margin:0;font-size:14px;color:#57451f;font-weight:800;line-height:1.6}
+.offer-text-disclosure>summary{list-style:none;cursor:pointer;padding:0}
+.offer-text-disclosure>summary::-webkit-details-marker{display:none}
+.offer-text-preview,.offer-text-full{display:block;padding:8px 14px 4px}
+.offer-long-text .offer-text-item,.offer-long-text .offer-text-heading,.offer-long-text .offer-text-note{display:block;overflow-wrap:anywhere;white-space:pre-wrap;text-align:start}
+.offer-long-text .offer-text-item{position:relative;padding:10px 13px 10px 0;padding-inline-start:13px;padding-inline-end:0;border-bottom:1px solid #eee5d1;font-size:14px;line-height:1.95;color:#443d30;font-variant-numeric:tabular-nums}
+.offer-long-text .offer-text-item:before{content:"";position:absolute;inset-inline-start:0;top:22px;width:5px;height:5px;border-radius:50%;background:#bd9439}
+.offer-long-text .offer-text-heading{font-size:15px;font-weight:800;color:#674d20;padding:10px 0 7px}
+.offer-long-text .offer-text-note{font-size:13px;line-height:1.95;color:#74674f;padding:7px 0}
+.offer-long-text .offer-text-space{display:block;height:8px}
+.offer-text-toggle{display:flex;align-items:center;justify-content:center;min-height:44px;margin:8px 12px 12px;padding:8px 12px;border:1px solid #dbc58b;border-radius:9px;background:#fff3d1;color:#654c1f;font-size:13px;font-weight:700;text-align:center;box-sizing:border-box}
+.offer-text-hide,.offer-text-disclosure[open] .offer-text-preview,.offer-text-disclosure[open] .offer-text-show{display:none}
+.offer-text-disclosure[open] .offer-text-hide{display:inline}
+.offer-text-disclosure[open] .offer-text-full{padding-bottom:14px}
+.offer-text-disclosure>summary:focus-visible{outline:2px solid #a57b24;outline-offset:-3px;border-radius:10px}
+@media(max-width:420px){.offer-long-text .offer-text-item{font-size:13px}.offer-text-preview,.offer-text-full{padding-inline:12px}}
