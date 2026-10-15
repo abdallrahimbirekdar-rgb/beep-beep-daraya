@@ -54,6 +54,7 @@ final class OfferReminders {
         return PendingIntent.getBroadcast(c,600 + slot,intent,flags);
     }
     private static void cancel(Context c) {
+        prefs(c).edit().remove("scheduled_signature").apply();
         AlarmManager manager = c.getSystemService(AlarmManager.class);
         for (int slot=0;slot<MAX;slot++) {
             PendingIntent pending = alarm(c,slot,0,false);
@@ -83,21 +84,33 @@ final class OfferReminders {
         } catch (Exception ignored) { return false; }
     }
     static void schedule(Context c) {
-        cancel(c); channel(c);
+        channel(c);
         SharedPreferences p=prefs(c);
         long now=System.currentTimeMillis();
-        if(!p.getBoolean("consent",false)||!p.getBoolean("active",false)||!canNotify(c)||now-p.getLong("synced",0)>CONFIG_LIFETIME)return;
+        if(!p.getBoolean("consent",false)||!p.getBoolean("active",false)||!canNotify(c)||now-p.getLong("synced",0)>CONFIG_LIFETIME) {cancel(c);return;}
+        String signature=p.getString("times","[]");
+        // Preserve alarms waiting inside their delivery window when the app resumes or syncs.
+        if(signature.equals(p.getString("scheduled_signature",""))) {
+            boolean allPresent=true;
+            try {
+                JSONArray times=new JSONArray(signature);
+                for(int i=0;i<times.length();i++)if(alarm(c,i,0,false)==null)allPresent=false;
+            } catch(Exception ignored) {allPresent=false;}
+            if(allPresent)return;
+        }
+        cancel(c);
         try {
-            JSONArray times=new JSONArray(p.getString("times","[]"));
+            JSONArray times=new JSONArray(signature);
             AlarmManager manager=c.getSystemService(AlarmManager.class);
             for(int i=0;i<Math.min(times.length(),MAX);i++) {
                 long due=ReminderTimes.next(now,times.getString(i));
                 manager.setWindow(AlarmManager.RTC_WAKEUP,due,WINDOW,alarm(c,i,due,true));
             }
+            p.edit().putString("scheduled_signature",signature).apply();
         } catch (Exception ignored) { cancel(c); }
     }
     static void receive(Context c, Intent intent) {
-        if(!ACTION.equals(intent.getAction())) { schedule(c); return; }
+        if(!ACTION.equals(intent.getAction())) {cancel(c);schedule(c);return;}
         SharedPreferences p=prefs(c);
         int slot=intent.getIntExtra("slot",-1);
         long due=intent.getLongExtra("due",0),now=System.currentTimeMillis();
@@ -112,6 +125,19 @@ final class OfferReminders {
         // Do not cancel another slot that is waiting for a delayed delivery.
         if(due<=p.getLong("last_due_"+slot,0))return;
         p.edit().putLong("last_due_"+slot,due).apply();
+        postNotification(c);
+    }
+    static void test(Activity a) {
+        if(!prefs(a).getBoolean("consent",false)||!canNotify(a)) {
+            Toast.makeText(a,"فعّل التذكير واسمح بإشعارات التطبيق أولًا",Toast.LENGTH_LONG).show();
+            showSettings(a);
+            return;
+        }
+        postNotification(a);
+        Toast.makeText(a,"أُرسل إشعار تجريبي. اسحب شريط الإشعارات لعرضه.",Toast.LENGTH_LONG).show();
+    }
+    private static void postNotification(Context c) {
+        channel(c);
         Intent open=new Intent(c,MainActivity.class).setAction(Intent.ACTION_VIEW)
             .setData(Uri.parse("https://damascus-shop.com/#offers"))
             .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_SINGLE_TOP);
@@ -136,7 +162,7 @@ final class OfferReminders {
         String times=p.getString("times","[]").replace("[","").replace("]","").replace("\"","");
         String status=p.getBoolean("consent",false)&&canNotify(a)?"مفعّل على هذا الهاتف":"متوقف على هذا الهاتف";
         new AlertDialog.Builder(a).setTitle("تذكير بعروض اليوم")
-            .setMessage(status+"\n\nنص الإشعار: شاهد عروض اليوم\nالأوقات بتوقيت داريا: "+times+"\n\nتحدد الإدارة العدد والأوقات. تتحدث عند فتح التطبيق واتصاله بالإنترنت. قد يتأخر التنبيه بسبب إعدادات البطارية. يتوقف التذكير بعد أسبوع دون مزامنة لحين فتح التطبيق مجددًا.")
+            .setMessage(status+"\n\nنص الإشعار: شاهد عروض اليوم\nالأوقات بتوقيت داريا: "+times+"\n\nتحدد الإدارة العدد والأوقات. تتحدث عند فتح التطبيق واتصاله بالإنترنت. الوقت تقريبي وقد يتأخر حتى ساعة، أو أكثر مع توفير البطارية. يتوقف التذكير بعد أسبوع دون مزامنة لحين فتح التطبيق مجددًا.")
             .setPositiveButton("تفعيل التذكير",(d,w)->{
                 if(!p.getBoolean("configured",false)) { Toast.makeText(a,"اتصل بالإنترنت وافتح عروض اليوم لتحميل مواعيد التذكير أولًا.",Toast.LENGTH_LONG).show();return; }
                 p.edit().putBoolean("consent",true).apply();
@@ -148,7 +174,7 @@ final class OfferReminders {
                 else { schedule(a); Toast.makeText(a,"تم تفعيل تذكير عروض اليوم على هذا الهاتف",Toast.LENGTH_LONG).show(); }
             })
             .setNegativeButton("إيقاف التذكير",(d,w)->{p.edit().putBoolean("consent",false).apply();cancel(a);Toast.makeText(a,"تم إيقاف التذكير",Toast.LENGTH_SHORT).show();})
-            .setNeutralButton("إغلاق",null).show();
+            .setNeutralButton("إشعار تجريبي الآن",(d,w)->test(a)).show();
     }
     static void permissionResult(Activity a) {
         if(canNotify(a)) { schedule(a); Toast.makeText(a,"تم تفعيل تذكير عروض اليوم",Toast.LENGTH_LONG).show(); }

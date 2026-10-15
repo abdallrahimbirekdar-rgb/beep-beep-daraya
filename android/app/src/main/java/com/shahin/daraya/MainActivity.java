@@ -169,6 +169,8 @@ public class MainActivity extends Activity {
                     if("sync".equals(body.optString("action"))) {
                         boolean ok=OfferReminders.applyConfig(this,body);
                         reply.postMessage(ok?"{\"ok\":true}":"{\"ok\":false}");
+                    } else if("test".equals(body.optString("action"))) {
+                        OfferReminders.test(this);
                     } else if("settings".equals(body.optString("action"))) {
                         OfferReminders.showSettings(this);
                     }
