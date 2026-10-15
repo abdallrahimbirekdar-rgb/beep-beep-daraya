@@ -59,7 +59,7 @@
     const track = app.querySelector('.offer-reels-track'), position = app.querySelector('[data-reel-position]');
     const dots=document.createElement('nav');dots.className='offer-shop-dots';dots.setAttribute('aria-label',t('اختيار المحل','Choose shop','Geschäft wählen'));app.querySelector('.reels-hint').before(dots);
     const edges=document.createElement('div');edges.className='offer-edge-navigation';edges.setAttribute('aria-hidden','true');
-    edges.innerHTML='<div class="offer-edge-side" data-edge-prev hidden></div><div class="offer-edge-side" data-edge-next hidden></div><div class="offer-edge-down" data-edge-down hidden></div>';
+    edges.innerHTML='<div class="offer-edge-side" data-edge-prev hidden></div><div class="offer-edge-side" data-edge-next hidden></div><div class="offer-edge-up" data-edge-up hidden>↑</div><div class="offer-edge-down" data-edge-down hidden>↓</div>';
     app.querySelector('.offers-reels-page').append(edges);
     let edgeFrame=0,nextOfferCard=null;
     const queueEdges=()=>{if(!edgeFrame)edgeFrame=requestAnimationFrame(()=>{edgeFrame=0;updateEdges();});};
@@ -91,17 +91,17 @@
       for(const [key,delta] of [['prev',-1],['next',1]]){
         const button=edges.querySelector('[data-edge-'+key+']'),target=all[index+delta];
         button.hidden=!visible||!target;if(!target)continue;
-        const right=(delta<0)===rtl;
+        const right=(delta>0)===rtl;
         button.classList.toggle('edge-right',right);button.classList.toggle('edge-left',!right);
         const name=target.cards[0].querySelector('.reel-identity strong')?.textContent||'';
         const label=t('اسحب','Swipe','Wischen');
         button.innerHTML='<span aria-hidden="true">'+(right?'›':'‹')+'</span><small>'+label+'</small>';
         button.title=label+' — '+name;
       }
-      nextOfferCard=null;
-      if(selected){let shown=0;selected.cards.forEach((c,i)=>{if(c.getBoundingClientRect().top<=height*.35)shown=i;});nextOfferCard=selected.cards[shown+1]||null;}
-      const down=edges.querySelector('[data-edge-down]');down.hidden=!visible||!nextOfferCard;
-      if(nextOfferCard){const title=nextOfferCard.querySelector('h2')?.textContent||'';down.innerHTML='<span aria-hidden="true">↑</span><span><strong>'+t('اسحب للأعلى · عرض آخر','Swipe up · More offers','Nach oben wischen · Mehr Angebote')+'</strong><small>'+esc(title)+'</small></span>';}
+      nextOfferCard=null;let previousOfferCard=null;
+      if(selected){let shown=0;selected.cards.forEach((c,i)=>{if(c.getBoundingClientRect().top<=height*.35)shown=i;});nextOfferCard=selected.cards[shown+1]||null;previousOfferCard=selected.cards[shown-1]||null;}
+      edges.querySelector('[data-edge-down]').hidden=!visible||!nextOfferCard;
+      edges.querySelector('[data-edge-up]').hidden=!visible||!previousOfferCard;
       const nav=document.querySelector('#mobile-navigation'),navBounds=nav?.getBoundingClientRect();
       edges.style.setProperty('--offer-edge-bottom',(navBounds&&navBounds.height&&navBounds.top<height?height-navBounds.top+10:18)+'px');
     }
