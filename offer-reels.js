@@ -121,17 +121,23 @@
       const nav=document.querySelector('#mobile-navigation'),navBounds=nav?.getBoundingClientRect();
       edges.style.setProperty('--offer-edge-bottom',(navBounds&&navBounds.height&&navBounds.top<height?height-navBounds.top+10:18)+'px');
     }
+    function alignCard(card){
+      if(!alive()||!card||card.hidden)return;
+      // Scroll only the page, never the clipped horizontal offer container.
+      const margin=parseFloat(getComputedStyle(card).scrollMarginTop)||12;
+      window.scrollTo({left:window.scrollX,top:Math.max(0,window.scrollY+card.getBoundingClientRect().top-margin),behavior:'instant'});
+    }
     function activate(card,refresh=false) {
       if(!alive()||!card||card.hidden||current===card&&!refresh)return;
       const previousShop=current?.dataset.storeId,shopId=card.dataset.storeId;mediaEpoch++;
-      track.querySelectorAll('.offer-reel').forEach(c=>{const same=c.dataset.storeId===shopId&&!c.hidden;c.classList.toggle('reel-current',same);if(!same)clearExternal(c);});
+      track.querySelectorAll('.offer-reel').forEach(c=>{const same=c.dataset.storeId===shopId&&!c.hidden;c.classList.toggle('reel-current',same);if(!same&&c.classList.contains('has-external-video'))clearExternal(c);});
       current=card;
       // Open mobile browsing at the same card position used by shop navigation.
       // Only align once: later loads and countdown updates must not move the reader.
       if(!initialMobileOfferAligned&&matchMedia('(max-width: 767px)').matches){
         initialMobileOfferAligned=true;
         requestAnimationFrame(()=>requestAnimationFrame(()=>{
-          if(alive()&&current===card&&!card.hidden)card.scrollIntoView({behavior:'instant',block:'start'});
+          if(alive()&&current===card&&!card.hidden)alignCard(card);
         }));
       }
       const all=groups(),index=all.findIndex(g=>g.id===shopId),selected=all[index];if(!selected)return;
@@ -140,7 +146,7 @@
       position.textContent=t('المحل ','Shop ','Geschäft ')+(index+1)+' / '+all.length;
       const hint=app.querySelector('.reels-hint');hint.textContent=t('لهذا المحل '+selected.cards.length+' عروض — انزل لرؤيتها. اسحب جانبيًا لتغيير المحل.','This shop has '+selected.cards.length+' offers — scroll down to see them. Swipe sideways to change shops.','Dieses Geschäft hat '+selected.cards.length+' Angebote — scrolle nach unten. Seitlich zum nächsten Geschäft wischen.');
       dots.innerHTML=all.map((g,i)=>'<button type="button" data-shop-dot="'+i+'" aria-label="'+esc(t('المحل ','Shop ','Geschäft ')+(i+1))+'" aria-current="'+(i===index?'true':'false')+'"><span aria-hidden="true"></span></button>').join('');
-      dots.querySelectorAll('button').forEach(b=>b.onclick=()=>{const next=all[Number(b.dataset.shopDot)]?.cards[0];if(next){activate(next);next.scrollIntoView({behavior:'auto',block:'start'});}});
+      dots.querySelectorAll('button').forEach(b=>b.onclick=()=>{const next=all[Number(b.dataset.shopDot)]?.cards[0];if(next){activate(next);alignCard(next);}});
 
       selected.cards.forEach((c,i)=>{let badge=c.querySelector('.reel-step-badge');if(!badge){badge=document.createElement('span');badge.className='reel-step-badge';c.append(badge);}badge.textContent=t('العرض ','Offer ','Angebot ')+(i+1)+' / '+selected.cards.length;});
       app.querySelector('[data-reel-prev]').disabled=index<=0;
@@ -203,7 +209,7 @@
     function move(delta) {
       const all=groups(),index=Math.max(0,all.findIndex(g=>g.id===current?.dataset.storeId));
       const next=all[Math.max(0,Math.min(all.length-1,index+delta))]?.cards[0];
-      if(next&&next.dataset.storeId!==current?.dataset.storeId){track.dataset.direction=delta>0?'next':'prev';activate(next);next.scrollIntoView({behavior:'auto',block:'start'});}
+      if(next&&next.dataset.storeId!==current?.dataset.storeId){track.dataset.direction=delta>0?'next':'prev';activate(next);alignCard(next);}
     }
     app.querySelector('[data-reel-prev]').onclick=()=>move(-1);app.querySelector('[data-reel-next]').onclick=()=>move(1);
     track.addEventListener('keydown',e=>{if(e.target!==track)return;if(['ArrowLeft','ArrowRight'].includes(e.key)){e.preventDefault();const rtl=getComputedStyle(track).direction==='rtl';move((e.key==='ArrowLeft')===rtl?1:-1);}});

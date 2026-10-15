@@ -7,3 +7,13 @@ test('editor has optional link and no direct video upload',()=>{const s=fs.readF
 test('supported video offers have an inline launch button without preloading iframe',()=>{c.parsePlaceVideo=()=>({kind:'embed',provider:'YouTube',src:'https://www.youtube-nocookie.com/embed/abcdefghijk'});const html=c.window.DarayaReels.linkMarkup('https://youtu.be/abcdefghijk');assert.match(html,/data-offer-play/);assert.doesNotMatch(html,/<iframe/)});
 
 test('offers from the same shop form one group in first appearance order',()=>{const cards=['a','b','a','c','b'].map(id=>({dataset:{storeId:id}}));const result=c.window.DarayaReels.shopGroups(cards);assert.deepEqual(Array.from(result,g=>g.id),['a','b','c']);assert.deepEqual(Array.from(result,g=>g.cards.length),[2,2,1]);assert.equal(result[0].cards[1],cards[2]);});
+
+test('shop alignment scrolls the page vertically without scrolling nested offer containers',()=>{
+ const source=fs.readFileSync('offer-reels.js','utf8'),start=source.indexOf('function alignCard('),end=source.indexOf('\n    function activate(',start);
+ const calls=[];let active=true;
+ const ctx={alive:()=>active,getComputedStyle:()=>({scrollMarginTop:'12px'}),window:{scrollX:0,scrollY:400,scrollTo:options=>calls.push(options)}};
+ vm.createContext(ctx);vm.runInContext(source.slice(start,end),ctx);
+ const card={hidden:false,getBoundingClientRect:()=>({top:120}),scrollIntoView:()=>{throw Error('nested scrolling causes swipe shake');}};
+ ctx.alignCard(card);assert.equal(calls.length,1);assert.equal(calls[0].top,508);assert.equal(calls[0].left,0);assert.equal(calls[0].behavior,'instant');
+ card.hidden=true;ctx.alignCard(card);assert.equal(calls.length,1);card.hidden=false;active=false;ctx.alignCard(card);assert.equal(calls.length,1);
+});
