@@ -5,7 +5,7 @@
  const app=document.getElementById('app');
  let lastRoute='';
  const adminHome=()=>!location.hash||['#dashboard','#dashboard/','#dashboard/home'].includes(location.hash);
- const icons={"stores":"🏪","details":"🪪","photos":"📸","products":"🛍️","delivery":"🚚","drivers":"🛵","hours":"⏰","reports":"📊","orders":"📋","new-section":"🆕","tools":"🗓️","workspace-tools":"🧰","overview":"🏠","help":"📖","accounts":"👥","statistics":"📈","notebook":"📝","usage":"⚡","plans":"👑","bans":"🛡️","document":"📄","offer-reminders":"🔔"};
+ const icons={"stores":"🏪","details":"🪪","photos":"📸","products":"🛍️","delivery":"🚚","drivers":"🛵","hours":"⏰","reports":"📊","orders":"📋","new-section":"🆕","tools":"🗓️","workspace-tools":"🧰","overview":"🏠","help":"📖","accounts":"👥","statistics":"📈","notebook":"📝","usage":"⚡","plans":"👑","bans":"🛡️","document":"📄","offer-reminders":"🔔","offer-display":"💎"};
  const iconMarkup=key=>'<span class="dashboard-color-icon" aria-hidden="true">'+(icons[key]||icons.document)+'</span>';
  window.DarayaDashboardIcon=iconMarkup;
  function link(href,label){const a=document.createElement('a');a.href=href;a.textContent=label;a.dataset.noTranslate='';return a;}
@@ -62,7 +62,7 @@
   app.dataset.dashboardSection=home?'home':tab;
   app.dataset.dashboardRoute=location.hash;
   const workspace=app.querySelector('.admin-workspace');workspace?.classList.add('dashboard-single-layout');
-  const extra=[['#dashboard/offer-reminders',say('إشعارات عروض اليوم','Offer reminders','Angebotserinnerungen'),'offer-reminders'],['#dashboard/place-reports',say('بلاغات الأماكن','Place reports','Ortsmeldungen'),'place-reports'],['#dashboard/reports',say('التقارير ومراجعة المتاجر','Reports and shop review','Berichte und Geschäftsprüfung'),'reports'],['#dashboard/statistics',say('الزيارات والإحصاءات','Visits and statistics','Besuche und Statistik'),'statistics'],['#dashboard/plans',say('باقات الاشتراك','Subscription plans','Tarife'),'plans'],['#banned-ad-accounts',say('الحسابات المحظورة من الإعلانات','Accounts blocked from ads','Für Anzeigen gesperrte Konten'),'bans'],['#dashboard/tools',say('أدوات الإدارة وتحديث البيانات','Admin tools and refresh','Werkzeuge und Aktualisieren'),'tools']];
+  const extra=[['#dashboard/offer-display',say('ترتيب وتمييز عروض اليوم','Offer order and levels','Angebotsreihenfolge und Stufen'),'offer-display'],['#dashboard/offer-reminders',say('إشعارات عروض اليوم','Offer reminders','Angebotserinnerungen'),'offer-reminders'],['#dashboard/place-reports',say('بلاغات الأماكن','Place reports','Ortsmeldungen'),'place-reports'],['#dashboard/reports',say('التقارير ومراجعة المتاجر','Reports and shop review','Berichte und Geschäftsprüfung'),'reports'],['#dashboard/statistics',say('الزيارات والإحصاءات','Visits and statistics','Besuche und Statistik'),'statistics'],['#dashboard/plans',say('باقات الاشتراك','Subscription plans','Tarife'),'plans'],['#banned-ad-accounts',say('الحسابات المحظورة من الإعلانات','Accounts blocked from ads','Für Anzeigen gesperrte Konten'),'bans'],['#dashboard/tools',say('أدوات الإدارة وتحديث البيانات','Admin tools and refresh','Werkzeuge und Aktualisieren'),'tools']];
   extra.forEach(([href,title,key])=>{if(![...tabs.querySelectorAll('a')].some(a=>a.getAttribute('href')===href)){const a=link(href,title);a.dataset.dashboardMenuKey=key;tabs.append(a);}});
   const request=heading.querySelector('a[href="#data-requests"]');if(request)tabs.append(request);
   const planButtons=[...heading.querySelectorAll(':scope > button')];const tools=heading.querySelector('.admin-tools');
