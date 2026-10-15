@@ -42,6 +42,11 @@ jobs:
           gradle-version: '8.11.1'
       - name: Install SDK
         run: '"$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-36" "build-tools;36.0.0"'
+      - name: Test local reminder calendar
+        run: |
+          mkdir -p /tmp/daraya-reminder-tests
+          javac -d /tmp/daraya-reminder-tests android/app/src/main/java/com/shahin/daraya/ReminderTimes.java android/tests/ReminderTimesTest.java
+          java -cp /tmp/daraya-reminder-tests com.souqdaraya.app.ReminderTimesTest
       - name: Build APK
         working-directory: android
         run: gradle --no-daemon :app:assembleRelease :app:bundleRelease
@@ -55,9 +60,9 @@ jobs:
           sha256sum souq-daraya.apk > souq-daraya.apk.sha256
           cp android/app/build/outputs/bundle/release/app-release.aab souq-daraya.aab
           jarsigner -verify souq-daraya.aab
-          NOTES='Daraya Android 1.4.6. Signed with the permanent release key. Future builds using this key support in-place updates. Older builds signed with disposable development keys may require a one-time reinstall. Internet required. The legacy release tag is retained for existing website download links.'
-          gh release view android-v1.3.0 >/dev/null 2>&1 || gh release create android-v1.3.0 --target "$GITHUB_SHA" --title 'Daraya Android 1.4.6' --notes "$NOTES"
-          gh release edit android-v1.3.0 --title 'Daraya Android 1.4.6' --notes "$NOTES"
+          NOTES='Daraya Android 1.4.7. Optional local offer reminders with an admin-managed schedule. Signed with the permanent release key. Future builds using this key support in-place updates. Older builds signed with disposable development keys may require a one-time reinstall. Internet required. The legacy release tag is retained for existing website download links.'
+          gh release view android-v1.3.0 >/dev/null 2>&1 || gh release create android-v1.3.0 --target "$GITHUB_SHA" --title 'Daraya Android 1.4.7' --notes "$NOTES"
+          gh release edit android-v1.3.0 --title 'Daraya Android 1.4.7' --notes "$NOTES"
           gh release upload android-v1.3.0 souq-daraya.apk souq-daraya.apk.sha256 souq-daraya.aab --clobber
           APK_ASSET_ID=$(gh api "repos/$GITHUB_REPOSITORY/releases/tags/android-v1.3.0" --jq '.assets[] | select(.name == "souq-daraya.apk") | .id')
           gh api --method PATCH "repos/$GITHUB_REPOSITORY/releases/assets/$APK_ASSET_ID" -f label="daraya-version-code:$ANDROID_VERSION_CODE"
@@ -70,4 +75,5 @@ jobs:
       - name: Remove private signing file
         if: always()
         run: rm -f "$ANDROID_KEYSTORE_PATH"
+
 

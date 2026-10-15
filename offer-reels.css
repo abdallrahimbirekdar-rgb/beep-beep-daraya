@@ -74,3 +74,8 @@
 .offer-text-disclosure[open] .offer-text-full{padding-bottom:14px}
 .offer-text-disclosure>summary:focus-visible{outline:2px solid #a57b24;outline-offset:-3px;border-radius:10px}
 @media(max-width:420px){.offer-long-text .offer-text-item{font-size:13px}.offer-text-preview,.offer-text-full{padding-inline:12px}}
+
+
+/* Local reminder controls and the main admin schedule form. */
+.offer-reminder-settings{display:inline-flex;align-items:center;min-height:36px;margin:0 0 12px;padding:6px 10px;font-size:12px;border:1px solid #dbc58b;border-radius:9px;background:#fff7df;color:#654c1f}
+.offer-reminder-admin p{line-height:1.9}.offer-reminder-admin form{max-width:560px}.offer-reminder-times{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:14px 0}.offer-reminder-times input{direction:ltr;min-height:44px}.offer-reminder-admin [role=status]{white-space:pre-wrap;overflow-wrap:anywhere}

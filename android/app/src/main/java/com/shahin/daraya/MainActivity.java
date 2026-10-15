@@ -69,7 +69,7 @@ public class MainActivity extends Activity {
         int installedCode=0;
         try { installedCode=getPackageManager().getPackageInfo(getPackageName(),0).versionCode; }
         catch(android.content.pm.PackageManager.NameNotFoundException ignored) {}
-        settings.setUserAgentString(settings.getUserAgentString()+" ShahinAndroid/1.2 DarayaVersion/"+installedCode);
+        settings.setUserAgentString(settings.getUserAgentString()+" ShahinAndroid/1.2 DarayaReminders/1 DarayaVersion/"+installedCode);
         CookieManager.getInstance().setAcceptCookie(true);
         CookieManager.getInstance().setAcceptThirdPartyCookies(web,false);
         WebView.setWebContentsDebuggingEnabled(false);
@@ -158,6 +158,23 @@ public class MainActivity extends Activity {
                 }
             });
         }
+        if(androidx.webkit.WebViewFeature.isFeatureSupported(androidx.webkit.WebViewFeature.WEB_MESSAGE_LISTENER)) {
+            java.util.Set<String> reminderOrigins=new java.util.HashSet<>(java.util.Arrays.asList("https://damascus-shop.com","https://www.damascus-shop.com"));
+            androidx.webkit.WebViewCompat.addWebMessageListener(web,"DarayaOfferReminders",reminderOrigins,(view,message,sourceOrigin,isMainFrame,reply)->{
+                if(!isMainFrame||!isSiteUrl(sourceOrigin))return;
+                try {
+                    String raw=message.getData();
+                    if(raw==null||raw.length()>4096)return;
+                    org.json.JSONObject body=new org.json.JSONObject(raw);
+                    if("sync".equals(body.optString("action"))) {
+                        boolean ok=OfferReminders.applyConfig(this,body);
+                        reply.postMessage(ok?"{\"ok\":true}":"{\"ok\":false}");
+                    } else if("settings".equals(body.optString("action"))) {
+                        OfferReminders.showSettings(this);
+                    }
+                } catch(Exception ignored) { reply.postMessage("{\"ok\":false}"); }
+            });
+        }
         String destination = destination(getIntent());
         if(destination != null) web.loadUrl(freshUrl(destination));
         else if(state == null || web.restoreState(state) == null) web.loadUrl(freshUrl(SITE+"#home"));
@@ -219,6 +236,7 @@ public class MainActivity extends Activity {
     }
     @Override public void onRequestPermissionsResult(int request,String[] permissions,int[] results) {
         super.onRequestPermissionsResult(request,permissions,results);
+        if(request==OfferReminders.PERMISSION_REQUEST) { OfferReminders.permissionResult(this);return; }
         if(request==STARTUP_LOCATION_PERMISSION) {
             boolean granted=checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION)==android.content.pm.PackageManager.PERMISSION_GRANTED ||
                 checkSelfPermission(android.Manifest.permission.ACCESS_COARSE_LOCATION)==android.content.pm.PackageManager.PERMISSION_GRANTED;
@@ -239,9 +257,10 @@ public class MainActivity extends Activity {
         }
     }
     @Override protected void onPause() { super.onPause(); if(web!=null&&locationCallback==null){web.evaluateJavascript("window.dispatchEvent(new Event('daraya-app-pause'));",null);web.onPause();} }
-    @Override protected void onResume() { super.onResume(); if(web!=null){web.onResume();web.evaluateJavascript("window.dispatchEvent(new Event('daraya-app-resume'));",null);} }
+    @Override protected void onResume() { super.onResume(); OfferReminders.schedule(this); if(web!=null){web.onResume();web.evaluateJavascript("window.dispatchEvent(new Event('daraya-app-resume'));",null);} }
     @Override public void onBackPressed() { if(web.canGoBack()) web.goBack(); else super.onBackPressed(); }
     @Override protected void onSaveInstanceState(Bundle state) { web.saveState(state); super.onSaveInstanceState(state); }
     @Override protected void onDestroy() { if(fileCallback!=null) fileCallback.onReceiveValue(null); if(locationCallback!=null)locationCallback.invoke(locationOrigin,false,false); web.destroy(); super.onDestroy(); }
 }
+
 
