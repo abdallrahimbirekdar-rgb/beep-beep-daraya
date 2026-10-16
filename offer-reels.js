@@ -111,8 +111,9 @@
         button.classList.toggle('edge-right',right);button.classList.toggle('edge-left',!right);
         const name=target.cards[0].querySelector('.reel-identity strong')?.textContent||'';
         const label=t('اسحب','Swipe','Wischen');
-        button.innerHTML='<span aria-hidden="true">'+(right?'›':'‹')+'</span><small>'+label+'</small>';
-        button.title=label+' — '+name;
+        const cue=(right?'right:':'left:')+label;
+        if(button.dataset.cue!==cue){button.dataset.cue=cue;button.innerHTML='<span aria-hidden="true">'+(right?'›':'‹')+'</span><small>'+label+'</small>';}
+        const title=label+' — '+name;if(button.title!==title)button.title=title;
       }
       nextOfferCard=null;let previousOfferCard=null;
       if(selected){let shown=0;selected.cards.forEach((c,i)=>{if(c.getBoundingClientRect().top<=height*.35)shown=i;});nextOfferCard=selected.cards[shown+1]||null;previousOfferCard=selected.cards[shown-1]||null;}
@@ -142,10 +143,11 @@
       }
       const all=groups(),index=all.findIndex(g=>g.id===shopId),selected=all[index];if(!selected)return;
       const groupRows=selected.cards.map(c=>rows.find(o=>o.id===c.dataset.reelId)).filter(Boolean),sample=groupRows[0],shop=sample?.demo?{demo:true,name:sample.shop_name}:stores.find(s=>s.id===shopId);
-      const summary=app.querySelector('[data-shop-summary]');if(shop&&summary)summary.innerHTML='<span>'+esc(shop.name)+'</span><p>'+(window.DarayaOfferTools?.summary(shop,groupRows)||'')+'</p>';
+      const summary=app.querySelector('[data-shop-summary]');if(shop&&summary){const html='<span>'+esc(shop.name)+'</span><p>'+(window.DarayaOfferTools?.summary(shop,groupRows)||'')+'</p>';if(summary.innerHTML!==html)summary.innerHTML=html;}
       position.textContent=t('المحل ','Shop ','Geschäft ')+(index+1)+' / '+all.length;
       const hint=app.querySelector('.reels-hint');hint.textContent=t('لهذا المحل '+selected.cards.length+' عروض — انزل لرؤيتها. اسحب جانبيًا لتغيير المحل.','This shop has '+selected.cards.length+' offers — scroll down to see them. Swipe sideways to change shops.','Dieses Geschäft hat '+selected.cards.length+' Angebote — scrolle nach unten. Seitlich zum nächsten Geschäft wischen.');
-      dots.innerHTML=all.map((g,i)=>'<button type="button" data-shop-dot="'+i+'" aria-label="'+esc(t('المحل ','Shop ','Geschäft ')+(i+1))+'" aria-current="'+(i===index?'true':'false')+'"><span aria-hidden="true"></span></button>').join('');
+      const dotsMarkup=all.map((g,i)=>'<button type="button" data-shop-dot="'+i+'" aria-label="'+esc(t('المحل ','Shop ','Geschäft ')+(i+1))+'" aria-current="'+(i===index?'true':'false')+'"><span aria-hidden="true"></span></button>').join('');
+      if(dots.innerHTML!==dotsMarkup)dots.innerHTML=dotsMarkup;
       dots.querySelectorAll('button').forEach(b=>b.onclick=()=>{const next=all[Number(b.dataset.shopDot)]?.cards[0];if(next){activate(next);alignCard(next);}});
 
       selected.cards.forEach((c,i)=>{let badge=c.querySelector('.reel-step-badge');if(!badge){badge=document.createElement('span');badge.className='reel-step-badge';c.append(badge);}badge.textContent=t('العرض ','Offer ','Angebot ')+(i+1)+' / '+selected.cards.length;});
@@ -213,9 +215,8 @@
     }
     app.querySelector('[data-reel-prev]').onclick=()=>move(-1);app.querySelector('[data-reel-next]').onclick=()=>move(1);
     track.addEventListener('keydown',e=>{if(e.target!==track)return;if(['ArrowLeft','ArrowRight'].includes(e.key)){e.preventDefault();const rtl=getComputedStyle(track).direction==='rtl';move((e.key==='ArrowLeft')===rtl?1:-1);}});
-    let touchStart=null;
-    track.addEventListener('touchstart',e=>{if(e.touches.length===1)touchStart={x:e.touches[0].clientX,y:e.touches[0].clientY};},{passive:true});
-    track.addEventListener('touchend',e=>{if(!touchStart)return;const end=e.changedTouches[0],dx=end.clientX-touchStart.x,dy=end.clientY-touchStart.y;touchStart=null;if(Math.abs(dx)>55&&Math.abs(dx)>Math.abs(dy)*1.4){const rtl=getComputedStyle(track).direction==='rtl';move((dx<0)===rtl?1:-1);}},{passive:true});
+    const detachGestures=window.DarayaOfferGestures?.attach(app.querySelector('.offers-reels-page'),direction=>{const rtl=getComputedStyle(track).direction==='rtl';move((direction==='left')===rtl?1:-1);});
+    const stopWithGestures=stop;stop=()=>{detachGestures?.();stopWithGestures();};
     function checkExpiry() {
       if (!alive()) return teardown();
       track.querySelectorAll('.offer-reel').forEach(card => {

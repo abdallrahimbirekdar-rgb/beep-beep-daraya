@@ -84,3 +84,6 @@
 
 /* Shop changes use page-only alignment: no nested horizontal scrolling or slide transform. */
 .offer-reels-track{overflow:clip;overflow-anchor:none;overscroll-behavior-x:contain}
+
+.offer-reels-track{touch-action:pan-y pinch-zoom}
+.offers-reels-page{touch-action:pan-y pinch-zoom;overscroll-behavior-x:contain}

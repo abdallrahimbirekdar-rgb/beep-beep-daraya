@@ -17,3 +17,13 @@ test('shop alignment scrolls the page vertically without scrolling nested offer 
  ctx.alignCard(card);assert.equal(calls.length,1);assert.equal(calls[0].top,508);assert.equal(calls[0].left,0);assert.equal(calls[0].behavior,'instant');
  card.hidden=true;ctx.alignCard(card);assert.equal(calls.length,1);card.hidden=false;active=false;ctx.alignCard(card);assert.equal(calls.length,1);
 });
+
+test('scrolling keeps direction hints stable instead of rebuilding them every frame',()=>{
+ const source=fs.readFileSync('offer-reels.js','utf8'),start=source.indexOf('function updateEdges()'),end=source.indexOf('\n    function alignCard(',start);
+ let writes=0;const buttons={};
+ const node=()=>{let html='',title='';return {dataset:{},classList:{toggle(){}},get innerHTML(){return html;},set innerHTML(value){html=value;writes++;},get title(){return title;},set title(value){title=value;writes++;}};};
+ for(const name of ['prev','next','up','down'])buttons['[data-edge-'+name+']']=node();
+ const card={getBoundingClientRect:()=>({top:20}),querySelector:()=>({textContent:'Shop'})};
+ const ctx={alive:()=>true,groups:()=>[{id:'a',cards:[card]},{id:'b',cards:[card]}],current:{dataset:{storeId:'a'}},track:{getBoundingClientRect:()=>({top:0,bottom:1000})},window:{innerHeight:800},getComputedStyle:()=>({direction:'rtl'}),edges:{querySelector:s=>buttons[s],style:{setProperty(){}}},document:{querySelector:()=>null},t:a=>a,nextOfferCard:null};
+ vm.createContext(ctx);vm.runInContext(source.slice(start,end),ctx);ctx.updateEdges();assert.ok(writes>0);writes=0;for(let i=0;i<60;i++)ctx.updateEdges();assert.equal(writes,0);
+});
