@@ -53,6 +53,8 @@
   }
   function teardown() { epoch++; stop(); stop = () => {}; }
   async function renderFeed(mode = 'all', focus = '') {
+    const examples = mode === 'all' && (focus === 'examples' || focus.startsWith('demo-'));
+    if (focus === 'examples') focus = '';
     teardown(); const token = epoch, uid = user?.id;
     document.querySelector('#app').innerHTML='<p role="status" data-no-translate>'+t('جاري تحميل العروض…','Loading offers…','Angebote werden geladen…')+'</p>';
     await window.DarayaOfferDisplay?.load();if(token!==epoch||uid!==user?.id)return;
@@ -60,6 +62,12 @@
     const app = document.querySelector('#app'); app.classList.remove('professional-home');
     app.innerHTML = '<section class="offers-reels-page" data-no-translate><header class="reels-heading"><a class="button outline" href="#home">' + t('الرئيسية', 'Home', 'Startseite') + '</a><div class="reels-heading-copy"><span>'+t('عروض من محلات مدينتك','Offers from local shops','Angebote lokaler Geschäfte')+'</span><h1>' + t('عروض اليوم', 'Today’s offers', 'Heutige Angebote') + '</h1></div><button type="button" data-post-reel>' + t('＋ أضف عرضًا', '＋ Add offer', '＋ Angebot hinzufügen') + '</button></header>' + (window.DarayaOfferTools?.nav(mode)||'') + '<div class="offer-shop-summary" data-shop-summary></div><p class="reels-hint">' + t('اسحب للأعلى لرؤية بقية عروض المحل، ويمينًا أو يسارًا للانتقال إلى محل آخر. العروض متاحة للجميع.', 'Scroll down for more offers from this shop. Swipe left or right for another shop. Offers are open to everyone.', 'Scrolle nach unten für weitere Angebote dieses Geschäfts. Wische seitlich zum nächsten Geschäft. Angebote gelten für alle.') + '</p><div class="offer-reels-track" tabindex="0" aria-label="' + t('تصفح العروض', 'Browse offers', 'Angebote ansehen') + '"><p role="status">' + t('جاري تحميل العروض…', 'Loading offers…', 'Angebote werden geladen…') + '</p></div><div class="reels-navigation"><button type="button" data-reel-prev>' + t('المحل السابق →', 'Previous shop →', 'Vorheriges Geschäft →') + '</button><span data-reel-position></span><button type="button" data-reel-next>' + t('← المحل التالي', '← Next shop', '← Nächstes Geschäft') + '</button></div></section>';
     const track = app.querySelector('.offer-reels-track'), position = app.querySelector('[data-reel-position]');
+    if (examples) {
+      app.querySelector('h1').textContent=t('أمثلة على عروض اليوم','Example daily offers','Beispiele für Tagesangebote');
+      app.querySelector('.reels-heading-copy > span').textContent=t('للتوضيح فقط — غير متاحة للشراء','For display only — not for sale','Nur zur Veranschaulichung — nicht kaufbar');
+      app.querySelector('.reels-heading > a').href='#offers';
+      app.querySelector('.reels-heading > a').textContent=t('العودة إلى عروض اليوم','Back to today’s offers','Zurück zu heutigen Angeboten');
+    }
     const dots=document.createElement('nav');dots.className='offer-shop-dots';dots.setAttribute('aria-label',t('اختيار المحل','Choose shop','Geschäft wählen'));app.querySelector('.reels-hint').before(dots);
     const edges=document.createElement('div');edges.className='offer-edge-navigation';edges.setAttribute('aria-hidden','true');
     edges.innerHTML='<div class="offer-edge-side" data-edge-prev hidden></div><div class="offer-edge-side" data-edge-next hidden></div><div class="offer-edge-up" data-edge-up hidden>↑</div><div class="offer-edge-down" data-edge-down hidden>↓</div>';
@@ -70,8 +78,8 @@
     window.DarayaOfferTools?.guide(track);
     const viewObserver=typeof IntersectionObserver==='undefined'?null:new IntersectionObserver(entries=>{for(const e of entries)if(e.isIntersecting&&(e.intersectionRatio>=.15||e.intersectionRect.height>=120)){const row=rows.find(o=>o.id===e.target.dataset.reelId);if(row&&isPublic(row))window.DarayaOfferTools?.record(row,'view');}},{threshold:[0,.15,.5]});
     const alive = () => token === epoch && track.isConnected && uid === user?.id;
-    const demos=mode==='all'?(window.DarayaDemoOfferCatalog?.()||[]).filter(isPublic):[];
-    let page = 0, done = false, loading = false, rows = [], following = null, current = null, mediaEpoch = 0, observer, expiryTimer;
+    const demos=examples?(window.DarayaDemoOfferCatalog?.()||[]).filter(isPublic):[];
+    let page = 0, done = examples, loading = false, rows = [], following = null, current = null, mediaEpoch = 0, observer, expiryTimer;
     const release = video => { video.pause(); video.removeAttribute('src'); video.load(); };
     stop = () => { window.removeEventListener('scroll',queueEdges);window.removeEventListener('resize',queueEdges);cancelAnimationFrame(edgeFrame);edges.remove();mediaEpoch++; observer?.disconnect();viewObserver?.disconnect(); clearInterval(expiryTimer); track.querySelectorAll('video').forEach(release);track.querySelectorAll('.has-external-video').forEach(clearExternal); document.removeEventListener('visibilitychange', visibility); window.removeEventListener('daraya-blocks-changed', checkExpiry); };
     function visibility() { if (document.hidden) { track.querySelectorAll('.has-external-video').forEach(clearExternal);mediaEpoch++; track.querySelectorAll('video').forEach(v => v.pause()); } }
@@ -201,7 +209,11 @@
         const fresh = r.data.filter(isPublic).filter(o => !rows.some(x => x.id === o.id)); rows.push(...fresh);
         if (page === 1 && !track.querySelector('.offer-reel')) track.innerHTML = '';
         for (const o of fresh) { track.insertAdjacentHTML('beforeend', markup(o)); const card = track.lastElementChild; bind(card); observer?.observe(card); }
-        if (!rows.length && done) track.innerHTML = '<div class="reels-empty"><h2>' + t('أول العروض قريبًا', 'First offers coming soon', 'Die ersten Angebote kommen bald') + '</h2><p>' + t('يمكن لصاحب المحل إرسال صورة أو عرض مكتوب مع رابط فيديو اختياري للمراجعة.', 'Shop owners can send an image or text offer with an optional video link for review.', 'Inhaber können ein Bild oder Textangebot mit optionalem Videolink zur Prüfung senden.') + '</p><a class="button outline" href="#home">' + t('تصفح المحلات', 'Browse shops', 'Geschäfte ansehen') + '</a></div>';
+        if (!rows.length && done) {
+          track.innerHTML = '<div class="reels-empty"><p><a href="#offers/examples">' + t('شاهد أمثلة على عروض اليوم', 'See examples of today’s offers', 'Beispiele für Tagesangebote ansehen') + '</a></p><p role="status">' + t('لا توجد عروض الآن', 'No offers right now', 'Derzeit keine Angebote') + '</p></div>';
+          app.querySelector('.reels-hint').hidden=true;
+          app.querySelector('.reels-navigation').hidden=true;
+        }
         orderCards();if(rows.length)activate(current||groups()[0]?.cards[0],true);
         if (!fresh.length && !done) { loading = false; return loadMore(); }
       } catch {
@@ -252,3 +264,4 @@
   window.addEventListener('hashchange',()=>{const parts=location.hash.split('/');if(parts[0]==='#offers')renderFeed('all',parts[1]||'');else if(parts[0]==='#followed-offers')renderFeed('following');else teardown();});
   const baseRender = render; render = function() { const parts = location.hash.split('/'); if (parts[0] === '#offers' && parts[1]) return window.DarayaReels.render('all', parts[1]); return baseRender.apply(this, arguments); };
 })();
+
