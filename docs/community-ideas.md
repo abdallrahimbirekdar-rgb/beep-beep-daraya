@@ -7,6 +7,6 @@ Implementation staged in a feature branch. Do not deploy the public UI until the
 3. Open `ideas.html` and test anonymous submit -> pending, anonymous public listing -> only approved, administrator moderation -> published, authenticated voting -> unique votes.
 4. Test merchant access cannot read pending ideas or moderate, and anonymous access cannot vote.
 5. Test from Android WebView and check Google Play disclosures if site behavior materially changes.
-6. After verification, add a navigation link from the homepage and merge the PR. No production database changes are performed by the branch itself.
+6. The branch includes a homepage menu link in ideas-navigation.js; verify the link and then merge the PR. No production database changes are performed by the branch itself.
 
 Note: This is a standalone page; login sessions depend on the existing Supabase client session storage. If the main app uses a custom auth storage key, adapt the client before enabling voting.
