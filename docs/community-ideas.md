@@ -30,3 +30,15 @@
 8. Review and merge PR #25, then deploy using the normal site release process.
 
 No website release has been performed.
+
+## Transactional integration tests (2026-10-16)
+- PASS: authenticated test user submits pending idea; public listing hides it.
+- PASS: immediate second submission rejected by cooldown.
+- PASS: voting on pending idea rejected.
+- PASS: non-admin moderation rejected.
+- PASS: test admin can list pending ideas and publish.
+- PASS: published idea appears in public listing.
+- PASS: repeated upvote by the same user counts as exactly one vote.
+- PASS: vote removal returns count to zero.
+- PASS: transaction rollback verified: 0 ideas, 0 votes, 0 test auth users, 0 test admin rows remain.
+- Tests simulated authenticated database roles and JWT claims inside SQL transactions; they do **not** replace browser, actual Supabase Auth JWT, or Android WebView end-to-end testing.
