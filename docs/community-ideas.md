@@ -22,9 +22,9 @@
 2. Test a visitor cannot submit or vote and cannot see pending ideas.
 3. Test admin moderation with an actual admin session.
 4. Test duplicate voting and the ten-minute cooldown.
-5. Verify login persistence in Android WebView; inspect whether the main site's auth storage key matches `beep-beep-daraya-auth`.
+5. Main-site and ideas-page auth storage keys match (`beep-beep-daraya-auth`, code-reviewed); verify persistence in Android WebView.
 6. Evaluate fake-account abuse and rate limiting if abuse occurs.
-7. Remove the unused `supabase/functions/community-idea-submit/index.ts` gateway from the branch before merging (it is not deployed).
+7. Obsolete Turnstile Edge gateway removed from this branch (completed).
 8. Review and merge PR #25, then deploy using the normal site release process.
 
 No website release has been performed.
