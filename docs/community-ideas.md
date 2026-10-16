@@ -16,6 +16,8 @@
 - SQL transaction privacy test: pending idea hidden; published idea visible; transaction rolled back.
 - Database contains zero ideas after rollback.
 - Frontend now uses authenticated Supabase RPC directly, not the old Turnstile gateway.
+- SQL role simulation: `anon` can call the public listing; authenticated role without a real JWT user is rejected by submission RPC with `سجل الدخول لإرسال اقتراح`.
+- Repeated transaction-based visibility test: only the published idea appears, and test inserts are rolled back.
 
 ## Before merging
 1. Test a real signed-in session submitting an idea and confirm `author_id` and pending status.
