@@ -33,20 +33,21 @@ create or replace function public.community_idea_submit(p_title text,p_details t
 returns uuid language plpgsql security definer set search_path=public as $$
 declare result uuid;
 begin
+ if auth.uid() is null then raise exception 'سجل الدخول لإرسال اقتراح'; end if;
  if length(btrim(coalesce(p_title,''))) not between 5 and 120
  or length(btrim(coalesce(p_details,''))) not between 10 and 2000
  or coalesce(p_category,'') not in ('idea','service','improvement','problem') then
   raise exception 'تحقق من عنوان الاقتراح وتفاصيله';
  end if;
- -- Basic global throttle; add CAPTCHA / edge rate limiting before enabling public anonymous traffic.
+ -- Authenticated submissions only; retain global and per-account throttles.
  perform pg_advisory_xact_lock(hashtext('community_idea_submit'));
  if (select count(*) from public.community_ideas where created_at>now()-interval '1 minute')>=12 then
   raise exception 'طلبات كثيرة حاليًا، حاول لاحقًا';
  end if;
- if auth.uid() is not null and exists (
+ if exists (
   select 1 from public.community_ideas where author_id=auth.uid()
-  and created_at>now()-interval '2 minutes') then
-  raise exception 'انتظر قليلًا قبل إرسال اقتراح آخر';
+  and created_at>now()-interval '10 minutes') then
+  raise exception 'انتظر 10 دقائق قبل إرسال اقتراح آخر';
  end if;
  insert into public.community_ideas(title,details,category,author_id)
  values (btrim(p_title),btrim(p_details),p_category,auth.uid()) returning id into result;
@@ -83,8 +84,7 @@ begin
 end;$$;
 revoke all on function public.community_ideas_public(),public.community_idea_submit(text,text,text),public.community_idea_vote(uuid,boolean),public.community_ideas_admin(),public.community_idea_moderate(uuid,text) from public,anon,authenticated;
 grant execute on function public.community_ideas_public() to anon,authenticated;
--- Anonymous submissions must pass Turnstile verification at the Edge Function.
--- Never grant direct execution to anon or authenticated.
-grant execute on function public.community_idea_submit(text,text,text) to service_role;
+-- Only signed-in users can submit; the RPC itself also checks auth.uid().
+grant execute on function public.community_idea_submit(text,text,text) to authenticated;
 grant execute on function public.community_idea_vote(uuid,boolean),public.community_ideas_admin(),public.community_idea_moderate(uuid,text) to authenticated;
 commit;
