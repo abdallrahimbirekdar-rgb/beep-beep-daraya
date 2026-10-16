@@ -209,7 +209,7 @@
         if (page === 1 && !track.querySelector('.offer-reel')) track.innerHTML = '';
         for (const o of fresh) { track.insertAdjacentHTML('beforeend', markup(o)); const card = track.lastElementChild; bind(card); observer?.observe(card); }
         if (!rows.length && done) {
-          track.innerHTML = '<div class="offers-empty-state"><p><a class="offers-example-link" href="#offers/examples">' + t('شاهد أمثلة على عروض اليوم', 'See examples of today’s offers', 'Beispiele für Tagesangebote ansehen') + '</a></p><p role="status">' + t('لا توجد عروض الآن', 'No offers right now', 'Derzeit keine Angebote') + '</p></div>';
+          track.innerHTML = '<div class="offers-empty-state"><p><a class="offers-example-link" href="#offers/examples">' + t('شاهد أمثلة لشرح عروض اليوم', 'See examples explaining today’s offers', 'Beispiele zur Erklärung der Tagesangebote ansehen') + '</a></p><p role="status">' + t('لا توجد عروض الآن', 'No offers right now', 'Derzeit keine Angebote') + '</p></div>';
           app.querySelector('.reels-hint').hidden=true;
           app.querySelector('.reels-navigation').hidden=true;
         }
