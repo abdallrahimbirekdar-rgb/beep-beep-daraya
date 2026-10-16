@@ -29,6 +29,40 @@
   };
   const cancel=()=>{gesture=null;};
   const click=e=>{if(e.detail!==0&&clock()<blockClickUntil){blockClickUntil=0;e.preventDefault();e.stopImmediatePropagation();}};
+  // Chromium/WebView on Android supports Pointer Events. Use one event family
+  // per device so a single swipe cannot be processed twice.
+  if(window.PointerEvent){
+   const pointers=new Set();
+   const down=e=>{
+    if(e.pointerType==='mouse'&&e.button!==0)return;
+    if(e.isPrimary===true)pointers.clear();
+    pointers.add(e.pointerId);gesture=null;
+    if(pointers.size!==1||e.isPrimary===false||e.target.closest?.('input,textarea,select,[contenteditable],video,iframe,[data-no-swipe]'))return;
+    blockClickUntil=0;gesture={id:e.pointerId,x:e.clientX,y:e.clientY,time:clock(),axis:null};
+   };
+   const pointerMove=e=>{
+    if(!gesture||e.pointerId!==gesture.id)return;
+    const x=Math.abs(e.clientX-gesture.x),y=Math.abs(e.clientY-gesture.y);
+    if(!gesture.axis&&Math.max(x,y)>=8){if(x>y*1.15)gesture.axis='horizontal';else if(y>x*1.15)gesture.axis='vertical';}
+    if(gesture.axis==='horizontal'){
+     if(e.cancelable)e.preventDefault();
+     try{if(!element.hasPointerCapture?.(e.pointerId))element.setPointerCapture?.(e.pointerId);}catch{}
+    }
+   };
+   const finish=e=>{
+    pointers.delete(e.pointerId);if(!gesture||e.pointerId!==gesture.id)return;
+    const g=gesture;gesture=null;
+    const value=direction({dx:e.clientX-g.x,dy:e.clientY-g.y,duration:clock()-g.time,width:element.clientWidth||360,axis:g.axis});
+    if(value){blockClickUntil=clock()+350;onSwipe(value);}
+   };
+   const pointerCancel=e=>{pointers.delete(e.pointerId);if(gesture?.id===e.pointerId)gesture=null;};
+   const lost=e=>{if(gesture?.id===e.pointerId)gesture=null;};
+   const drag=e=>{if(gesture)e.preventDefault();};
+   const handlers=[['pointerdown',down],['pointermove',pointerMove],['pointerup',finish],['pointercancel',pointerCancel],['lostpointercapture',lost],['dragstart',drag]];
+   for(const [name,fn] of handlers)element.addEventListener(name,fn,{passive:false});
+   element.addEventListener('click',click,true);
+   return ()=>{for(const [name,fn] of handlers)element.removeEventListener(name,fn);element.removeEventListener('click',click,true);pointers.clear();gesture=null;};
+  }
   element.addEventListener('touchstart',start,{passive:true});
   element.addEventListener('touchmove',move,{passive:false});
   element.addEventListener('touchend',end,{passive:true});
@@ -38,3 +72,4 @@
  }
  window.DarayaOfferGestures={direction,attach};
 })();
+
