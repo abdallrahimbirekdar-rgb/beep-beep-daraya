@@ -14,10 +14,10 @@
    for(const item of items){
     const card=el('article','idea'),title=el('h3','',item.title),description=el('p','',item.details),meta=el('small','',statuses[item.status]+' · '+new Date(item.created_at).toLocaleDateString('ar-SY'));
     const actions=el('div','actions'),vote=el('button','vote','👍 '+item.votes);vote.type='button';
-    vote.onclick=async()=>{vote.disabled=true;try{const {data:{user}}=await client.auth.getUser();if(!user){if(confirm('التصويت يتطلب تسجيل الدخول. هل تريد الانتقال إلى صفحة الحساب؟'))location.href='./#account';return;}await rpc('community_idea_vote',{p_id:item.id,p_vote:true});await load();}catch(e){alert(e.message||'تعذر التصويت');}finally{vote.disabled=false;}};
+    vote.onclick=async()=>{vote.disabled=true;try{const {data:{user}}=await client.auth.getUser();if(!user){if(confirm('التصويت يتطلب تسجيل الدخول. هل تريد الانتقال إلى صفحة الحساب؟'))location.href='./#account';return;}await rpc('community_idea_vote',{p_id:item.id,p_vote:true});vote.textContent='✓ تم تسجيل صوتك';await load();}catch(e){alert(e.message||'تعذر التصويت');}finally{vote.disabled=false;}};
     actions.append(vote);card.append(title,description,meta,actions);root.append(card);
    }
-  }catch(e){root.textContent='الأفكار غير متاحة حاليًا. قد تحتاج قاعدة البيانات إلى التحديث.';}
+  }catch(e){root.textContent='الأفكار غير متاحة حاليًا. حاول تحديث الصفحة لاحقًا.';}
  }
  $('#idea-form').onsubmit=async event=>{
   event.preventDefault();const form=event.currentTarget,button=form.querySelector('button'),status=$('#submit-status'),data=new FormData(form);
