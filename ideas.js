@@ -22,8 +22,9 @@
  $('#idea-form').onsubmit=async event=>{
   event.preventDefault();const form=event.currentTarget,button=form.querySelector('button'),status=$('#submit-status'),data=new FormData(form);
   if(!client){status.textContent='تعذر الاتصال بخدمة الاقتراحات.';return;}
-  const {data:{user},error:authError}=await client.auth.getUser();
-  if(authError || !user){status.textContent='سجّل الدخول أولًا لإرسال اقتراح.';return;}
+  let user=null;
+  try{const session=await client.auth.getUser();user=session.data?.user||null;}catch{}
+  if(!user){status.textContent='سجّل الدخول من الصفحة الرئيسية لإرسال اقتراح.';return;}
   button.disabled=true;status.textContent='جارٍ إرسال الاقتراح…';
   try{
    await rpc('community_idea_submit',{p_title:data.get('title'),p_details:data.get('details'),p_category:data.get('category')});
