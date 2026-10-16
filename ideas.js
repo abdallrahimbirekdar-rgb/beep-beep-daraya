@@ -1,7 +1,7 @@
 'use strict';
 (()=>{
  const cfg=window.BEEP_CONFIG||{},root=document.querySelector('#ideas-list'),adminPanel=document.querySelector('#admin-panel');
- const client=window.supabase?.createClient(cfg.supabaseUrl,cfg.supabaseAnonKey,{auth:{storageKey:'beep-beep-daraya-auth'}});
+ const client=window.supabase?.createClient && cfg.supabaseUrl && cfg.supabaseAnonKey ? window.supabase.createClient(cfg.supabaseUrl,cfg.supabaseAnonKey,{auth:{storageKey:'beep-beep-daraya-auth'}}) : null;
  const $=s=>document.querySelector(s);
  const el=(tag,cls,txt)=>{const node=document.createElement(tag);if(cls)node.className=cls;if(txt!==undefined)node.textContent=txt;return node;};
  const statuses={pending:'بانتظار المراجعة',rejected:'مرفوض',published:'منشور',in_progress:'قيد التنفيذ',implemented:'منفذ'};
@@ -21,12 +21,14 @@
  }
  $('#idea-form').onsubmit=async event=>{
   event.preventDefault();const form=event.currentTarget,button=form.querySelector('button'),status=$('#submit-status'),data=new FormData(form);
+  if(!client){status.textContent='تعذر الاتصال بخدمة الاقتراحات.';return;}
   button.disabled=true;status.textContent='جارٍ إرسال الاقتراح…';
   try{await rpc('community_idea_submit',{p_title:data.get('title'),p_details:data.get('details'),p_category:data.get('category')});form.reset();status.textContent='وصل اقتراحك للمراجعة. شكرًا لمشاركتك!';}
   catch(e){status.textContent='تعذر الإرسال: '+(e.message||'حاول لاحقًا');}
   finally{button.disabled=false;}
  };
  async function loadAdmin(){
+  if(!client)return;
   try{
    const {data:{user}}=await client.auth.getUser();if(!user)return;
    const ideas=await rpc('community_ideas_admin');adminPanel.hidden=false;const list=$('#admin-list');list.replaceChildren();
