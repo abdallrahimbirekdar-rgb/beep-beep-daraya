@@ -75,7 +75,6 @@
     let edgeFrame=0,nextOfferCard=null;
     const queueEdges=()=>{if(!edgeFrame)edgeFrame=requestAnimationFrame(()=>{edgeFrame=0;updateEdges();});};
     window.addEventListener('scroll',queueEdges,{passive:true});window.addEventListener('resize',queueEdges,{passive:true});
-    window.DarayaOfferTools?.guide(track);
     const viewObserver=typeof IntersectionObserver==='undefined'?null:new IntersectionObserver(entries=>{for(const e of entries)if(e.isIntersecting&&(e.intersectionRatio>=.15||e.intersectionRect.height>=120)){const row=rows.find(o=>o.id===e.target.dataset.reelId);if(row&&isPublic(row))window.DarayaOfferTools?.record(row,'view');}},{threshold:[0,.15,.5]});
     const alive = () => token === epoch && track.isConnected && uid === user?.id;
     const demos=examples?(window.DarayaDemoOfferCatalog?.()||[]).filter(isPublic):[];
@@ -257,6 +256,7 @@
       // Wait for the first server page before choosing the initial shop.
     }
     await loadMore();
+    if(alive() && rows.length) window.DarayaOfferTools?.guide(track);
     if(alive()&&!current&&rows.length){orderCards();activate(groups()[0]?.cards[0],true);}
   }
   window.DarayaReels = { render: renderFeed, isPublic, link, linkMarkup, shopGroups, markup };
