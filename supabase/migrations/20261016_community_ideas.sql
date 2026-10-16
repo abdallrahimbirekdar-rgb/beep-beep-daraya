@@ -34,7 +34,7 @@ returns uuid language plpgsql security definer set search_path=public as $$
 declare result uuid;
 begin
  if length(btrim(coalesce(p_title,''))) not between 5 and 120
- or length(btrim(coalesce(p_details,''))) not between 10 and 2000)
+ or length(btrim(coalesce(p_details,''))) not between 10 and 2000
  or coalesce(p_category,'') not in ('idea','service','improvement','problem') then
   raise exception 'تحقق من عنوان الاقتراح وتفاصيله';
  end if;
