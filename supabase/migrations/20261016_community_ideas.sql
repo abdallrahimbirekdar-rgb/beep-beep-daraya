@@ -82,6 +82,9 @@ begin
  if not found then raise exception 'الاقتراح غير موجود';end if;
 end;$$;
 revoke all on function public.community_ideas_public(),public.community_idea_submit(text,text,text),public.community_idea_vote(uuid,boolean),public.community_ideas_admin(),public.community_idea_moderate(uuid,text) from public,anon,authenticated;
-grant execute on function public.community_ideas_public(),public.community_idea_submit(text,text,text) to anon,authenticated;
+grant execute on function public.community_ideas_public() to anon,authenticated;
+-- Anonymous submissions must pass Turnstile verification at the Edge Function.
+-- Never grant direct execution to anon or authenticated.
+grant execute on function public.community_idea_submit(text,text,text) to service_role;
 grant execute on function public.community_idea_vote(uuid,boolean),public.community_ideas_admin(),public.community_idea_moderate(uuid,text) to authenticated;
 commit;
