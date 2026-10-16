@@ -46,6 +46,12 @@
  }
  const baseRender=render;
  render=function(){if(location.hash==='#delete-account'&&api&&!passwordRecovery){renderDeletion();return;}checkingId++;baseRender();};
+ // Existing hash listeners captured render before this page module loaded.
+ // Handle this route explicitly, without changing other pages' navigation.
+ window.addEventListener('hashchange',()=>{
+  if(location.hash==='#delete-account'&&api&&!passwordRecovery)renderDeletion();
+  else checkingId++;
+ });
  const baseAccount=renderCustomerAccount;
  renderCustomerAccount=function(){
   baseAccount();
@@ -60,3 +66,4 @@
   settings.append(link);account.append(settings);
  };
 })();
+

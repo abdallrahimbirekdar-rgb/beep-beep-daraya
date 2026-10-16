@@ -29,7 +29,7 @@
  }]);
  const baseMatch=matchesCategory;
  const publicDemoStoreId='a5e8abe7-974a-416c-a570-858d6fd03572';
- matchesCategory=function(s,key=filter){if(s.is_example&&s.id!==publicDemoStoreId&&directoryKind(s)!=='mosque')return false;return baseMatch(s,key);};
+ matchesCategory=function(s,key=filter){if(s.is_example&&directoryKind(s)!=='mosque')return false;return baseMatch(s,key);};
  const baseStore=renderStore;
  renderStore=function(id){const s=stores.find(x=>x.id===id);if(s?.is_example&&s.id!==publicDemoStoreId&&directoryKind(s)!=='mosque'&&sector(directoryKind(s))){show(directoryKind(s));return;}return baseStore.apply(this,arguments);};
  function index(){
@@ -67,3 +67,4 @@
  window.addEventListener('hashchange',()=>{if(/^#examples?(?:\/|$)/.test(location.hash))render();});
  window.DarayaDemos={keys:()=>sectors().map(s=>s[0]),items,keyFor:directoryKind};
 })();
+

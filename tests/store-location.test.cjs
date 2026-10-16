@@ -1,7 +1,7 @@
 const test=require('node:test'),assert=require('node:assert/strict'),vm=require('node:vm'),fs=require('node:fs');
 const c={merchantEditor(){},editStore(){},showStoreAddress(){}};vm.createContext(c);vm.runInContext(fs.readFileSync('store-location.js','utf8'),c);
 test('shop coordinates require a finite valid pair and support clearing',()=>{
-for(const s of [{},{latitude:'',longitude:''},{latitude:33,longitude:null},{latitude:91,longitude:36},{latitude:33,longitude:Infinity}])assert.equal(c.storeCoordinates(s),null);
+for(const s of [{},{latitude:'',longitude:''},{latitude:33,longitude:null},{latitude:91,longitude:36},{is_example:true,latitude:51.501972,longitude:7.208147},{latitude:33,longitude:Infinity}])assert.equal(c.storeCoordinates(s),null);
 assert.equal(JSON.stringify(c.storeCoordinates({latitude:0,longitude:0})),'[0,0]');
 const data=values=>({get:k=>values[k]});
 assert.equal(JSON.stringify(c.readStoreCoordinates(data({latitude:'',longitude:''}))), '{"latitude":null,"longitude":null}');
@@ -19,3 +19,4 @@ gps.onclick();failure({code:1});assert.equal(fields.latitude.value,'33.45');asse
 gps.onclick();clear.onclick();await success({coords:{latitude:33.458,longitude:36.236}});assert.equal(fields.latitude.value,'');
 gps.onclick();await success({coords:{latitude:33.458,longitude:36.236}});assert.equal(fields.latitude.value,'33.458000');assert.equal(fields.longitude.value,'36.236000');assert.equal(box.hidden,false);
 });
+

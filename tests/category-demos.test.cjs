@@ -1,10 +1,10 @@
 const test=require('node:test'),assert=require('node:assert/strict'),vm=require('node:vm'),fs=require('node:fs');
 function setup(language='ar'){
- const nodes={},qr=[],banners=[];
+ const nodes={},qr=[],banners=[],previews=[];
  const node=selector=>nodes[selector]||(nodes[selector]={innerHTML:'',hidden:false,classList:{remove(){}},before(n){banners.push(n);}});
- const c={window:{ShahinI18n:{language},addEventListener(){},scrollTo(){},darayaHomeShowsResults:()=>true,darayaSectorKey:k=>k},location:{hash:'#example/restaurant',href:'https://damascus-shop.com/'},document:{querySelectorAll:selector=>selector==='[data-demo-add]'?Array.from({length:3},(_,i)=>{const n=node('add-'+i);n.dataset={demoAdd:String(i)};return n;}):selector==='[data-demo-item]'?Array.from({length:3},(_,i)=>{const n=node('item-'+i);n.dataset={demoItem:String(i)};return n;}):[],createElement:()=>({dataset:{}})},$:node,esc:v=>String(v??''),photo:(src,alt)=>'<img src="'+src+'" alt="'+alt+'">',money:n=>n+' SYP',URL,Blob,QRCode:class{static CorrectLevel={M:0};constructor(box,options){qr.push(options.text);this._oQRCode={getModuleCount:()=>1,isDark:()=>true};}},filter:'restaurant',search:'',browseFavorites:false,stores:[],matchesCategory:()=>true,directoryKind:s=>s.kind,renderHome(){},renderStore(){},render(){},updateCustomerNav(){},modal(){}};
+ const c={window:{ShahinI18n:{language},addEventListener(){},scrollTo(){},darayaHomeShowsResults:()=>true,darayaSectorKey:k=>k},location:{hash:'#example/restaurant',href:'https://damascus-shop.com/'},document:{querySelectorAll:selector=>selector==='[data-demo-add]'?Array.from({length:3},(_,i)=>{const n=node('add-'+i);n.dataset={demoAdd:String(i)};return n;}):selector==='[data-demo-item]'?Array.from({length:3},(_,i)=>{const n=node('item-'+i);n.dataset={demoItem:String(i)};return n;}):[],createElement:()=>({dataset:{}})},$:node,esc:v=>String(v??''),photo:(src,alt)=>'<img src="'+src+'" alt="'+alt+'">',money:n=>n+' SYP',URL,Blob,QRCode:class{static CorrectLevel={M:0};constructor(box,options){qr.push(options.text);this._oQRCode={getModuleCount:()=>1,isDark:()=>true};}},filter:'restaurant',search:'',browseFavorites:false,stores:[],matchesCategory:()=>true,directoryKind:s=>s.kind,renderHome(){},renderStore(id){previews.push(id);},render(){},updateCustomerNav(){},modal(){}};
  vm.createContext(c);vm.runInContext(fs.readFileSync('business-sectors.js','utf8').split('(() =>')[0],c);vm.runInContext(fs.readFileSync('category-demos.js','utf8'),c);
- return {c,nodes,qr,banners};
+ return {c,nodes,qr,banners,previews};
 }
 test('one showcase exists per sector except mosques, with three illustrated entries',()=>{
  const {c}=setup(),keys=c.window.DarayaDemos.keys();assert.equal(keys.length,15);assert.equal(new Set(keys).size,15);assert.ok(!keys.includes('mosque'));
@@ -24,9 +24,9 @@ test('all demo pages render with fictional address, correct QR URL and no real c
 test('existing example listings are hidden but real stores and mosques stay available',()=>{
  const {c}=setup();assert.equal(c.matchesCategory({kind:'apparel',is_example:true},'apparel'),false);assert.equal(c.matchesCategory({kind:'apparel',is_example:false},'apparel'),true);assert.equal(c.matchesCategory({kind:'mosque',is_example:true},'mosque'),true);
 });
-test('the review demo shop is discoverable while other demo shops remain hidden',()=>{
+test('the review demo shop is excluded from public search like other examples',()=>{
  const {c}=setup();
- assert.equal(c.matchesCategory({id:'a5e8abe7-974a-416c-a570-858d6fd03572',kind:'restaurant',is_example:true},'restaurant'),true);
+ assert.equal(c.matchesCategory({id:'a5e8abe7-974a-416c-a570-858d6fd03572',kind:'restaurant',is_example:true},'restaurant'),false);
  assert.equal(c.matchesCategory({id:'another-demo',kind:'restaurant',is_example:true},'restaurant'),false);
 });
 test('category banner links to exactly one demo and leaves mosque section unchanged',()=>{
@@ -42,3 +42,6 @@ test('basket totals and product search are local demonstrations',()=>{
  nodes['[data-demo-clear]'].onclick();assert.match(nodes['[data-demo-basket]'].innerHTML,/0 SYP/);
  nodes['[data-demo-search]'].oninput({target:{value:'برغر'}});assert.equal(nodes['item-0'].hidden,true);assert.equal(nodes['item-1'].hidden,false);assert.equal(nodes['item-2'].hidden,true);
 });
+
+
+test("review shop remains accessible by its direct preview link",()=>{const {c,previews}=setup(),id="a5e8abe7-974a-416c-a570-858d6fd03572";c.stores.push({id,kind:"restaurant",is_example:true});c.renderStore(id);assert.deepEqual(previews,[id]);});
