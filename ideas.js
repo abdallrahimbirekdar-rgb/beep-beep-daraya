@@ -4,13 +4,6 @@
  const client=window.supabase?.createClient && cfg.supabaseUrl && cfg.supabaseAnonKey ? window.supabase.createClient(cfg.supabaseUrl,cfg.supabaseAnonKey,{auth:{storageKey:'beep-beep-daraya-auth'}}) : null;
  const $=s=>document.querySelector(s);
  const el=(tag,cls,txt)=>{const node=document.createElement(tag);if(cls)node.className=cls;if(txt!==undefined)node.textContent=txt;return node;};
- let turnstileWidget=null;
- const turnstileKey=cfg.turnstileSiteKey;
- function initTurnstile(){
-  if(!turnstileKey || !window.turnstile){$('#submit-status').textContent='إرسال المقترحات غير متاح حتى اكتمال إعداد الحماية.';return;}
-  turnstileWidget=window.turnstile.render('#idea-turnstile',{sitekey:turnstileKey});
- }
- window.addEventListener('load',initTurnstile);
  const statuses={pending:'بانتظار المراجعة',rejected:'مرفوض',published:'منشور',in_progress:'قيد التنفيذ',implemented:'منفذ'};
  async function rpc(name,args){const {data,error}=await client.rpc(name,args);if(error)throw error;return data;}
  async function load(){
@@ -29,19 +22,14 @@
  $('#idea-form').onsubmit=async event=>{
   event.preventDefault();const form=event.currentTarget,button=form.querySelector('button'),status=$('#submit-status'),data=new FormData(form);
   if(!client){status.textContent='تعذر الاتصال بخدمة الاقتراحات.';return;}
-  const token=turnstileWidget!==null && window.turnstile?.getResponse(turnstileWidget);
-  if(!token){status.textContent='أكمل التحقق من الأمان قبل إرسال الاقتراح.';return;}
+  const {data:{user},error:authError}=await client.auth.getUser();
+  if(authError || !user){status.textContent='سجّل الدخول أولًا لإرسال اقتراح.';return;}
   button.disabled=true;status.textContent='جارٍ إرسال الاقتراح…';
   try{
-   const response=await fetch(cfg.supabaseUrl+'/functions/v1/community-idea-submit',{
-    method:'POST',headers:{'content-type':'application/json','apikey':cfg.supabaseAnonKey},
-    body:JSON.stringify({title:data.get('title'),details:data.get('details'),category:data.get('category'),turnstileToken:token})
-   });
-   const result=await response.json();
-   if(!response.ok || !result.ok)throw new Error(result.error||'تعذر إرسال الاقتراح');
+   await rpc('community_idea_submit',{p_title:data.get('title'),p_details:data.get('details'),p_category:data.get('category')});
    form.reset();status.textContent='وصل اقتراحك للمراجعة. شكرًا لمشاركتك!';
   }catch(e){status.textContent='تعذر الإرسال: '+(e.message||'حاول لاحقًا');}
-  finally{window.turnstile?.reset(turnstileWidget);button.disabled=false;}
+  finally{button.disabled=false;}
  };
  async function loadAdmin(){
   if(!client)return;
