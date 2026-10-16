@@ -56,7 +56,12 @@
     if(value){blockClickUntil=clock()+350;onSwipe(value);}
    };
    const pointerCancel=e=>{pointers.delete(e.pointerId);if(gesture?.id===e.pointerId)gesture=null;};
-   const lost=e=>{if(gesture?.id===e.pointerId)gesture=null;};
+   const lost=e=>{
+    // Touchscreens implicitly capture to the starting child. Its loss event
+    // bubbles when capture moves here; that transfer is not a cancelled swipe.
+    if(e.target!==element||element.hasPointerCapture?.(e.pointerId))return;
+    if(gesture?.id===e.pointerId)gesture=null;
+   };
    const drag=e=>{if(gesture)e.preventDefault();};
    const handlers=[['pointerdown',down],['pointermove',pointerMove],['pointerup',finish],['pointercancel',pointerCancel],['lostpointercapture',lost],['dragstart',drag]];
    for(const [name,fn] of handlers)element.addEventListener(name,fn,{passive:false});

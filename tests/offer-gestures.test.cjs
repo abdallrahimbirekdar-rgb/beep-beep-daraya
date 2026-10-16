@@ -39,6 +39,16 @@ test('pointer form fields and iframe/video players are excluded and all listener
 });
 test('lost capture does not navigate and a fresh swipe is still accepted',()=>{
  const {tool,time}=setup(true),el=element(),calls=[];tool.attach(el,v=>calls.push(v));
- el.handlers.get('pointerdown')(pointer(100,100));el.handlers.get('lostpointercapture')(pointer(40,100));el.handlers.get('pointerup')(pointer(30,100));assert.deepEqual(calls,[]);
+ el.handlers.get('pointerdown')(pointer(100,100));el.handlers.get('lostpointercapture')(pointer(40,100,1,{target:el}));el.handlers.get('pointerup')(pointer(30,100));assert.deepEqual(calls,[]);
  el.handlers.get('pointerdown')(pointer(100,100));time(100);el.handlers.get('pointerup')(pointer(155,105));assert.deepEqual(calls,['right']);
+});
+test('Android implicit capture transfer from an image or play button must not cancel the swipe',()=>{
+ const {tool,time}=setup(true),el=element(),calls=[];
+ tool.attach(el,v=>calls.push(v));
+ const image={closest:()=>false};
+ el.setPointerCapture=id=>el.handlers.get('lostpointercapture')({pointerId:id,target:image});
+ el.handlers.get('pointerdown')(pointer(200,100,1,{target:image}));time(100);
+ el.handlers.get('pointermove')(pointer(140,104,1,{target:image}));
+ el.handlers.get('pointerup')(pointer(130,104));
+ assert.deepEqual(calls,['left']);
 });
