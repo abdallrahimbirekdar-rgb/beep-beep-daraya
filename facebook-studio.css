@@ -3,7 +3,7 @@
 .fb-photo-tools{margin-block:20px;padding:16px;border:1px solid #d5b866;border-radius:14px;background:#fffaf0}.fb-photo-tools legend{font-weight:700;color:#173f35;padding-inline:8px}.fb-photo-tools small{display:block;line-height:1.8;color:#776a50}.fb-photo-tools [data-fb-photo-note]{color:#173f35}.fb-photo-tools input[type=file]{max-width:100%;white-space:normal}.fb-preview>div img{box-shadow:0 15px 35px #173f351c}.fb-preview>div>a{display:block;text-align:center;margin-bottom:10px}.fb-preview>div>small{display:block;line-height:1.7;color:#776a50}
 
 
-/* A compact framed preview; exported PNG remains 1080 × 1350. */
+/* A compact framed preview; exported PNG is 1200 × 1200. */
 .fb-studio .fb-preview{background:linear-gradient(145deg,#fffdf7,#f3e6bd);border:1px solid #d7ba68;box-shadow:0 8px 28px #70551e12;position:relative;overflow:hidden}
 .fb-studio .fb-preview::before{content:"";display:block;width:72px;height:4px;border-radius:4px;background:linear-gradient(90deg,#b78628,#f5df9c,#c79c3b);margin-bottom:14px}
 .fb-preview>div img{width:min(100%,280px);height:auto;max-height:350px;object-fit:contain;margin:0 auto 18px;border:3px solid #e1c674;border-radius:12px;box-sizing:border-box;box-shadow:0 10px 24px #72571f26}
