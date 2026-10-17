@@ -19,13 +19,12 @@
   const root=document.createElement('section');root.className='home-visitor-guide';root.dataset.noTranslate='';root.setAttribute('role','region');root.setAttribute('aria-roledescription',t('عارض شرائح','carousel','Karussell'));root.setAttribute('aria-label',t('ماذا يمكنك أن تفعل في سوق داريا؟','What can you do on Souq Daraya?','Was kannst du auf Souq Daraya tun?'));
   root.innerHTML='<div class="visitor-guide-main"><div class="visitor-guide-copy"><h2 data-guide-title></h2><p data-guide-description></p><a class="visitor-guide-action" data-guide-action></a></div><div class="visitor-guide-art">'+slides.map((s,i)=>'<img data-guide-image="'+i+'" data-src="assets/home-guide/'+s.image+'-384.webp" data-srcset="assets/home-guide/'+s.image+'-384.webp 384w, assets/home-guide/'+s.image+'-640.webp 640w" sizes="(max-width: 600px) 140px, 200px" width="384" height="384" alt="" decoding="async" loading="lazy"'+(i!==current?' hidden':'')+'>').join('')+'</div></div><div class="visitor-guide-controls"><button type="button" data-visitor-prev></button><div class="visitor-guide-dots">'+slides.map((s,i)=>'<button type="button" data-visitor-dot="'+i+'"><span></span></button>').join('')+'</div><button type="button" data-visitor-pause></button><button type="button" data-visitor-next></button></div>';
   const offer=filters.querySelector('.daily-offers-preview');if(offer)offer.after(root);else input.closest('.search-wrap,.search-box,.search-field').after(root);
-  const reduced=window.matchMedia?.('(prefers-reduced-motion: reduce)'),connection=navigator.connection;
+  const reduced=window.matchMedia?.('(prefers-reduced-motion: reduce)');
   let timer=null,visible=false,hovered=false,focused=false,paused=false,dead=false,observer=null,start=null;
-  const slow=()=>connection?.saveData||['slow-2g','2g'].includes(connection?.effectiveType);
   const stop=()=>{if(timer!==null)clearTimeout(timer);timer=null;};
   const hydrate=()=>{if(!visible)return;const img=root.querySelector('[data-guide-image="'+current+'"]');if(!img.getAttribute('src')){img.srcset=img.dataset.srcset;img.src=img.dataset.src;}};
   const canPlay=()=>!paused&&!reduced?.matches;
-  function schedule(){stop();if(!dead&&root.isConnected&&visible&&!hovered&&!focused&&!document.hidden&&canPlay())timer=setTimeout(()=>show(current+1,false),slow()?10000:6000);}
+  function schedule(){stop();if(!dead&&root.isConnected&&visible&&!hovered&&!focused&&!document.hidden&&canPlay())timer=setTimeout(()=>show(current+1,false),4000);}
   function labels(){
    const prev=root.querySelector('[data-visitor-prev]'),next=root.querySelector('[data-visitor-next]'),pause=root.querySelector('[data-visitor-pause]'),rtl=document.documentElement.dir!=='ltr';
    prev.textContent=rtl?'→':'←';next.textContent=rtl?'←':'→';prev.setAttribute('aria-label',t('السلايد السابق','Previous slide','Vorherige Folie'));next.setAttribute('aria-label',t('السلايد التالي','Next slide','Nächste Folie'));
@@ -40,10 +39,10 @@
   root.addEventListener('focusin',e=>{focused=e.target.matches(':focus-visible');if(focused)stop();});root.addEventListener('focusout',e=>{if(!root.contains(e.relatedTarget)){focused=false;schedule();}});
   root.addEventListener('touchstart',e=>{if(e.touches.length!==1){start=null;return;}start={x:e.touches[0].clientX,y:e.touches[0].clientY};stop();},{passive:true});
   root.addEventListener('touchend',e=>{if(start&&e.changedTouches.length){const dx=e.changedTouches[0].clientX-start.x,dy=e.changedTouches[0].clientY-start.y;if(Math.abs(dx)>45&&Math.abs(dx)>Math.abs(dy)*1.3){const rtl=document.documentElement.dir!=='ltr';show(current+((dx>0)===rtl?1:-1));}}start=null;schedule();},{passive:true});root.addEventListener('touchcancel',()=>{start=null;schedule();},{passive:true});
-  const visibility=()=>schedule(),motion=()=>{labels();schedule();};document.addEventListener('visibilitychange',visibility);reduced?.addEventListener?.('change',motion);connection?.addEventListener?.('change',motion);
+  const visibility=()=>schedule(),motion=()=>{labels();schedule();};document.addEventListener('visibilitychange',visibility);reduced?.addEventListener?.('change',motion);
   if('IntersectionObserver'in window){observer=new IntersectionObserver(entries=>{visible=entries.some(e=>e.isIntersecting);hydrate();schedule();},{threshold:.15});observer.observe(root);}else{visible=true;hydrate();}
   show(current,false);
-  cleanup=()=>{dead=true;stop();observer?.disconnect();document.removeEventListener('visibilitychange',visibility);reduced?.removeEventListener?.('change',motion);connection?.removeEventListener?.('change',motion);};
+  cleanup=()=>{dead=true;stop();observer?.disconnect();document.removeEventListener('visibilitychange',visibility);reduced?.removeEventListener?.('change',motion);};
  }
  const previous=renderHome;renderHome=function(){cleanup();previous.apply(this,arguments);mount();};
  window.addEventListener('hashchange',()=>{if(!['','#','#home'].includes(location.hash))cleanup();});
