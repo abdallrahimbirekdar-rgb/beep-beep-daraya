@@ -23,8 +23,9 @@
   root.innerHTML='<div class="visitor-guide-main"><div class="visitor-guide-copy"><h2 data-guide-title></h2><p data-guide-description></p><a class="visitor-guide-action" data-guide-action></a></div><div class="visitor-guide-art">'+slides.map((s,i)=>'<img data-guide-image="'+i+'" data-src="assets/home-guide/'+s.image+'-384.webp" data-srcset="assets/home-guide/'+s.image+'-384.webp 384w, assets/home-guide/'+s.image+'-640.webp 640w" sizes="(max-width: 600px) 95px, 145px" width="384" height="384" alt="" decoding="async" loading="lazy"'+(i!==current?' hidden':'')+'>').join('')+'</div></div><div class="visitor-guide-controls"><button type="button" data-visitor-prev></button><div class="visitor-guide-dots">'+slides.map((s,i)=>'<button type="button" data-visitor-dot="'+i+'"><span></span></button>').join('')+'</div><button type="button" data-visitor-pause></button><button type="button" data-visitor-next></button></div>';
   app.prepend(root);
   const hero=app.querySelector('.shahin-hero');if(hero)hero.hidden=true;
-  const track=filters.querySelector('.browse-category-track'),offer=filters.querySelector('.daily-offers-preview');
-  if(track){if(offer)track.after(offer);const delivery=track.querySelector('.simple-delivery-category');if(delivery)track.append(delivery);}
+  const offer=app.querySelector('.daily-offers-preview'),delivery=app.querySelector('.simple-delivery-category');
+  if(offer)root.after(offer);
+  if(delivery)(offer||root).after(delivery);
   const reduced=window.matchMedia?.('(prefers-reduced-motion: reduce)');
   let timer=null,visible=false,hovered=false,focused=false,paused=false,dead=false,observer=null,start=null;
   const stop=()=>{if(timer!==null)clearTimeout(timer);timer=null;};
