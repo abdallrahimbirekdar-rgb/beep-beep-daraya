@@ -48,6 +48,7 @@
  }
  const previous=renderHome;renderHome=function(){cleanup();previous.apply(this,arguments);mount();};
  window.addEventListener('hashchange',()=>{if(!['','#','#home'].includes(location.hash))cleanup();});
- new MutationObserver(()=>{if(document.querySelector('.home-visitor-guide'))mount();}).observe(document.documentElement,{attributes:true,attributeFilter:['lang','dir']});
+ let lastLocale=document.documentElement.lang+'|'+document.documentElement.dir;
+ new MutationObserver(()=>{const locale=document.documentElement.lang+'|'+document.documentElement.dir;if(locale===lastLocale)return;lastLocale=locale;if(document.querySelector('.home-visitor-guide'))mount();}).observe(document.documentElement,{attributes:true,attributeFilter:['lang','dir']});
  if(document.querySelector('#app.professional-home #browse>.filters'))mount();
 })();
