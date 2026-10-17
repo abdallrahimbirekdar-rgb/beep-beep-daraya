@@ -1,5 +1,6 @@
 'use strict';
 (() => {
+ const t=(ar,en,de)=>({ar,en,de}[window.ShahinI18n?.language||'ar']||ar);
  const tools=[
   ['صفحة خاصة باسمك','اعرض اسم متجرك أو نشاطك، وصفه، صوره، عنوانه ووسائل التواصل معه، وشارك رابط الصفحة مع زبائنك.'],
   ['منتجاتك وأسعارك','أضف منتجاتك أو خدماتك مع الصور والأسعار والوصف، ونظّمها ضمن أقسام، وعدّلها عند الحاجة.'],
@@ -29,6 +30,10 @@
  function show(key){
   const page=pages[key];if(!page)return;
   const app=document.querySelector('#app');app.classList.remove('professional-home');
+  if(page.steps){
+   app.innerHTML='<article class="panel project-info simple-business-start" data-no-translate><a class="button outline" href="#home">'+esc(t('العودة إلى الرئيسية','Back to home','Zur Startseite'))+'</a><h1>'+esc(t('أضف متجرك أو خدمتك','Add your shop or service','Geschäft oder Dienstleistung hinzufügen'))+'</h1><p class="project-info-lead">'+esc(t('إنشاء صفحتك مجاني. أضف معلوماتك، وسنراجع الطلب قبل نشر الصفحة.','Your page is free. Add your details. We will review your request before the page is published.','Deine Seite ist kostenlos. Ergänze deine Angaben. Wir prüfen den Antrag vor der Veröffentlichung.'))+'</p><ol class="project-start-steps"><li>'+esc(t('اكتب اسم نشاطك ورقم التواصل.','Add your business name and phone number.','Name und Telefonnummer eintragen.'))+'</li><li>'+esc(t('اختر صورة وأضف العنوان والمكان على الخريطة.','Choose a photo, add the address and select the place on the map.','Foto wählen, Adresse eintragen und Ort auf der Karte markieren.'))+'</li><li>'+esc(t('اضغط «إرسال الطلب للإدارة».','Press Send request.','Auf Antrag senden tippen.'))+'</li></ol><div class="project-info-actions"><a class="button" href="#business-application/new">'+esc(t('ابدأ الآن','Start now','Jetzt starten'))+'</a><a class="simple-follow-request" href="#business-applications">'+esc(t('لدي طلب سابق — متابعة الطلب','I have a request — check its status','Ich habe bereits einen Antrag — Status ansehen'))+'</a></div><p>'+esc(t('المنتجات والأسعار وبقية التفاصيل يمكنك إضافتها لاحقًا.','You can add products, prices and other details later.','Produkte, Preise und weitere Angaben kannst du später ergänzen.'))+'</p><details class="simple-business-extras"><summary>'+esc(t('ماذا يمكنني إضافته لاحقًا؟','What else can I add?','Was kann ich noch ergänzen?'))+'</summary><p>'+esc(t('صور المنتجات وأسعارها، أوقات العمل، روابط التواصل، والعروض. تظهر لك الأدوات المناسبة لنشاطك داخل لوحة متجرك.','Product photos and prices, opening hours, contact links and offers. The tools for your business are in your shop menu.','Produktfotos und Preise, Öffnungszeiten, Kontaktlinks und Angebote. Die passenden Werkzeuge findest du in deinem Geschäftsmenü.'))+'</p></details></article>';return;
+  }
+
   const required=key==='home-business'
    ?'لطلب المعاينة، أضف اسم نشاطك وعنوانه أو منطقة العمل أو الاستلام، وموقع GPS، ورقمًا للتواصل (يفضّل واتساب أو تيليجرام)، وصورة واضحة لنشاطك أو منتجاتك. صورة واجهة محل ليست مطلوبة للعمل من المنزل.'
    :'لطلب المعاينة، أضف اسم المتجر أو الخدمة والعنوان وموقع GPS ورقمًا للتواصل (يفضّل واتساب أو تيليجرام)، وصورة واضحة لواجهة المحل. للخدمة دون محل، استخدم صورة تعبّر عن النشاط وحدّد منطقة تقديم الخدمة.';

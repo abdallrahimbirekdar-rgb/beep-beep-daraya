@@ -1,0 +1,18 @@
+/* Keep the common tasks visible and let owners open the rest when needed. */
+.dashboard-menu-layout .owner-more-tools{grid-column:1/-1;min-width:0;margin-top:4px;border:1px solid #dfd9c6;border-radius:12px;background:#fffdf7;padding:0 12px}
+.owner-more-tools>summary{cursor:pointer;min-height:48px;padding:10px 4px;box-sizing:border-box;color:#173b35;font-size:16px;font-weight:700;line-height:1.6}
+.owner-more-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;padding:6px 0 12px}
+.owner-more-tools>summary:focus-visible,.simple-business-extras>summary:focus-visible{outline:3px solid #173b35;outline-offset:2px;border-radius:6px}
+.simple-business-start{max-width:720px!important}
+.simple-business-start h1{font-size:clamp(23px,5vw,30px)!important;line-height:1.5!important}
+.simple-business-start .project-info-lead{font-size:16px;line-height:1.8;padding:12px;margin:14px 0}
+.simple-business-start .project-start-steps{font-size:16px;line-height:1.8;margin:16px 0}
+.simple-business-start .project-info-actions{display:flex;flex-direction:column;align-items:stretch;gap:8px;margin:16px 0}
+.simple-business-start .project-info-actions>.button{min-height:48px;display:flex;align-items:center;justify-content:center;font-size:17px}
+.simple-follow-request{display:flex;align-items:center;justify-content:center;min-height:44px;text-align:center;color:#173b35;font-size:14px}
+.simple-business-extras{border-top:1px solid #e5d6ae;padding-top:8px;margin-top:16px}
+.simple-business-extras>summary{min-height:44px;font-weight:700;cursor:pointer;padding:8px 0}
+.business-application .business-secondary-actions{margin:10px 0 0;padding:4px 8px;background:#fffdf8}
+.business-application .business-secondary-actions>summary{font-size:14px;padding:8px 4px}
+.business-application .business-submit-panel>p{font-size:14px;margin:6px 0}
+@media(max-width:760px){.owner-more-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.simple-business-start{padding:16px!important}.simple-business-start .project-info-actions a{width:auto}.dashboard-menu-layout .owner-more-tools .dashboard-menu-card{min-height:88px!important;font-size:13px!important}}
