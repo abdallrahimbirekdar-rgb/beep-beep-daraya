@@ -11,14 +11,14 @@
 #app.professional-home .daily-offers-preview>a.button{grid-column:2!important;grid-row:1/3!important;min-height:44px!important;margin:0!important;padding:8px 10px!important;font-size:12px!important;line-height:1.4!important;white-space:normal!important;max-width:110px!important;box-sizing:border-box!important;text-align:center!important;justify-content:center!important;border-radius:10px!important}
 #app.professional-home .home-visitor-guide{width:100%;flex:0 0 100%;min-width:0;box-sizing:border-box;overflow:hidden;position:relative;border:1px solid #ddc782;border-radius:17px;background:#fff9ec;box-shadow:0 5px 18px #765a1710;margin:5px 0 10px;isolation:isolate;touch-action:pan-y}
 .home-visitor-guide::before{content:"";position:absolute;inset-block-start:0;inset-inline-start:0;width:76px;height:4px;background:linear-gradient(90deg,#bb8e2b,#f1d98a,#d0aa4d);border-end-end-radius:7px;pointer-events:none;z-index:1}
-.home-visitor-guide .visitor-guide-main{display:grid;grid-template-columns:minmax(0,1fr) minmax(110px,36%);gap:8px;align-items:center;padding:12px 14px 0;min-height:155px}
+.home-visitor-guide .visitor-guide-main{display:grid;grid-template-columns:minmax(0,1fr) minmax(100px,31%);gap:8px;align-items:center;padding:9px 12px 0;min-height:135px}
 .home-visitor-guide .visitor-guide-copy{min-width:0;padding:2px 0}
 #app .home-visitor-guide h2{font-size:20px!important;line-height:1.45!important;margin:0 0 5px!important;color:#173f35!important;font-weight:700!important}
 #app .home-visitor-guide p{font-size:14px!important;line-height:1.7!important;margin:0!important;color:#586247!important}
 #app .home-visitor-guide .visitor-guide-action{display:inline-flex;align-items:center;min-height:44px;font-size:13px!important;line-height:1.4;color:#173f35!important;text-decoration:none;font-weight:700;padding:3px 0;margin:1px 0 0;border:0;background:none;box-shadow:none}
 .home-visitor-guide .visitor-guide-action::after{content:"←";margin-inline-start:7px;color:#ad8127;font-size:19px}html[dir=ltr] .home-visitor-guide .visitor-guide-action::after{content:"→"}
 .home-visitor-guide .visitor-guide-art{min-width:0;position:relative;align-self:stretch;display:grid;place-items:center;overflow:hidden;border-radius:12px}
-#app .home-visitor-guide img{display:block;width:100%!important;max-width:210px!important;height:auto!important;aspect-ratio:1;object-fit:contain!important;border-radius:0!important;background:#fff9ec}
+#app .home-visitor-guide img{display:block;width:100%!important;max-width:175px!important;height:auto!important;aspect-ratio:1;object-fit:contain!important;border-radius:0!important;background:#fff9ec}
 #app .home-visitor-guide [hidden]{display:none!important}
 .home-visitor-guide .visitor-guide-controls{display:flex;align-items:center;justify-content:center;gap:2px;border-top:1px solid #e7d8b044;padding:0 7px;min-height:44px}
 #app .home-visitor-guide button{display:inline-grid!important;place-items:center!important;min-width:44px!important;width:44px!important;height:44px!important;min-height:44px!important;max-width:44px!important;margin:0!important;padding:0!important;flex:0 0 44px!important;background:transparent!important;border:0!important;border-radius:10px!important;box-shadow:none!important;color:#173f35!important;font-size:19px!important;line-height:1!important;cursor:pointer}
@@ -27,7 +27,7 @@
 .home-visitor-guide .visitor-guide-dots button[aria-pressed=true]>span{width:22px;background:linear-gradient(100deg,#b08529,#e3c66f)}
 #app .home-visitor-guide [data-visitor-pause]{font-size:14px!important;color:#877037!important}
 .home-visitor-guide a:focus-visible,.home-visitor-guide button:focus-visible{outline:2px solid #173f35!important;outline-offset:-3px}
-@media(max-width:600px){.home-visitor-guide .visitor-guide-main{padding:10px 11px 0;min-height:145px;gap:5px;grid-template-columns:minmax(0,1fr) 36%}#app .home-visitor-guide h2{font-size:18px!important}#app .home-visitor-guide p{font-size:13px!important;line-height:1.65!important}#app .home-visitor-guide .visitor-guide-action{font-size:12px!important}.home-visitor-guide .visitor-guide-controls{gap:0;padding:0 2px}#app .home-visitor-guide .visitor-guide-dots button{width:38px!important;min-width:38px!important;max-width:38px!important;flex-basis:38px!important}}
+@media(max-width:600px){.home-visitor-guide .visitor-guide-main{padding:8px 10px 0;min-height:125px;gap:5px;grid-template-columns:minmax(0,1fr) 31%}#app .home-visitor-guide h2{font-size:18px!important}#app .home-visitor-guide p{font-size:13px!important;line-height:1.65!important}#app .home-visitor-guide .visitor-guide-action{font-size:12px!important}.home-visitor-guide .visitor-guide-controls{gap:0;padding:0 2px}#app .home-visitor-guide .visitor-guide-dots button{width:38px!important;min-width:38px!important;max-width:38px!important;flex-basis:38px!important}}
 @media(prefers-reduced-motion:reduce){.home-visitor-guide *{transition:none!important;animation:none!important}}
 
 @media(max-width:380px){#app .home-visitor-guide .visitor-guide-dots button{width:32px!important;min-width:32px!important;max-width:32px!important;flex-basis:32px!important}}
@@ -38,3 +38,13 @@
 #app.professional-home .simple-delivery-category .delivery-hero-button:before{position:absolute!important;inset-inline-start:5px!important;top:50%!important;transform:translateY(-50%);width:20px!important;height:20px!important;margin:0!important}
 #app.professional-home .simple-delivery-category .delivery-pending-note{margin:0!important;font-size:11px!important;line-height:1.5!important;font-weight:400!important}
 #app.professional-home .simple-delivery-category .delivery-info-button{min-width:44px!important;min-height:44px!important;width:44px!important;height:44px!important;margin:0!important;font-size:21px!important}
+
+/* Shorter bottom navigation, with safe-area space and 44px buttons. */
+@media(max-width:760px){
+ #mobile-navigation{padding:3px 8px calc(3px + env(safe-area-inset-bottom))!important}
+ #mobile-navigation a{min-height:44px!important;padding:0 4px!important;gap:1px!important;border-radius:8px!important}
+ #mobile-navigation a>span:last-child{font-size:11px!important;line-height:1.3!important}
+ #mobile-navigation a[href]>span:first-child{font-size:20px!important;width:24px!important;height:22px!important;line-height:1.1!important}
+ body{padding-bottom:calc(56px + env(safe-area-inset-bottom))!important}
+ #cart-shortcut,.editor-footer{bottom:calc(58px + env(safe-area-inset-bottom))!important}
+}
