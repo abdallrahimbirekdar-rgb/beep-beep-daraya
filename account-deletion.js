@@ -6,12 +6,13 @@
  de:{settings:'Kontoeinstellungen',personal:'Diese Option betrifft dein persönliches Anmeldekonto. Ein Geschäft entfernst du über „Geschäft löschen“ im Hauptverwaltungsbereich.',title:'Mein Konto löschen',intro:'Dies löscht dein Anmeldekonto, Profil, Adressen, Favoriten, Beiträge und unveröffentlichte Entwürfe. Beträge abgeschlossener Bestellungen bleiben für die Buchhaltung erhalten; Name, Telefon, Adresse und Standort werden entfernt.',confirm:'Zur endgültigen Löschung DELETE eingeben',button:'Konto endgültig löschen',cancel:'Zurück zu meinem Konto',login:'Melde dich beim zu löschenden Konto an und kehre hierher zurück.',checking:'Konto wird geprüft…',business:'Dieses Konto ist mit Verwaltung, einem Geschäft oder Lieferarbeit verknüpft. Beantrage die Löschung per E-Mail, damit Geschäftsdaten und Bilder bearbeitet werden.',active:'Eine Bestellung oder Buchung ist offen. Beantrage die Löschung jetzt per E-Mail oder schließe sie ab bzw. storniere sie und versuche es erneut.',files:'Verknüpfte Bilder müssen bearbeitet werden. Beantrage die Löschung per E-Mail.',error:'Die Löschung konnte nicht abgeschlossen oder bestätigt werden. Wir haben keine Kontolöschung bestätigt. Versuche es erneut oder kontaktiere uns.',done:'Dein Konto und persönliche Daten wurden gelöscht. Deine Identität wurde aus abgeschlossenen Bestellungen entfernt.',pending:'Konto wird gelöscht…',email:'Löschung per E-Mail beantragen',support:'Sende die Anfrage von deiner Konto-E-Mail an info@damascus-shop.com. Sende niemals dein Passwort.',wrong:'Gib zur Bestätigung genau DELETE ein.'}
  };
  const copy=()=>messages[window.ShahinI18n?.language]||messages.ar;
- const support=c=>`<p>${esc(c.support)}</p><a class="button outline" href="delete-account.html">${esc(c.email)}</a>`;
+ const support=c=>`${user&&!completed?'<p><a class="button" href="#account" data-open-deletion-request>'+esc(({ar:'إرسال ومتابعة طلب الحذف داخل التطبيق',en:'Send and track a deletion request in the app',de:'Löschantrag in der App senden und verfolgen'})[window.ShahinI18n?.language||'ar']||'إرسال ومتابعة طلب الحذف داخل التطبيق')+'</a></p>':''}<p>${esc(c.support)}</p><a class="button outline" href="delete-account.html">${esc(c.email)}</a>`;
  let checkingId=0,deleting=false,completed=false;
  async function renderDeletion(){
   const c=copy(),uid=user?.id,check=++checkingId;
   if(uid&&completed)completed=false;
   $('#app').innerHTML=`<section class="panel customer-auth" data-no-translate><h1>${esc(c.title)}</h1><p>${esc(c.intro)}</p><div id="deletion-content" aria-live="polite">${esc(completed?c.done:uid?c.checking:c.login)}</div>${!uid&&!completed?'<a class="button" href="#account">'+esc(c.cancel)+'</a>':''}${support(c)}</section>`;
+  const requestLink=document.querySelector('[data-open-deletion-request]');if(requestLink&&uid)requestLink.onclick=()=>{try{sessionStorage.setItem('daraya-deletion-request-focus',uid);}catch{}};
   if(!uid||completed)return;
   const content=$('#deletion-content');
   try{
@@ -34,7 +35,7 @@
      try{if(typeof marketOrderCompleted==='function')marketOrderCompleted();sessionStorage.removeItem('daraya-business-return');}catch{}
      // Clear the local session even if the deleted user's server logout returns 403.
      try{await api.auth.signOut({scope:'local'});}catch{}
-     try{localStorage.removeItem('beep-beep-daraya-auth');}catch{}
+     try{localStorage.removeItem('beep-beep-daraya-auth');localStorage.removeItem('daraya-blocks:'+uid);sessionStorage.removeItem('daraya-deletion-request-focus');}catch{}
      user=null;admin=false;orders=[];customerProfile=null;customerLoadedFor=null;favoriteIds=[];cart={};cartStore=null;
      try{customerOrders=[];remember.set('orders',[]);remember.set('favorites',[]);saveCart();}catch{}
      updateCustomerNav();renderDeletion();
@@ -66,4 +67,3 @@
   settings.append(link);account.append(settings);
  };
 })();
-
