@@ -30,13 +30,13 @@
   if(logo){const z=Math.min(330/logo.width,114/logo.height),w=logo.width*z,h=logo.height*z;c.drawImage(logo,690+(330-w)/2,32+(114-h)/2,w,h);}else{c.fillStyle='#143d32';c.textAlign='right';c.font='bold 38px Tahoma,Arial,sans-serif';c.fillText(t('سوق داريا الإلكتروني','Souq Daraya','Souq Daraya'),1010,106,450);}
   c.fillStyle='#fffdf8';c.shadowColor='#46381816';c.shadowBlur=22;rounded(48,185,984,1086,34);c.fill();c.shadowBlur=0;
   c.strokeStyle='#e2d3ae';c.lineWidth=1;rounded(48,185,984,1086,34);c.stroke();
-  // Small photo uses about 7% of the poster, leaving the main area for the post.
-  const x=85,y=225,w=410,h=260;c.save();rounded(x,y,w,h,24);c.clip();
+  // A medium facade photo balances the shop identity with the text area.
+  const x=85,y=215,w=580,h=300;c.save();rounded(x,y,w,h,24);c.clip();
   const cover=Math.max(w/image.width,h/image.height);c.filter='blur(18px)';c.drawImage(image,x+(w-image.width*cover)/2-8,y+(h-image.height*cover)/2-8,image.width*cover+16,image.height*cover+16);c.filter='none';c.fillStyle='rgba(17,43,34,.14)';c.fillRect(x,y,w,h);
   const scale=fit==='cover'?cover:Math.min(w/image.width,h/image.height),pw=image.width*scale,ph=image.height*scale;c.drawImage(image,x+(w-pw)/2,y+(h-ph)/2,pw,ph);c.restore();
   c.strokeStyle=gold;c.lineWidth=4;rounded(x,y,w,h,24);c.stroke();
-  c.direction='rtl';c.textAlign='right';c.fillStyle='#967125';c.font='26px Tahoma,Arial,sans-serif';c.fillText(t('من داريا','From Daraya','Aus Daraya'),982,271,420);
-  c.fillStyle='#173f35';c.font='bold 38px Tahoma,Arial,sans-serif';wrap(c,shopName||heading,430,4).forEach((line,i)=>c.fillText(line,982,332+i*47));
+  c.direction='rtl';c.textAlign='right';c.fillStyle='#967125';c.font='26px Tahoma,Arial,sans-serif';c.fillText(t('من داريا','From Daraya','Aus Daraya'),982,271,280);
+  c.fillStyle='#173f35';c.font='bold 32px Tahoma,Arial,sans-serif';wrap(c,shopName||heading,280,5).forEach((line,i)=>c.fillText(line,982,324+i*40));
   c.fillStyle=gold;rounded(85,528,910,3,1);c.fill();
   c.textAlign='center';c.fillStyle='#153e33';c.font='bold 66px Tahoma,Arial,sans-serif';let titleLines=wrap(c,heading,860,3);if(titleLines.length===3){c.font='bold 58px Tahoma,Arial,sans-serif';titleLines=wrap(c,heading,860,3);}
   const titleStart=625,titleGap=78;titleLines.forEach((line,i)=>c.fillText(line,540,titleStart+i*titleGap));
