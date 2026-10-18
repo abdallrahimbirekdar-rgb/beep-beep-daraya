@@ -27,15 +27,16 @@
   if(offer)root.after(offer);
   if(delivery)(offer||root).after(delivery);
   const reduced=window.matchMedia?.('(prefers-reduced-motion: reduce)');
-  let timer=null,visible=false,hovered=false,focused=false,paused=false,dead=false,observer=null,start=null;
+  let timer=null,visible=false,hovered=false,focused=false,paused=false,dead=false,observer=null,start=null,touchInput=false;
   const stop=()=>{if(timer!==null)clearTimeout(timer);timer=null;};
   const hydrate=()=>{if(!visible)return;const img=root.querySelector('[data-guide-image="'+current+'"]');if(!img.getAttribute('src')){img.srcset=img.dataset.srcset;img.src=img.dataset.src;}};
-  const canPlay=()=>!paused&&!reduced?.matches;
+  // Reduced motion removes visual transitions in CSS; content still changes without animation.
+  const canPlay=()=>!paused;
   function schedule(){stop();if(!dead&&root.isConnected&&visible&&!hovered&&!focused&&!document.hidden&&canPlay())timer=setTimeout(()=>show(current+1,false),4000);}
   function labels(){
    const prev=root.querySelector('[data-visitor-prev]'),next=root.querySelector('[data-visitor-next]'),pause=root.querySelector('[data-visitor-pause]'),rtl=document.documentElement.dir!=='ltr';
    prev.textContent=rtl?'→':'←';next.textContent=rtl?'←':'→';prev.setAttribute('aria-label',t('السلايد السابق','Previous slide','Vorherige Folie'));next.setAttribute('aria-label',t('السلايد التالي','Next slide','Nächste Folie'));
-   pause.textContent=paused?'▶':'Ⅱ';pause.setAttribute('aria-label',paused?t('تشغيل التبديل التلقائي','Start auto play','Automatisch abspielen'):t('إيقاف التبديل التلقائي','Pause auto play','Automatik anhalten'));pause.setAttribute('aria-pressed',String(paused));pause.hidden=Boolean(reduced?.matches);
+   pause.textContent=paused?'▶':'Ⅱ';pause.setAttribute('aria-label',paused?t('تشغيل التبديل التلقائي','Start auto play','Automatisch abspielen'):t('إيقاف التبديل التلقائي','Pause auto play','Automatik anhalten'));pause.setAttribute('aria-pressed',String(paused));pause.hidden=false;
    root.querySelectorAll('[data-visitor-dot]').forEach((b,i)=>{b.setAttribute('aria-label',t('السلايد ','Slide ','Folie ')+(i+1)+': '+t(...slides[i].title));b.setAttribute('aria-pressed',String(i===current));});
   }
   function show(index,manual=true){if(dead)return;current=(index+slides.length)%slides.length;const s=slides[current];root.querySelector('[data-guide-title]').textContent=t(...s.title);root.querySelector('[data-guide-description]').textContent=t(...s.body);const link=root.querySelector('[data-guide-action]');link.textContent=t(...s.action);link.href=s.target==='search'?'#home':'#'+s.target;root.querySelectorAll('[data-guide-image]').forEach((img,i)=>img.hidden=i!==current);root.dataset.slide=String(current);const dot=root.querySelector('[data-visitor-dot="'+current+'"]'),dots=root.querySelector('.visitor-guide-dots');if(dot&&dots){const x=dot.offsetLeft-dots.offsetLeft-(dots.clientWidth-dot.offsetWidth)/2;dots.scrollLeft=x;}if(manual){root.querySelector('.visitor-guide-copy').setAttribute('aria-live','polite');}else root.querySelector('.visitor-guide-copy').setAttribute('aria-live','off');hydrate();labels();schedule();}
@@ -43,13 +44,17 @@
   root.querySelector('[data-visitor-pause]').onclick=()=>{paused=!paused;labels();schedule();};
   root.querySelector('[data-guide-action]').onclick=e=>{if(slides[current].target!=='search')return;e.preventDefault();input.focus();input.scrollIntoView({behavior:reduced?.matches?'auto':'smooth',block:'center'});};
   root.addEventListener('pointerenter',e=>{if(e.pointerType==='mouse'){hovered=true;stop();}});root.addEventListener('pointerleave',e=>{if(e.pointerType==='mouse'){hovered=false;schedule();}});
-  root.addEventListener('focusin',e=>{focused=e.target.matches(':focus-visible');if(focused)stop();});root.addEventListener('focusout',e=>{if(!root.contains(e.relatedTarget)){focused=false;schedule();}});
-  root.addEventListener('touchstart',e=>{if(e.touches.length!==1){start=null;return;}start={x:e.touches[0].clientX,y:e.touches[0].clientY};stop();},{passive:true});
+  const keyboard=()=>{touchInput=false;};
+  root.addEventListener('keydown',keyboard);
+  root.addEventListener('focusin',e=>{focused=false;if(!touchInput){try{focused=e.target.matches(':focus-visible');}catch{focused=true;}}schedule();});root.addEventListener('focusout',e=>{if(!root.contains(e.relatedTarget)){focused=false;schedule();}});
+  root.addEventListener('touchstart',e=>{touchInput=true;focused=false;if(e.touches.length!==1){start=null;return;}start={x:e.touches[0].clientX,y:e.touches[0].clientY};stop();},{passive:true});
   root.addEventListener('touchend',e=>{if(start&&e.changedTouches.length){const dx=e.changedTouches[0].clientX-start.x,dy=e.changedTouches[0].clientY-start.y;if(Math.abs(dx)>45&&Math.abs(dx)>Math.abs(dy)*1.3){const rtl=document.documentElement.dir!=='ltr';show(current+((dx>0)===rtl?1:-1));}}start=null;schedule();},{passive:true});root.addEventListener('touchcancel',()=>{start=null;schedule();},{passive:true});
-  const visibility=()=>schedule(),motion=()=>{labels();schedule();};document.addEventListener('visibilitychange',visibility);reduced?.addEventListener?.('change',motion);
+  // iOS can restore the standalone app without a new intersection notification.
+  const resume=()=>{if(dead||document.hidden)return;hovered=false;if(touchInput)focused=false;const rect=root.getBoundingClientRect();visible=rect.width>0&&rect.height>0&&rect.bottom>0&&rect.top<window.innerHeight&&rect.right>0&&rect.left<window.innerWidth;hydrate();schedule();};
+  const visibility=()=>{if(document.hidden)stop();else resume();},motion=()=>{labels();schedule();};document.addEventListener('visibilitychange',visibility);window.addEventListener('pageshow',resume);window.addEventListener('focus',resume);reduced?.addEventListener?.('change',motion);
   if('IntersectionObserver'in window){observer=new IntersectionObserver(entries=>{visible=entries.some(e=>e.isIntersecting);hydrate();schedule();},{threshold:.15});observer.observe(root);}else{visible=true;hydrate();}
   show(current,false);
-  cleanup=()=>{dead=true;stop();observer?.disconnect();document.removeEventListener('visibilitychange',visibility);reduced?.removeEventListener?.('change',motion);};
+  cleanup=()=>{dead=true;stop();observer?.disconnect();document.removeEventListener('visibilitychange',visibility);window.removeEventListener('pageshow',resume);window.removeEventListener('focus',resume);reduced?.removeEventListener?.('change',motion);};
  }
  const previous=renderHome;renderHome=function(){cleanup();previous.apply(this,arguments);mount();};
  window.addEventListener('hashchange',()=>{if(!['','#','#home'].includes(location.hash))cleanup();});
