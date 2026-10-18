@@ -1,10 +1,35 @@
-/* Small, consistent vector symbols use the market's green and gold palette. */
+/* Compact photographic category cards inspired by the approved reference. */
+#app.professional-home .browse-category-track{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important;overflow:visible!important;align-items:stretch;padding:0!important}
+#app.professional-home .browse-category-track[hidden]{display:none!important}
+#app.professional-home #browse>.filters{padding:6px 0!important;gap:8px!important;border:0!important;background:transparent!important;box-shadow:none!important}
 #app.professional-home .browse-category-track>button.has-category-symbol::before{content:none!important;display:none!important}
-#app.professional-home .browse-category-track>button.has-category-symbol{gap:4px!important}
-#app .category-symbol{display:flex;align-items:center;justify-content:center;flex:0 0 29px;width:29px;height:29px;box-sizing:border-box;border:1px solid #d8c48a;border-radius:9px;background:linear-gradient(140deg,#fffdf5,#f4e7bf);color:#214d40;box-shadow:inset 0 1px 0 #fff,0 2px 4px #8163210a;pointer-events:none}
-#app .category-symbol svg{display:block;width:22px;height:22px;overflow:visible}
-#app .category-symbol .icon-gold{stroke:#a77c28}
-#app .category-symbol-label{display:block;max-width:100%;font:inherit;line-height:inherit;color:inherit;text-align:center;pointer-events:none}
-#app .browse-category-track>button.has-category-symbol[aria-pressed=true] .category-symbol{background:linear-gradient(135deg,#fff8dc,#e8d08a);border-color:#e8d08a;box-shadow:0 1px 4px #102b2420}
-#app .browse-category-track>button.has-category-symbol:focus-visible{outline:3px solid #a77c28;outline-offset:2px}
-@media(hover:hover){#app .browse-category-track>button.has-category-symbol:hover .category-symbol{border-color:#b38b34;background:#fff4d2}}
+#app.professional-home .browse-category-track>button.has-category-symbol{display:flex!important;flex-direction:column!important;align-items:stretch!important;justify-content:flex-start!important;gap:0!important;min-width:0!important;min-height:44px!important;padding:0!important;overflow:hidden!important;border:1px solid #b59343!important;border-radius:11px!important;background:#fffdf7!important;color:#173f35!important;box-shadow:none!important;white-space:normal!important;font-size:13px!important;line-height:1.4!important}
+#app .category-symbol{display:block;position:relative;overflow:hidden;width:100%;aspect-ratio:2.3/1;flex:none;background:#eee9dd;pointer-events:none}
+#app .category-symbol img{display:block;width:100%;height:100%;object-fit:cover}
+#app .category-symbol img.reference-category-photo{position:absolute;max-width:none;object-fit:fill}
+#app .category-symbol-label{display:flex;align-items:center;justify-content:center;min-height:30px;padding:3px 5px;box-sizing:border-box;font:inherit;font-weight:750;line-height:inherit;color:inherit;text-align:center;pointer-events:none;overflow-wrap:break-word}
+#app .browse-category-track>button.has-category-symbol.category-all{grid-column:1/-1;flex-direction:row!important;justify-self:start;align-items:center!important;padding:0 12px!important;gap:6px!important;min-height:36px!important;border-radius:20px!important}
+#app .category-all .category-symbol{width:19px;height:19px;aspect-ratio:auto;background:none}
+#app .category-all svg{display:block;width:19px;height:19px}
+#app .browse-category-track>button.has-category-symbol[aria-pressed=true]{border-color:#174b3b!important;box-shadow:0 0 0 2px #174b3b26!important}
+#app .browse-category-track>button.has-category-symbol[aria-pressed=true] .category-symbol-label{background:#174b3b;color:#fff}
+#app .browse-category-track>button.category-all[aria-pressed=true]{background:#174b3b!important;color:#fff!important}
+#app .browse-category-track>button.has-category-symbol:focus-visible{outline:3px solid #174b3b;outline-offset:3px}
+@media(hover:hover){#app .browse-category-track>button.has-category-symbol:hover{border-color:#174b3b!important;box-shadow:0 2px 8px #173f3520!important}}
+@media(min-width:640px){#app.professional-home .browse-category-track{grid-template-columns:repeat(3,minmax(0,1fr))!important}}
+@media(min-width:960px){#app.professional-home .browse-category-track{grid-template-columns:repeat(4,minmax(0,1fr))!important}#app .category-symbol{aspect-ratio:2.8/1}}
+/* Two short actions beneath the slides save one full row on phones. */
+#app.professional-home .home-quick-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:0 0 6px;align-items:stretch}
+#app.professional-home .home-quick-actions .daily-offers-preview{display:flex!important;align-items:stretch!important;padding:0!important;margin:0!important;min-width:0;border:0!important;background:transparent!important;box-shadow:none!important}
+#app.professional-home .home-quick-actions .daily-offers-preview .offers-preview-heading,#app.professional-home .home-quick-actions .daily-offers-preview>p{display:none!important}
+#app.professional-home .home-quick-actions .daily-offers-preview>a.button{display:flex!important;align-items:center!important;justify-content:center!important;gap:6px!important;width:100%!important;max-width:none!important;min-height:52px!important;margin:0!important;padding:6px!important;box-sizing:border-box!important;font-size:13px!important;line-height:1.4!important;background:linear-gradient(135deg,#f7e8b8,#ecd080)!important;border:1px solid #d5b96b!important;border-radius:11px!important;color:#173f35!important}
+.home-quick-actions .quick-offer-label{min-width:0}.home-quick-actions a>svg{width:21px;height:21px;flex:0 0 21px}
+#app.professional-home .home-quick-actions .simple-delivery-category{margin:0!important;padding:3px!important;gap:1px!important;min-width:0}
+#app.professional-home .home-quick-actions .delivery-hero-button{padding:2px!important;font-size:13px!important;line-height:1.4!important;min-height:44px!important}
+#app.professional-home .home-quick-actions .delivery-hero-button:before{display:none!important}
+#app.professional-home .home-quick-actions .delivery-pending-note{font-size:10px!important;line-height:1.4!important;white-space:normal!important}
+@media(max-width:300px){#app.professional-home .home-quick-actions{grid-template-columns:1fr}}
+#app.professional-home .home-quick-actions .simple-delivery-category{background:#174b3b!important;border:1px solid #174b3b!important;color:#fff!important;box-shadow:none!important}
+#app.professional-home .home-quick-actions .delivery-hero-button{background:transparent!important;color:#fff!important}
+#app.professional-home .home-quick-actions .delivery-pending-note{color:#f1d992!important}
+#app.professional-home .home-quick-actions .delivery-info-button{color:#f1d992!important;background:transparent!important}

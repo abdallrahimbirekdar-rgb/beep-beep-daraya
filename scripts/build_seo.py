@@ -169,9 +169,10 @@ if __name__ == '__main__':
             shutil.copy2(item,output/item.name)
         elif item.name in {'images','thumbnails','fonts'} and item.is_dir():
             shutil.copytree(item,output/item.name,dirs_exist_ok=True)
-    # Only publish the curated homepage guide illustrations from assets.
-    guide_assets = source/'assets'/'home-guide'
-    if guide_assets.is_dir():
-        shutil.copytree(guide_assets,output/'assets'/'home-guide',dirs_exist_ok=True)
+    # Publish only curated homepage guide and category artwork from assets.
+    for folder in ('home-guide', 'categories'):
+        public_assets = source/'assets'/folder
+        if public_assets.is_dir():
+            shutil.copytree(public_assets,output/'assets'/folder,dirs_exist_ok=True)
     count = build(merge_mosques(fetch_stores((source/'config.js').read_text()),source,output),output)
     print(f'Generated {count} public shop pages and sitemap')
