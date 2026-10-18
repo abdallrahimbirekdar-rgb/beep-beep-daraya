@@ -1,0 +1,10 @@
+/* Small, consistent vector symbols use the market's green and gold palette. */
+#app.professional-home .browse-category-track>button.has-category-symbol::before{content:none!important;display:none!important}
+#app.professional-home .browse-category-track>button.has-category-symbol{gap:4px!important}
+#app .category-symbol{display:flex;align-items:center;justify-content:center;flex:0 0 29px;width:29px;height:29px;box-sizing:border-box;border:1px solid #d8c48a;border-radius:9px;background:linear-gradient(140deg,#fffdf5,#f4e7bf);color:#214d40;box-shadow:inset 0 1px 0 #fff,0 2px 4px #8163210a;pointer-events:none}
+#app .category-symbol svg{display:block;width:22px;height:22px;overflow:visible}
+#app .category-symbol .icon-gold{stroke:#a77c28}
+#app .category-symbol-label{display:block;max-width:100%;font:inherit;line-height:inherit;color:inherit;text-align:center;pointer-events:none}
+#app .browse-category-track>button.has-category-symbol[aria-pressed=true] .category-symbol{background:linear-gradient(135deg,#fff8dc,#e8d08a);border-color:#e8d08a;box-shadow:0 1px 4px #102b2420}
+#app .browse-category-track>button.has-category-symbol:focus-visible{outline:3px solid #a77c28;outline-offset:2px}
+@media(hover:hover){#app .browse-category-track>button.has-category-symbol:hover .category-symbol{border-color:#b38b34;background:#fff4d2}}
