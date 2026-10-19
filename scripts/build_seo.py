@@ -175,4 +175,6 @@ if __name__ == '__main__':
         if public_assets.is_dir():
             shutil.copytree(public_assets,output/'assets'/folder,dirs_exist_ok=True)
     count = build(merge_mosques(fetch_stores((source/'config.js').read_text()),source,output),output)
-    print(f'Generated {count} public shop pages and sitemap')
+    from frontend_assets import bundle_frontend
+    bundled = bundle_frontend(output)
+    print(f'Generated {count} public shop pages and sitemap; bundled {len(bundled)} application entry pages')

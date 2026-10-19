@@ -6,8 +6,8 @@
  function artwork(key){
   if(key==='all')return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" aria-hidden="true">'+drawings.all+'</svg>';
   const xy=reference[key],img=document.createElement('img');img.alt='';img.loading='lazy';img.decoding='async';
-  img.src='assets/categories/'+(xy?'reference-photos':key)+'.webp';
-  if(xy){img.className='reference-category-photo';img.style.cssText='width:301.1765%;height:1037.8379%;left:-'+(xy[0]/340*100)+'%;top:-'+(xy[1]/148*100)+'%';}
+  img.dataset.lazySrc='assets/categories/'+key+'.webp';
+  if(xy){img.className='cropped-category-photo';img.width=255;img.height=key==='doctor'||key==='pharmacy'?110:111;}
   else{img.width=480;img.height=240;}
   return img.outerHTML;
  }

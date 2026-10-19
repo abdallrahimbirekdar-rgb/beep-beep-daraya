@@ -6,7 +6,7 @@
 #app.professional-home .browse-category-track>button.has-category-symbol{display:flex!important;flex-direction:column!important;align-items:stretch!important;justify-content:flex-start!important;gap:0!important;min-width:0!important;min-height:44px!important;padding:0!important;overflow:hidden!important;border:1px solid #b59343!important;border-radius:11px!important;background:#fffdf7!important;color:#173f35!important;box-shadow:none!important;white-space:normal!important;font-size:13px!important;line-height:1.4!important}
 #app .category-symbol{display:block;position:relative;overflow:hidden;width:100%;aspect-ratio:2.3/1;flex:none;background:#eee9dd;pointer-events:none}
 #app .category-symbol img{display:block;width:100%;height:100%;object-fit:cover}
-#app .category-symbol img.reference-category-photo{position:absolute;max-width:none;object-fit:fill}
+#app .category-symbol img.cropped-category-photo{object-fit:fill}
 #app .category-symbol-label{display:flex;align-items:center;justify-content:center;min-height:30px;padding:3px 5px;box-sizing:border-box;font:inherit;font-weight:750;line-height:inherit;color:inherit;text-align:center;pointer-events:none;overflow-wrap:break-word}
 #app .browse-category-track>button.has-category-symbol.category-all{grid-column:1/-1;flex-direction:row!important;justify-self:start;align-items:center!important;padding:0 12px!important;gap:6px!important;min-height:36px!important;border-radius:20px!important}
 #app .category-all .category-symbol{width:19px;height:19px;aspect-ratio:auto;background:none}
