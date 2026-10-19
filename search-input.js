@@ -46,6 +46,7 @@
   event.stopImmediatePropagation();
   search=input.value;
   if(typeof customerSearchLimit!=='undefined')customerSearchLimit=24;
+  if(typeof homeStoreLimit!=='undefined')homeStoreLimit=12;
   if(composing||event.isComposing){cancel();return;}
   schedule();
  },true);

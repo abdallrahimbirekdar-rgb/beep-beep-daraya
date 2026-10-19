@@ -3,7 +3,7 @@ const {JSDOM}=require('jsdom');
 function setup(){
  const dom=new JSDOM('<main id="app"></main><button id="other">Other</button>',{url:'https://damascus-shop.com/#home',runScripts:'outside-only',pretendToBeVisual:true}),w=dom.window;
  let renders=0,scrolls=0,next=0;const tasks=new Map();
- w.search='';w.customerSearchLimit=96;
+ w.search='';w.customerSearchLimit=96;w.homeStoreLimit=120;
  const stores=Array.from({length:500},(_,i)=>i===499?'صيدلية داريا':'متجر '+i);
  w.renderHome=()=>{
   renders++;const app=w.document.querySelector('#app');app.innerHTML='<div class="search-wrap"><input id="search"></div><section id="results"></section>';
@@ -20,7 +20,7 @@ function setup(){
 }
 test('a typing burst updates the native value immediately and renders 500-store results only once',()=>{
  const a=setup();for(const value of ['ص','صي','صيد','صيدل','صيدلي','صيدلية'])a.type(value);
- assert.equal(a.input.value,'صيدلية');assert.equal(a.w.search,'صيدلية');assert.equal(a.renders,1);assert.equal(a.tasks.size,1);assert.equal(a.w.customerSearchLimit,24);
+ assert.equal(a.input.value,'صيدلية');assert.equal(a.w.search,'صيدلية');assert.equal(a.renders,1);assert.equal(a.tasks.size,1);assert.equal(a.w.customerSearchLimit,24);assert.equal(a.w.homeStoreLimit,12);
  a.flush();assert.equal(a.renders,2);assert.equal(a.tasks.size,0);assert.equal(a.w.document.querySelector('#results').textContent,'صيدلية داريا');assert.equal(a.w.document.querySelector('#search'),a.input);assert.equal(a.w.document.activeElement,a.input);assert.equal(a.input.selectionStart,6);assert.equal(a.scrolls,0);a.close();
 });
 test('async result refresh waits for pending typing and preserves the original caret selection',()=>{
@@ -56,9 +56,23 @@ test('the complete production render chain keeps typing focused and returns the 
  try{
   w.eval(sources+`\nwindow.__fixture=()=>{stores=Array.from({length:500},(_,i)=>({id:'shop-'+i,name:i===499?'صيدلية داريا':'متجر '+i,active:true,category:'shop',description:'',online_ordering:false,opening_hours:{}}));products=[];heroStores=[];renderHome();};`);
   w.__fixture();const input=w.document.querySelector('#search');input.focus();
+  // The first letter matches almost the entire directory: never build 499 cards.
+  input.value='م';input.dispatchEvent(new w.InputEvent('input',{bubbles:true}));
+  await new Promise(resolve=>setTimeout(resolve,360));
+  assert.equal(w.document.querySelectorAll('#browse > .grid .card').length,12);
+  assert.ok(parseInt(w.document.querySelector('.store-count').textContent,10)>=499);
+  assert.equal(w.document.querySelector('#search'),input);assert.equal(w.document.activeElement,input);
+  const firstIds=[...w.document.querySelectorAll('#browse > .grid .card a')].map(a=>a.hash);
+  w.document.querySelector('#more-store-results').click();
+  assert.equal(w.document.querySelectorAll('#browse > .grid .card').length,24);
+  assert.deepEqual([...w.document.querySelectorAll('#browse > .grid .card a')].slice(0,12).map(a=>a.hash),firstIds);
   for(const value of ['ص','صي','صيد','صيدل','صيدلي','صيدلية']){input.value=value;input.dispatchEvent(new w.InputEvent('input',{bubbles:true}));}
   await new Promise(resolve=>setTimeout(resolve,360));
   assert.equal(w.document.querySelector('#search'),input);assert.equal(w.document.activeElement,input);assert.equal(input.value,'صيدلية');
   assert.equal(w.document.querySelectorAll('#browse .grid .card').length,1);assert.match(w.document.querySelector('#browse .grid').textContent,/صيدلية داريا/);
+  assert.equal(w.document.querySelector('#more-store-results'),null);
+  input.value='م';input.dispatchEvent(new w.InputEvent('input',{bubbles:true}));
+  await new Promise(resolve=>setTimeout(resolve,360));
+  assert.equal(w.document.querySelectorAll('#browse > .grid .card').length,12);
  }finally{dom.window.close();}
 });
