@@ -54,7 +54,7 @@ test('the complete production render chain keeps typing focused and returns the 
  const scripts=[...html.matchAll(/<script[^>]*\bsrc="([^"?]+)[^"]*"[^>]*>/g)].map(m=>m[1]).filter(s=>!s.includes('://'));
  const sources=scripts.map(s=>fs.readFileSync(path.join(root,s),'utf8').replace(/\binit\(\);\s*$/,'')).join('\n;\n');
  try{
-  w.eval(sources+`\nwindow.__fixture=()=>{stores=Array.from({length:500},(_,i)=>({id:'shop-'+i,name:i===499?'صيدلية داريا':'متجر '+i,active:true,category:'shop',description:'',online_ordering:false,opening_hours:{}}));products=[];heroStores=[];renderHome();};`);
+  w.eval(sources+`\nwindow.__fixture=()=>{stores=Array.from({length:500},(_,i)=>({id:'shop-'+i,name:i===499?'صيدلية داريا':'متجر '+i,active:true,category:'shop',description:'',online_ordering:false,opening_hours:{}}));products=[];heroStores=[];renderHome();};window.__setProducts=rows=>{products=rows;renderHome();};`);
   w.__fixture();const input=w.document.querySelector('#search');input.focus();
   // The first letter matches almost the entire directory: never build 499 cards.
   input.value='م';input.dispatchEvent(new w.InputEvent('input',{bubbles:true}));
@@ -71,8 +71,18 @@ test('the complete production render chain keeps typing focused and returns the 
   assert.equal(w.document.querySelector('#search'),input);assert.equal(w.document.activeElement,input);assert.equal(input.value,'صيدلية');
   assert.equal(w.document.querySelectorAll('#browse .grid .card').length,1);assert.match(w.document.querySelector('#browse .grid').textContent,/صيدلية داريا/);
   assert.equal(w.document.querySelector('#more-store-results'),null);
+  assert.equal(w.document.querySelector('.product-search-results'),null,'a matching shop must not be preceded by an empty product warning');
+  w.__setProducts([{id:'medicine',store_id:'shop-499',name:'صيدلية داريا',available:true,price:100}]);
+  assert.equal(w.document.querySelectorAll('.product-search-results .search-product').length,1,'matching products remain visible');
+  w.__setProducts([]);
+  assert.equal(w.document.querySelector('.product-search-results'),null);
   input.value='م';input.dispatchEvent(new w.InputEvent('input',{bubbles:true}));
   await new Promise(resolve=>setTimeout(resolve,360));
   assert.equal(w.document.querySelectorAll('#browse > .grid .card').length,12);
+  input.value='zzzzzzzzzz';input.dispatchEvent(new w.InputEvent('input',{bubbles:true}));
+  await new Promise(resolve=>setTimeout(resolve,360));
+  assert.equal(w.document.querySelectorAll('#browse > .grid .card').length,0);
+  assert.equal(w.document.querySelector('.product-search-results'),null);
+  assert.match(w.document.querySelector('#browse > .grid').textContent,/لم نجد أماكن مطابقة/);
  }finally{dom.window.close();}
 });
