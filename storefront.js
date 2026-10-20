@@ -6,6 +6,15 @@
  const make=(tag,cls,text)=>{const n=document.createElement(tag);if(cls)n.className=cls;if(text!=null)n.textContent=text;return n;};
  let observed=null,sectionObserver=null,queued=false;
  const motion=()=>window.matchMedia?.('(prefers-reduced-motion: reduce)').matches?'auto':'smooth';
+ function positionMenu(menu){
+  if(!menu.open)return;
+  const panel=menu.querySelector('.sf-more-items'),heading=menu.closest('.sf-heading');if(!panel||!heading)return;
+  const box=heading.getBoundingClientRect(),nav=document.querySelector('#mobile-navigation'),navBox=nav?.getBoundingClientRect();
+  const bottom=navBox&&navBox.height>0&&navBox.top>0?Math.min(innerHeight,navBox.top):innerHeight;
+  const below=bottom-box.bottom-18,above=box.top-18,up=below<200&&above>below;
+  panel.style.top=up?'auto':'calc(100% + 6px)';panel.style.bottom=up?'calc(100% + 6px)':'auto';
+  panel.style.maxHeight=Math.max(80,Math.min(innerHeight*.65,up?above:below))+'px';
+ }
  function go(node){node.scrollIntoView({behavior:motion(),block:'start'});node.setAttribute('tabindex','-1');node.focus({preventScroll:true});}
  function galleryView(container){
   if(!container||container.dataset.storefrontGallery)return;
@@ -60,6 +69,7 @@
   const heading=make('div','sf-heading');title.before(heading);heading.append(title);
   const more=make('details','sf-more'),summary=make('summary','','⋯');summary.setAttribute('aria-label',t('المزيد من أدوات المحل','More shop tools','Weitere Geschäftswerkzeuge'));more.append(summary);heading.append(more);
   const tools=make('div','sf-more-items');tools.dataset.noTranslate='';more.append(tools);
+  more.addEventListener('toggle',()=>positionMenu(more));
   const quick=make('div','sf-primary-actions');quick.dataset.noTranslate='';
   const layout=root.querySelector('.store-layout');
   if(layout){const browse=make('button','sf-browse',s.text_only?t('شاهد الخدمات','Explore services','Leistungen ansehen'):/restaurant|مطعم|فلافل|مأكولات/.test(s.category+' '+s.name)?t('شاهد القائمة','View menu','Speisekarte ansehen'):t('تصفّح المنتجات','Browse products','Produkte ansehen'));browse.type='button';browse.onclick=()=>go(layout);quick.append(browse);}
@@ -101,5 +111,7 @@
  new MutationObserver(records=>{if(!records.some(r=>r.target===root||r.target.closest?.('[data-current-shop-offers]')))return;if(queued)return;queued=true;requestAnimationFrame(()=>{queued=false;refresh();});}).observe(root,{childList:true,subtree:true});
  root.addEventListener('click',e=>{root.querySelectorAll('.sf-more[open]').forEach(menu=>{if(!menu.contains(e.target))menu.open=false;});});
  root.addEventListener('keydown',e=>{if(e.key==='Escape')root.querySelectorAll('.sf-more[open]').forEach(menu=>{menu.open=false;menu.querySelector('summary').focus();});});
+ let menuFrame=0;const adjustMenus=()=>{if(menuFrame||!root.querySelector('.sf-more[open]'))return;menuFrame=requestAnimationFrame(()=>{menuFrame=0;root.querySelectorAll('.sf-more[open]').forEach(positionMenu);});};
+ window.addEventListener('resize',adjustMenus);window.addEventListener('scroll',adjustMenus,{passive:true});
  refresh();
 })();

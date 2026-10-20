@@ -4,14 +4,14 @@
 #app .storefront .sf-cover-button{display:block;width:100%;padding:0;margin:0;border:0;background:#f5f1e5;overflow:hidden;border-radius:21px 21px 0 0;cursor:zoom-in}
 #app .storefront img.store-image{width:100%!important;height:clamp(195px,35vw,350px)!important;max-height:350px!important;min-height:0!important;aspect-ratio:16/7!important;object-fit:cover!important;object-position:center!important;border-radius:0!important;background:#f5f1e5}
 #app .storefront .store-identity{padding:18px 22px 20px!important;width:100%;min-width:0}
-.sf-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;min-width:0}
+.sf-heading{position:relative;display:flex;align-items:center;justify-content:space-between;gap:12px;min-width:0}
 #app .storefront .sf-heading h1{font-size:clamp(25px,4.2vw,36px)!important;line-height:1.4!important;margin:8px 0!important;overflow-wrap:anywhere;border:0}
 .sf-heading h1 .plan-badge{font-size:12px}
 .sf-subtitle{font-size:15px!important;line-height:1.7;color:#657469;margin:4px 0 12px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.sf-more{position:relative;flex:0 0 auto;align-self:center}
+.sf-more{position:static;flex:0 0 auto;align-self:center}
 .sf-more>summary{display:grid;place-items:center;list-style:none;cursor:pointer;width:43px;height:43px;border:1px solid #ded9c8;border-radius:50%;background:#fff;color:#173b35;font-size:27px;line-height:1}
 .sf-more>summary::-webkit-details-marker{display:none}
-.sf-more-items{position:absolute;inset-inline-end:0;top:49px;z-index:30;width:min(300px,75vw);max-height:65vh;overflow:auto;overscroll-behavior:contain;padding:10px;background:#fffdf7;border:1px solid #dfd5b6;border-radius:16px;box-shadow:0 12px 40px #173b3528}
+.sf-more-items{position:absolute;inset-inline-end:0;top:calc(100% + 6px);z-index:30;width:min(300px,calc(100vw - 48px));max-width:100%;max-height:65vh;overflow:auto;overscroll-behavior:contain;padding:10px;background:#fffdf7;border:1px solid #dfd5b6;border-radius:16px;box-shadow:0 12px 40px #173b3528}
 .sf-more:not([open]) .sf-more-items{display:none}
 #app .sf-more-items .directory-actions{display:flex!important;flex-direction:column!important;gap:4px;border:0;margin:0;padding:0}
 #app .sf-more-items button,#app .sf-more-items a{display:block;width:100%!important;padding:11px 12px!important;margin:2px 0!important;text-align:start;font-size:14px!important;border:0!important;border-radius:8px;background:#fff;color:#173b35;min-height:44px!important;white-space:normal}
