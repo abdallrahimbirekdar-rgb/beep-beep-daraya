@@ -44,8 +44,14 @@
 #app .sf-catalog .cart{position:sticky;top:82px;max-width:100%;min-width:0}
 .sf-information{padding:20px;margin:24px 0;background:#fffdf9;border:1px solid #e7dfcd;border-radius:18px}
 #app .sf-information .sf-info-body{width:100%!important;margin:0!important}
-#app .sf-information .shop-info-tabs{display:flex;gap:8px;overflow-x:auto;flex-wrap:nowrap;margin:12px 0}
-#app .sf-information .shop-info-tabs button{flex:0 0 auto;white-space:nowrap;font-size:13px;border-radius:25px}
+#app .sf-information .shop-info-tabs{display:flex;gap:8px;overflow:visible;flex-wrap:wrap;justify-content:flex-start;min-width:0;width:100%;max-width:100%;margin:12px 0}
+#app .sf-information .shop-info-tabs button{flex:0 1 auto;min-width:0;max-width:100%;white-space:normal;overflow-wrap:anywhere;text-align:start;font-size:13px;border-radius:25px}
+#app .sf-information .public-hours{width:100%;max-width:100%;min-width:0;margin:0;padding:12px}
+#app .sf-information .public-hours dl>div{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:baseline}
+#app .sf-information .public-hours dt{flex:1 1 70px;min-width:0;overflow-wrap:anywhere}
+#app .sf-information .public-hours dd{flex:0 1 auto;min-width:0;margin:0;overflow-wrap:anywhere}
+#app .sf-information .public-hours dd span{display:inline-block;white-space:nowrap;max-width:100%}
+#app .sf-information .public-hours small{display:block;white-space:normal;line-height:1.7}
 #app .sf-information .shop-info-panel{padding:14px;border:0;background:#f8f6ef;border-radius:12px}
 #app .sf-information .shop-info-panel p{font-size:15px;line-height:1.85}
 #app .sf-information .catalog-notice{margin:12px 0;padding:12px;background:#f8f6ef;border:0;box-shadow:none}
