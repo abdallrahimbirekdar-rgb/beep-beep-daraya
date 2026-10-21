@@ -111,3 +111,9 @@
  #app .offers-spotlight .offers-spotlight-link{padding-block:6px}
  #app.professional-home #browse>.filters{gap:5px!important;padding-block:4px!important}
 }
+
+/* A readable gold discount seal, sized to the compact home card. */
+.offers-discount-seal{display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;max-width:112px;aspect-ratio:1;box-sizing:border-box;padding:6px 3px;border:1px solid #fff0bd;border-radius:22%;background:linear-gradient(135deg,#fff0bb,#e6bc58);color:#173f35;box-shadow:4px 5px 0 #aa823b70,inset 0 0 0 4px #fff4ca55;transform:rotate(-8deg)}
+.offers-discount-symbol{font-family:inherit;font-size:clamp(25px,5vw,42px);font-weight:800;line-height:1.1}
+.offers-discount-label{font-size:clamp(11px,2vw,17px);font-weight:800;line-height:1.8;white-space:nowrap;border-top:1px dashed #99762e80;width:88%;margin-top:3px;text-align:center}
+@media(max-width:760px){.offers-discount-seal{border-radius:14px}.offers-discount-symbol{font-size:26px}.offers-discount-label{font-size:11px;line-height:1.7;margin-top:2px}}
