@@ -153,7 +153,7 @@
       const summary=app.querySelector('[data-shop-summary]');if(shop&&summary){const html='<span>'+esc(shop.name)+'</span><p>'+(window.DarayaOfferTools?.summary(shop,groupRows)||'')+'</p>';if(summary.innerHTML!==html)summary.innerHTML=html;}
       position.textContent=t('المحل ','Shop ','Geschäft ')+(index+1)+' / '+all.length;
       const hint=app.querySelector('.reels-hint');hint.textContent=t('لهذا المحل '+selected.cards.length+' عروض — انزل لرؤيتها. اسحب جانبيًا لتغيير المحل.','This shop has '+selected.cards.length+' offers — scroll down to see them. Swipe sideways to change shops.','Dieses Geschäft hat '+selected.cards.length+' Angebote — scrolle nach unten. Seitlich zum nächsten Geschäft wischen.');
-      const dotsMarkup=all.map((g,i)=>'<button type="button" data-shop-dot="'+i+'" aria-label="'+esc(t('المحل ','Shop ','Geschäft ')+(i+1))+'" aria-current="'+(i===index?'true':'false')+'"><span aria-hidden="true"></span></button>').join('');
+      const dotsMarkup=all.map((g,i)=>'<button type="button" data-shop-dot="'+i+'" aria-label="'+esc(t('المحل ','Shop ','Geschäft ')+(i+1))+'" aria-current="'+(i===index?'true':'false')+'"><span aria-hidden="true"></span><span class="offer-shop-chip-label">'+esc(stores.find(s=>s.id===g.id)?.name||rows.find(o=>o.store_id===g.id)?.shop_name||t('المحل ','Shop ','Geschäft ')+(i+1))+'</span></button>').join('');
       if(dots.innerHTML!==dotsMarkup)dots.innerHTML=dotsMarkup;
       dots.querySelectorAll('button').forEach(b=>b.onclick=()=>{const next=all[Number(b.dataset.shopDot)]?.cards[0];if(next){activate(next);alignCard(next);}});
 
@@ -167,6 +167,8 @@
     }
     function bind(card) {
       const row = rows.find(o => o.id === card.dataset.reelId);
+      const actions=card.querySelector('.reel-actions'),secondary=[...card.querySelectorAll('[data-share-reel],[data-offer-share-image],[data-offer-report]')];
+      if(actions&&secondary.length){const tools=document.createElement('details'),summary=document.createElement('summary'),body=document.createElement('div');tools.className='offer-card-tools';summary.textContent=t('مشاركة والمزيد','Share & more','Teilen & mehr');body.append(...secondary);tools.append(summary,body);actions.append(tools);}
       window.DarayaOfferTools?.bind(card,row);viewObserver?.observe(card);
       card.querySelector('[data-offer-share-image]').onclick=()=>window.DarayaOfferSharing?.open(row);
       card.querySelector('[data-share-reel]').onclick = async () => {
