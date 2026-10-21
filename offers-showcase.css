@@ -71,7 +71,8 @@
 .offers-reels-page .reel-demo-banner{background:#fff0bc;border-block:1px solid #d4ae53;color:#6a4c15;padding:10px 14px;font-size:13px;line-height:1.8}
 @media(max-width:420px){#app .offers-spotlight .offers-spotlight-link{grid-template-columns:minmax(0,1fr) 76px;gap:7px 10px;padding:17px 17px 12px}.offers-spotlight-art:before{width:90px;height:90px}#app .offers-spotlight .offers-spotlight-copy>p{font-size:13px!important}.offers-spotlight-action{font-size:13px;min-height:42px;padding:8px 13px}#app .offers-reels-page>.reels-heading{padding:16px;border-radius:18px;gap:10px}#app .offers-reels-page .reel-copy{padding:16px}#app .offers-reels-page .reel-copy h2{font-size:22px!important}.offers-reels-page .reel-identity strong{font-size:18px}.offers-reels-page .reel-identity{padding-inline-start:12px}.offers-reels-page .offer-discount{font-size:16px!important;padding:8px 12px!important}}
 @media(min-width:800px){#app .offers-spotlight .offers-spotlight-link{grid-template-columns:minmax(0,1fr) 150px;min-height:190px}.offers-spotlight-art svg{max-width:125px}}
-@media(prefers-reduced-motion:no-preference){.offers-spotlight-art{animation:offers-ticket-welcome 2.4s ease-in-out 2}@keyframes offers-ticket-welcome{0%,100%{transform:rotate(8deg) translateY(0)}50%{transform:rotate(2deg) translateY(-5px)}}}
+@media(prefers-reduced-motion:no-preference){.offers-spotlight-art{--offers-bob-up:-10px;--offers-bob-down:5px;animation:offers-ticket-welcome 1.8s ease-in-out infinite}@keyframes offers-ticket-welcome{0%,100%{transform:translateY(var(--offers-bob-down)) rotate(8deg)}50%{transform:translateY(var(--offers-bob-up)) rotate(8deg)}}}
+@media(max-width:760px) and (max-height:700px){.offers-spotlight-art{--offers-bob-up:-3px;--offers-bob-down:3px}}
 @media(prefers-reduced-motion:reduce){.offers-spotlight-art{animation:none}}
 
 /* Keep the first categories in view when the mobile home opens. */
