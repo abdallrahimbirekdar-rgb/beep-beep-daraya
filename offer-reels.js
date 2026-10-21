@@ -15,7 +15,8 @@
   function linkMarkup(raw) {
     const item = link(raw); if(!item)return '';
     let embedded=false;try{embedded=typeof parsePlaceVideo==='function'&&parsePlaceVideo(item.url)?.kind==='embed';}catch{}
-    return (embedded?'<button type="button" class="button" data-offer-play="'+esc(item.url)+'">'+t('تشغيل الفيديو هنا','Play video here','Video hier abspielen')+'</button>':'')+'<a class="button outline" href="'+esc(item.url)+'" target="_blank" rel="noopener noreferrer">'+t('فتح على ','Open on ','Öffnen auf ')+esc(item.provider)+'</a>';
+    const facebook=item.provider==='Facebook',providerName=facebook?t('فيسبوك','Facebook','Facebook'):item.provider,icon=facebook?'<svg class="offer-facebook-icon" aria-hidden="true" viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M24 12.07C24 5.4 18.63 0 12 0S0 5.4 0 12.07C0 18.1 4.39 23.1 10.13 24v-8.44H7.08v-3.49h3.05V9.41c0-3.03 1.8-4.7 4.54-4.7 1.31 0 2.69.24 2.69.24v2.97h-1.51c-1.49 0-1.96.93-1.96 1.89v2.26h3.33l-.53 3.49h-2.8V24C19.61 23.1 24 18.1 24 12.07Z"/></svg>':'';
+    return (embedded?'<button type="button" class="button" data-offer-play="'+esc(item.url)+'">'+t('تشغيل الفيديو هنا','Play video here','Video hier abspielen')+'</button>':'')+'<a class="button outline offer-provider-link'+(facebook?' offer-provider-facebook':'')+'" href="'+esc(item.url)+'" target="_blank" rel="noopener noreferrer">'+icon+'<span>'+t('افتح على ','Open on ','Öffnen auf ')+esc(providerName)+'</span></a>';
   }
   function clearExternal(card){card.querySelector('.reel-video-stage')?.remove();card.classList.remove('has-external-video');card.querySelectorAll('[data-offer-play]').forEach(b=>b.textContent=t('تشغيل الفيديو هنا','Play video here','Video hier abspielen'));}
   document.addEventListener('click',e=>{
@@ -37,13 +38,24 @@
     const m = window.DarayaOffers?.meta(o), s = stores.find(s => s.id === o.store_id);
     return !!s && window.DarayaOffers?.eligible(s) && o.status === 'approved' && Date.parse(o.ends_at) > Date.now() && !m.exclusive && !window.DarayaShopModeration?.isBlocked(s.id) && !window.DarayaPublisherModeration?.isBlocked(o.user_id);
   }
-  function poster(o) {
-    const m = window.DarayaOffers.meta(o), s = stores.find(s => s.id === o.store_id);
-    return safeImage(m.image || storeCover(s || {}));
+  function posterSources(o) {
+    const m=window.DarayaOffers.meta(o),s=stores.find(s=>s.id===o.store_id);
+    const cover=o.demo?o.shop_logo:storeCover(s||{}),raw=link(m.video_link)&&!['product','upload'].includes(m.poster_source)?[cover,m.image]:[m.image,cover];
+    const urls=[];
+    for(const value of raw){if(typeof value!=='string'||!value.trim()||['null','undefined'].includes(value))continue;const url=safeImage(value);if(url)urls.push(thumbnailForImage(url),url);}
+    urls.push(new URL('images/services/generic.svg',location.href).href);
+    return [...new Set(urls.filter(Boolean))];
   }
+  document.addEventListener('error',e=>{
+    const img=e.target;if(!img?.matches?.('img[data-offer-poster]'))return;
+    let remaining;try{remaining=JSON.parse(img.dataset.offerPoster);}catch{remaining=[];}
+    const next=remaining.shift();img.dataset.offerPoster=JSON.stringify(remaining);
+    if(next)img.src=next;else img.hidden=true;
+  },true);
   function markup(o,display=window.DarayaOfferDisplay) {
     const m = window.DarayaOffers.meta(o), s = o.demo ? {id:o.store_id,name:o.shop_name} : stores.find(s => s.id === o.store_id), route=o.demo?o.shop_route:'#store/'+s.id, kind = m.kind === 'text' ? 'text' : 'image';
-    let media = kind === 'text' ? '<div class="reel-text-art" aria-hidden="true">🏷️</div>' : '<img class="reel-photo" src="' + esc(thumbnailForImage(poster(o))) + '" alt="' + esc(o.title) + '" loading="lazy" decoding="async">';
+    const video=link(m.video_link),sources=kind!=='text'||video?posterSources(o):[];
+    let media = kind === 'text'&&!video ? '<div class="reel-text-art" aria-hidden="true">🏷️</div>' : '<img class="reel-photo" src="' + esc(sources[0]) + '" data-offer-poster="'+esc(JSON.stringify(sources.slice(1)))+'" alt="' + esc(o.title) + '" loading="lazy" decoding="async">';
     if(link(m.video_link)){const links=linkMarkup(m.video_link),buttonEnd=links.indexOf('</button>');const launch=buttonEnd>=0?links.slice(0,buttonEnd+9):links;media='<div class="reel-media">'+media+'<div class="reel-media-launch">'+launch+'</div><span class="reel-video-label">'+t('عرض مع فيديو','Video offer','Angebot mit Video')+'</span></div>';}
     const original=Number(m.original),price=Number(o.price),discount=m.original!=null&&o.price!=null&&original>price&&price>=0?Math.round((original-price)/original*100):0;
     if(kind!=='text'||link(m.video_link))media='<div class="reel-visual">'+media+(discount>0?'<span class="offer-discount">'+t('خصم ','Save ','Rabatt ')+discount.toLocaleString(communityLang())+'%</span>':'')+'</div>';

@@ -20,5 +20,22 @@ test('medical and mosque pages are excluded; offer text is escaped',()=>{const h
 function editorSetup(){const h=setup(),dialogs=[];h.c.modal=html=>dialogs.push(html);h.c.document.querySelectorAll=()=>[];h.c.document.querySelector=()=>null;h.c.console={error(){}};return {...h,dialogs};}
 test('add offer gives guests a visible sign-in action without posting anything',()=>{const h=editorSetup();h.c.user=null;h.c.exposed.edit();assert.match(h.dialogs[0],/سجّل الدخول لإضافة عرض/);assert.match(h.dialogs[0],/href="#account"/);assert.equal(h.calls.some(x=>x[0]==='insert'),false);});
 test('accounts without an eligible shop receive a persistent explanation and next step',()=>{const h=editorSetup();h.c.mine=()=>[];h.c.exposed.edit();assert.match(h.dialogs[0],/لا يوجد محل مؤهل/);assert.match(h.dialogs[0],/href="#shop-owner"/);assert.equal(h.calls.some(x=>x[0]==='toast'),false);});
-test('eligible owners can open and initialize the complete offer form',()=>{const h=editorSetup(),form={isConnected:true,elements:{ends:{},store:{value:'shop1'},address:{},product:{},kind:{value:'image'}}};const base=h.c.$;h.c.$=s=>s==='#daily-offer-form'?form:base(s);h.c.communityKnownDate=()=> '2026-10-16T12:00';h.c.exposed.edit();assert.equal(h.dialogs.length,1);assert.match(h.dialogs[0],/id="daily-offer-form"/);assert.equal(form.elements.ends.value,'2026-10-16T12:00');assert.equal(typeof form.onsubmit,'function');assert.equal(h.calls.some(x=>x[0]==='insert'),false);});
+test('eligible owners choose shop, product or uploaded covers for video offers',async()=>{
+ const {JSDOM}=require('jsdom'),dom=new JSDOM('<div id="modal-body"></div>',{url:'https://damascus-shop.com/'}),h=editorSetup();
+ h.c.document=dom.window.document;h.c.$=s=>dom.window.document.querySelector(s);h.c.modal=html=>{h.dialogs.push(html);dom.window.document.querySelector('#modal-body').innerHTML=html;};h.c.FormData=dom.window.FormData;h.c.URL={createObjectURL:()=> 'blob:preview',revokeObjectURL(){}};
+ h.c.communityKnownDate=()=> '2026-10-22T12:00';h.c.communityLocalTime=()=>new Date(Date.now()+3600000).toISOString();h.c.crypto={randomUUID:()=> 'new-offer'};h.store.image='https://images.example/shop.webp';h.c.storeCover=s=>s.image||'';h.c.products=[{id:'product1',store_id:'shop1',name:'Meal',image:'https://images.example/meal.webp'}];h.c.window.DarayaReels={link:u=>u?{url:u}:null};
+ const uploads=[];h.c.uploadOrLink=async(data,sid)=>{uploads.push({file:data.get('photo'),sid});return 'https://images.example/upload.webp';};
+ h.c.exposed.edit();const f=h.c.$('#daily-offer-form');assert.ok(f);assert.equal(f.elements.poster_source.value,'shop');
+ f.elements.kind.value='text';f.elements.kind.onchange();assert.equal(f.querySelector('[data-offer-image]').hidden,true);
+ f.elements.video_link.value='https://www.facebook.com/share/r/123/';f.elements.video_link.oninput();assert.equal(f.querySelector('[data-offer-image]').hidden,false);assert.equal(f.querySelector('img').src,h.store.image);
+ f.elements.poster_source.value='product';f.elements.product.value='product1';f.elements.poster_source.onchange();assert.equal(f.querySelector('img').src,h.c.products[0].image);
+ f.elements.poster_source.value='upload';f.elements.poster_source.onchange();assert.equal(f.querySelector('[data-poster-upload]').hidden,false);
+ const file=new dom.window.File(['image bytes'],'cover.jpg',{type:'image/jpeg'});Object.defineProperty(f.elements.photo,'files',{value:[file]});f.elements.photo.onchange();assert.equal(f.querySelector('img').src,'blob:preview');
+ for(const [name,value] of Object.entries({title:'Test offer',benefit:'Good benefit',details:'Offer terms',address:'Daraya street'}))f.elements[name].value=value;
+ // A real FormData reads the browser-selected file; mirror that selection in jsdom.
+ class SelectedData extends dom.window.FormData{constructor(form){super(form);if(form)this.set('photo',file);}}
+ h.c.FormData=SelectedData;const button=f.querySelector('[type=submit]');await f.onsubmit({preventDefault(){},submitter:button});
+ assert.equal(uploads.length,1);assert.equal(uploads[0].sid,'shop1');const row=h.calls.find(x=>x[0]==='insert')[1],meta=JSON.parse(row.details);assert.equal(meta.poster_source,'upload');assert.equal(meta.image,'https://images.example/upload.webp');assert.equal(meta.kind,'text');assert.equal(row.status,'pending');assert.match(f.textContent,/وصل العرض للمراجعة/);dom.window.close();
+});
+
 test('an unexpected editor error produces retry feedback instead of a silent button',()=>{const h=editorSetup();h.c.exposed.edit();assert.match(h.dialogs.at(-1),/تعذر فتح نموذج العرض/);assert.match(h.dialogs.at(-1),/data-retry-offer-editor/);});

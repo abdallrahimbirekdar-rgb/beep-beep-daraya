@@ -130,3 +130,16 @@
 #app .home-visitor-guide img{background:transparent}
 .home-visitor-guide .visitor-guide-art{mix-blend-mode:multiply}
 @media(prefers-reduced-motion:no-preference){#app.professional-home .home-visitor-guide{transition:background-color .55s ease,border-color .55s ease}}
+
+/* Video links use the shop cover and recognizable source branding. */
+#app .offers-reels-page .reel-media>.reel-photo{object-fit:cover!important;object-position:center}
+.offer-facebook-icon{display:block;flex:0 0 auto;width:24px;height:24px}
+#app .offer-provider-facebook{display:inline-flex;align-items:center;justify-content:center;gap:9px;background:#1877f2;color:#fff!important;border:1px solid #70aaff;border-radius:12px;text-decoration:none}
+#app .reel-media-launch>a.offer-provider-facebook{flex-direction:row;min-height:62px;min-width:0;padding:15px 21px;background:#1877f2;color:#fff!important;border:1px solid #c8e1ff;box-shadow:0 6px 22px #062f6d55;font-size:16px;line-height:1.6;backdrop-filter:none}
+#app .reel-media-launch>a.offer-provider-facebook:before{content:none;display:none}
+#app .reel-media-launch>a.offer-provider-facebook .offer-facebook-icon{width:30px;height:30px}
+#app .reel-actions>a.offer-provider-facebook{padding:9px 13px;min-height:44px;font-size:12px}
+#app .offer-provider-facebook:focus-visible{outline:3px solid #fff;outline-offset:3px;box-shadow:0 0 0 5px #1877f2}
+
+#daily-offer-form [data-offer-cover-preview]{display:block;width:100%;max-height:190px;object-fit:contain;border:1px solid #dfcd9b;border-radius:12px;background:#fff9ea;margin-top:10px}
+#daily-offer-form [hidden]{display:none!important}

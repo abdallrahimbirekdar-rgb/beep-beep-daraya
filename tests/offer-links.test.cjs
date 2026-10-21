@@ -27,3 +27,22 @@ test('scrolling keeps direction hints stable instead of rebuilding them every fr
  const ctx={alive:()=>true,groups:()=>[{id:'a',cards:[card]},{id:'b',cards:[card]}],current:{dataset:{storeId:'a'}},track:{getBoundingClientRect:()=>({top:0,bottom:1000})},window:{innerHeight:800},getComputedStyle:()=>({direction:'rtl'}),edges:{querySelector:s=>buttons[s],style:{setProperty(){}}},document:{querySelector:()=>null},t:a=>a,nextOfferCard:null};
  vm.createContext(ctx);vm.runInContext(source.slice(start,end),ctx);ctx.updateEdges();assert.ok(writes>0);writes=0;for(let i=0;i<60;i++)ctx.updateEdges();assert.equal(writes,0);
 });
+
+test('Facebook offer links have source branding and safe external navigation',()=>{
+ const html=c.window.DarayaReels.linkMarkup('https://www.facebook.com/share/r/123/');
+ assert.match(html,/offer-provider-facebook/);assert.match(html,/offer-facebook-icon/);assert.match(html,/افتح على فيسبوك/);assert.match(html,/rel="noopener noreferrer"/);
+});
+
+test('text video offers use shop imagery and broken posters exhaust fallbacks safely',()=>{
+ const {JSDOM}=require('jsdom');const dom=new JSDOM('<main id="app"></main>',{url:'https://damascus-shop.com/'});
+ const s={id:'shop',name:'Shop',image:'https://images.example/shop.webp'};
+ const ctx={window:dom.window,document:dom.window.document,location:dom.window.location,URL,ct:a=>a,render(){},esc:x=>String(x??'').replaceAll('&','&amp;').replaceAll('"','&quot;').replaceAll('<','&lt;'),stores:[s],storeCover:s=>s.image,safeImage:u=>typeof u==='string'&&u.startsWith('https:')?u:'',thumbnailForImage:u=>u+'?thumbnail',communityLang:()=> 'ar',money:String};
+ ctx.window.DarayaOffers={meta:o=>o.meta};vm.createContext(ctx);vm.runInContext(fs.readFileSync('offer-reels.js','utf8'),ctx);
+ const row={id:'offer',store_id:'shop',user_id:'owner',title:'Offer',price:null,meta:{kind:'text',image:'https://images.example/offer.webp',video_link:'https://www.facebook.com/share/r/123/',benefit:'Benefit'}};
+ dom.window.document.querySelector('#app').innerHTML=ctx.window.DarayaReels.markup(row);
+ const img=dom.window.document.querySelector('.reel-media .reel-photo');assert.ok(img);assert.equal(img.src,s.image+'?thumbnail');assert.equal(dom.window.document.querySelectorAll('iframe').length,0);
+ row.meta.poster_source='upload';const custom=dom.window.document.createElement('div');custom.innerHTML=ctx.window.DarayaReels.markup(row);assert.equal(custom.querySelector('.reel-photo').src,row.meta.image+'?thumbnail');
+ const expected=[s.image,row.meta.image+'?thumbnail',row.meta.image,'https://damascus-shop.com/images/services/generic.svg'];
+ for(const url of expected){img.dispatchEvent(new dom.window.Event('error'));assert.equal(img.src,url);assert.equal(img.hidden,false);}
+ img.dispatchEvent(new dom.window.Event('error'));assert.equal(img.hidden,true);assert.equal(img.dataset.offerPoster,'[]');dom.window.close();
+});
