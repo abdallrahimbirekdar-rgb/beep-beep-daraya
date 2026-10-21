@@ -94,17 +94,6 @@
  #app.professional-home .home-quick-actions>.simple-delivery-category{margin-bottom:3px!important;padding:2px 6px!important}
  #app.professional-home .home-quick-actions>.simple-delivery-category .delivery-hero-button{min-height:44px!important;padding:2px 32px!important}
 }
-/* A short entrance makes every new message noticeable without moving the page. */
-@keyframes visitor-message-enter{from{opacity:.25;transform:translateX(var(--guide-enter,20px))}to{opacity:1;transform:translateX(0)}}
-@keyframes visitor-art-enter{from{opacity:.15;transform:scale(.88) rotate(-4deg)}to{opacity:1;transform:scale(1) rotate(0)}}
-@keyframes visitor-indicator-pulse{0%{box-shadow:0 0 0 0 #bd923b80}100%{box-shadow:0 0 0 8px #bd923b00}}
-@media(prefers-reduced-motion:no-preference){
- .home-visitor-guide.is-changing .visitor-guide-copy{animation:visitor-message-enter .52s cubic-bezier(.2,.7,.2,1) both}
- .home-visitor-guide.is-changing .visitor-guide-art{animation:visitor-art-enter .6s cubic-bezier(.2,.7,.2,1) both}
- .home-visitor-guide.is-changing .visitor-guide-dots button[aria-pressed=true]>span{animation:visitor-indicator-pulse .65s ease-out}
- html[dir=ltr] .home-visitor-guide{--guide-enter:-20px}
-}
-
 @media(max-width:760px) and (max-height:700px){
  #app .offers-spotlight .offers-spotlight-copy>p{display:none}
  #app.professional-home .daily-offers-preview.offers-spotlight{margin:2px 0!important}
@@ -118,19 +107,6 @@
 .offers-discount-label{font-size:clamp(11px,2vw,17px);font-weight:800;line-height:1.8;white-space:nowrap;border-top:1px dashed #99762e80;width:88%;margin-top:3px;text-align:center}
 @media(max-width:760px){.offers-discount-seal{border-radius:14px}.offers-discount-symbol{font-size:26px}.offers-discount-label{font-size:11px;line-height:1.7;margin-top:2px}}
 
-/* Distinct shades of the same warm gold palette make slide changes visible. */
-#app.professional-home .home-visitor-guide{--guide-paper:#fff9ec;--guide-glow:#efd68b;--guide-border:#ddc782;background-color:var(--guide-paper);background-image:radial-gradient(ellipse at 0 15%,var(--guide-glow),transparent 72%),linear-gradient(115deg,#ffffff45,transparent 70%);border-color:var(--guide-border)}
-#app.professional-home .home-visitor-guide[data-slide="0"]{--guide-paper:#fff9ec;--guide-glow:#f6e9c4;--guide-border:#ddc782}
-#app.professional-home .home-visitor-guide[data-slide="1"]{--guide-paper:#f4df9f;--guide-glow:#e7c262;--guide-border:#c9a342}
-#app.professional-home .home-visitor-guide[data-slide="2"]{--guide-paper:#f9efd9;--guide-glow:#e8d3aa;--guide-border:#cbb17e}
-#app.professional-home .home-visitor-guide[data-slide="3"]{--guide-paper:#efd394;--guide-glow:#dcb255;--guide-border:#b58a34}
-#app.professional-home .home-visitor-guide[data-slide="4"]{--guide-paper:#fff3c5;--guide-glow:#f0d36e;--guide-border:#cfac43}
-#app.professional-home .home-visitor-guide[data-slide="5"]{--guide-paper:#f3e5ca;--guide-glow:#d8bd86;--guide-border:#bc9e61}
-#app.professional-home .home-visitor-guide[data-slide="6"]{--guide-paper:#fffaee;--guide-glow:#edce83;--guide-border:#d1ae58}
-#app .home-visitor-guide img{background:transparent}
-.home-visitor-guide .visitor-guide-art{mix-blend-mode:multiply}
-@media(prefers-reduced-motion:no-preference){#app.professional-home .home-visitor-guide{transition:background-color .55s ease,border-color .55s ease}}
-
 /* Video links use the shop cover and recognizable source branding. */
 #app .offers-reels-page .reel-media>.reel-photo{object-fit:cover!important;object-position:center}
 .offer-facebook-icon{display:block;flex:0 0 auto;width:24px;height:24px}
@@ -143,3 +119,15 @@
 
 #daily-offer-form [data-offer-cover-preview]{display:block;width:100%;max-height:190px;object-fit:contain;border:1px solid #dfcd9b;border-radius:12px;background:#fff9ea;margin-top:10px}
 #daily-offer-form [hidden]{display:none!important}
+
+/* One readable card with a small glimpse of the next, in either reading direction. */
+#app.professional-home .home-visitor-guide{background:transparent;border:0;box-shadow:none;overflow:hidden;border-radius:0;isolation:isolate}
+.home-visitor-guide::before{display:none}
+.visitor-guide-viewport{overflow:hidden;width:100%;padding:1px 0}
+.visitor-guide-track{display:flex;gap:10px;align-items:stretch;will-change:transform}
+#app .home-visitor-guide .visitor-guide-main{flex:0 0 calc(100% - 34px);min-width:0;box-sizing:border-box;border:1px solid #ddc782;border-radius:15px;background:linear-gradient(115deg,#f3e3b7,#fff9ec 65%);padding-bottom:3px}
+#app .home-visitor-guide .visitor-guide-controls{border:0;margin-top:1px}
+#app .home-visitor-guide .visitor-guide-art{mix-blend-mode:multiply}
+#app .home-visitor-guide img{background:transparent}
+@media(max-width:760px){#app .home-visitor-guide .visitor-guide-main{grid-template-columns:minmax(0,1fr) 62px;gap:5px;padding-inline:9px}#app .home-visitor-guide h2{font-size:14px!important}#app .home-visitor-guide img{max-width:62px!important}}
+@media(prefers-reduced-motion:reduce){.visitor-guide-track{will-change:auto}}

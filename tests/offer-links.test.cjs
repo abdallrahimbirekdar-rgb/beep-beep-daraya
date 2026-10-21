@@ -30,7 +30,7 @@ test('scrolling keeps direction hints stable instead of rebuilding them every fr
 
 test('Facebook offer links have source branding and safe external navigation',()=>{
  const html=c.window.DarayaReels.linkMarkup('https://www.facebook.com/share/r/123/');
- assert.match(html,/offer-provider-facebook/);assert.match(html,/offer-facebook-icon/);assert.match(html,/افتح على فيسبوك/);assert.match(html,/rel="noopener noreferrer"/);
+ assert.match(html,/offer-provider-facebook/);assert.match(html,/offer-facebook-icon/);assert.match(html,/افتح الفيديو على فيسبوك/);assert.match(html,/rel="noopener noreferrer"/);
 });
 
 test('text video offers use shop imagery and broken posters exhaust fallbacks safely',()=>{
