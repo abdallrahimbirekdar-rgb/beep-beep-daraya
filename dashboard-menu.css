@@ -49,3 +49,26 @@
 .dashboard-menu-layout .dashboard-menu-card>[data-dashboard-icon]{width:48px!important;height:48px}
 .dashboard-color-icon{display:inline-flex;align-items:center;justify-content:center;font-family:"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif;font-size:38px;line-height:1.15;font-weight:400;filter:drop-shadow(0 3px 2px #173b3512)}
 #mobile-navigation .dashboard-color-icon{font-size:29px;min-height:34px}
+
+/* Task groups and a local search keep the main admin menu easy to scan. */
+.admin-layout.dashboard-menu-home>[data-moderation-nav]{display:none!important}
+.admin-layout.dashboard-menu-home .dashboard-menu-hint{max-width:55em}
+.dashboard-menu-layout.admin-layout .dashboard-menu-grid.admin-menu-organized{display:block!important}
+.admin-menu-search{padding:14px 16px;background:#fff9e9;border:1px solid #e2ce91;border-radius:15px;margin:0 0 22px}
+.admin-menu-search>label{display:block;font-size:14px;font-weight:700;color:#173f35;margin-bottom:8px}
+.admin-menu-search>div{display:flex;gap:8px;align-items:center}
+.admin-menu-search input{flex:1;min-width:0;width:100%;height:46px;font-size:16px;border:1px solid #cdbd91;border-radius:10px;background:#fff;padding:8px 12px;color:#173f35}
+.admin-menu-search button{flex:0 0 auto;min-height:44px;font-size:12px;padding:8px 12px;border-radius:10px}
+.admin-menu-search-status{font-size:12px;line-height:1.7;color:#65715b;margin:7px 0 0}
+.admin-menu-group{margin:0 0 25px;scroll-margin-top:90px}
+.admin-menu-group>h3{font-size:18px!important;line-height:1.6;color:#173f35;border-inline-start:4px solid #c6a34b;padding-inline-start:10px;margin:0 0 11px!important}
+.admin-menu-group-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.dashboard-menu-layout.admin-layout .admin-menu-organized .dashboard-menu-card{min-height:116px!important;gap:5px!important;align-items:flex-start!important;text-align:start!important;justify-content:flex-start!important;padding:13px 15px!important;background:#fffdf8!important;border-color:#ded5bd!important}
+.dashboard-menu-layout.admin-layout .admin-menu-organized .dashboard-menu-card>[data-dashboard-icon]{width:30px!important;height:30px}
+.admin-menu-organized .dashboard-color-icon{font-size:27px}
+.dashboard-menu-layout.admin-layout .dashboard-menu-grid.admin-menu-organized .dashboard-menu-card>span.admin-menu-label{display:block!important;font-size:14px;font-weight:700;color:#173f35;line-height:1.6}
+.admin-menu-description{display:block;font-size:12px;font-weight:400;color:#6b725f;line-height:1.7}
+.admin-menu-organized [hidden]{display:none!important}
+@media(max-width:760px){.admin-menu-group-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.admin-menu-search{padding:12px}.admin-menu-search>div{flex-wrap:nowrap}.admin-menu-search button{padding:6px 12px}.admin-menu-group>h3{font-size:17px!important}.dashboard-menu-layout.admin-layout .admin-menu-organized .dashboard-menu-card{padding:11px!important;min-height:120px!important}.admin-menu-description{font-size:11px}}
+@media(max-width:350px){.admin-menu-group-grid{grid-template-columns:minmax(0,1fr)}.dashboard-menu-layout.admin-layout .admin-menu-organized .dashboard-menu-card{min-height:0!important}}
+.dashboard-menu-layout.admin-layout .admin-menu-organized a.dashboard-menu-card[hidden]{display:none!important}
