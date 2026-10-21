@@ -117,3 +117,16 @@
 .offers-discount-symbol{font-family:inherit;font-size:clamp(25px,5vw,42px);font-weight:800;line-height:1.1}
 .offers-discount-label{font-size:clamp(11px,2vw,17px);font-weight:800;line-height:1.8;white-space:nowrap;border-top:1px dashed #99762e80;width:88%;margin-top:3px;text-align:center}
 @media(max-width:760px){.offers-discount-seal{border-radius:14px}.offers-discount-symbol{font-size:26px}.offers-discount-label{font-size:11px;line-height:1.7;margin-top:2px}}
+
+/* Distinct shades of the same warm gold palette make slide changes visible. */
+#app.professional-home .home-visitor-guide{--guide-paper:#fff9ec;--guide-glow:#efd68b;--guide-border:#ddc782;background-color:var(--guide-paper);background-image:radial-gradient(ellipse at 0 15%,var(--guide-glow),transparent 72%),linear-gradient(115deg,#ffffff45,transparent 70%);border-color:var(--guide-border)}
+#app.professional-home .home-visitor-guide[data-slide="0"]{--guide-paper:#fff9ec;--guide-glow:#f6e9c4;--guide-border:#ddc782}
+#app.professional-home .home-visitor-guide[data-slide="1"]{--guide-paper:#f4df9f;--guide-glow:#e7c262;--guide-border:#c9a342}
+#app.professional-home .home-visitor-guide[data-slide="2"]{--guide-paper:#f9efd9;--guide-glow:#e8d3aa;--guide-border:#cbb17e}
+#app.professional-home .home-visitor-guide[data-slide="3"]{--guide-paper:#efd394;--guide-glow:#dcb255;--guide-border:#b58a34}
+#app.professional-home .home-visitor-guide[data-slide="4"]{--guide-paper:#fff3c5;--guide-glow:#f0d36e;--guide-border:#cfac43}
+#app.professional-home .home-visitor-guide[data-slide="5"]{--guide-paper:#f3e5ca;--guide-glow:#d8bd86;--guide-border:#bc9e61}
+#app.professional-home .home-visitor-guide[data-slide="6"]{--guide-paper:#fffaee;--guide-glow:#edce83;--guide-border:#d1ae58}
+#app .home-visitor-guide img{background:transparent}
+.home-visitor-guide .visitor-guide-art{mix-blend-mode:multiply}
+@media(prefers-reduced-motion:no-preference){#app.professional-home .home-visitor-guide{transition:background-color .55s ease,border-color .55s ease}}
