@@ -14,8 +14,11 @@
  const dialog=document.createElement('dialog');
  dialog.id='android-install-dialog';dialog.setAttribute('aria-labelledby','android-install-title');dialog.setAttribute('data-no-translate','');
  document.body.append(dialog);
- let lastDownload=0;
+ let lastDownload=0,renderedLanguage=null;
  function render(){
+  const language=window.ShahinI18n?.language||document.documentElement.lang||'ar';
+  if(renderedLanguage===language)return;
+  renderedLanguage=language;
   const t=words();button.querySelector('[data-app-button-label]').textContent=t.button;button.setAttribute('aria-label',t.button);
   dialog.dir=(window.ShahinI18n?.language||document.documentElement.lang||'ar')==='ar'?'rtl':'ltr';
   dialog.innerHTML='<button type="button" class="android-install-close" aria-label="'+t.close+'">×</button><img class="android-install-logo" src="daraya-mark-gold.webp?v=gold-logo-36" width="60" height="60" alt=""><h2 id="android-install-title">'+t.title+'</h2><p class="android-install-intro">'+t.intro+'</p><div class="android-play-soon" aria-disabled="true"><span aria-hidden="true">▷</span><div><strong>'+t.soon+'</strong><small>'+t.soonNote+'</small></div></div><a class="android-apk-link" href="'+apk+'" target="_blank" rel="noopener noreferrer" download="souq-daraya.apk"><span aria-hidden="true">↓</span><span><strong>'+t.download+'</strong><small>'+t.file+'</small></span></a>'+(ios?'<p class="android-install-note-inline">'+t.ios+'</p>':'')+'<section class="android-install-steps"><h3>'+t.steps+'</h3><ol><li>'+t.one+'</li><li>'+t.two+'</li><li>'+t.three+'</li></ol><p>'+t.note+'</p></section>';
