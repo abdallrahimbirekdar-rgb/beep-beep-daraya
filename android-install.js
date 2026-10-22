@@ -43,12 +43,29 @@
 (() => {
  let request=0;
  const fmt=n=>Math.max(0,Number(n)||0).toLocaleString(document.documentElement.lang||'ar');
+ async function loadHost(panel,alive){
+  const count=panel.querySelector('[data-host-download-count]'),status=panel.querySelector('[data-host-download-status]');
+  const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),8000);
+  count.textContent='—';count.setAttribute('aria-busy','true');status.textContent='جاري جلب العدد من GitHub…';
+  try{
+   const response=await fetch('https://api.github.com/repos/abdallrahimbirekdar-rgb/beep-beep-daraya/releases/tags/android-v1.3.0',{signal:controller.signal,credentials:'omit',referrerPolicy:'no-referrer',headers:{Accept:'application/vnd.github+json'}});
+   if(!response.ok)throw Error('unavailable');
+   const data=await response.json(),asset=Array.isArray(data.assets)?data.assets.find(a=>a.name==='souq-daraya.apk'&&a.state==='uploaded'):null;
+   if(!asset||!Number.isSafeInteger(asset.download_count)||asset.download_count<0)throw Error('invalid counter');
+   if(!alive())return;
+   count.textContent=fmt(asset.download_count);
+   status.textContent='المصدر: GitHub · آخر جلب: '+new Date().toLocaleTimeString(document.documentElement.lang||'ar',{hour:'2-digit',minute:'2-digit'});
+  }catch{if(alive())status.textContent='تعذر جلب عدد المستضيف مؤقتًا؛ قد يكون الاتصال أو حد الطلبات. اضغط تحديث العدد للمحاولة مجددًا.';}
+  finally{clearTimeout(timer);if(alive())count.removeAttribute('aria-busy');}
+ }
+
  async function load(){
   const panel=document.querySelector('#android-download-stats');
   if(!panel||typeof admin==='undefined'||!admin||typeof user==='undefined'||!user)return;
   const ticket=++request,uid=user.id,status=panel.querySelector('[data-download-status]'),values=panel.querySelector('[data-download-values]');
   status.textContent='جاري تحميل الإحصاءات…';values.setAttribute('aria-busy','true');
   const alive=()=>ticket===request&&admin&&user?.id===uid&&panel.isConnected&&location.hash==='#dashboard/statistics';
+  loadHost(panel,alive);
   try{
    const r=await api.rpc('admin_android_download_stats');
    if(!alive())return;
@@ -62,7 +79,7 @@
   if(typeof admin==='undefined'||!admin||typeof user==='undefined'||!user||location.hash!=='#dashboard/statistics')return;
   const app=document.querySelector('#app'),content=app?.querySelector('#dashboard-content');
   if(!content||app.dataset.dashboardRoute!==location.hash||document.querySelector('.merchant-layout')||content.querySelector('#android-download-stats'))return;
-  content.insertAdjacentHTML('beforeend','<section class="panel visitor-dashboard" id="android-download-stats" data-no-translate><div class="visitor-dashboard-heading"><div><h2>طلبات تحميل تطبيق أندرويد من الموقع</h2><p>عدد الضغطات لبدء تنزيل ملف APK من زر الموقع.</p></div><button type="button" class="outline" data-refresh-downloads>تحديث العدد</button></div><div class="visitor-metrics" data-download-values></div><p role="status" data-download-status></p><small class="muted">هذه طلبات بدء تنزيل، وليست تأكيدًا لاكتمال التحميل أو تثبيت التطبيق، ولا تمثل أشخاصًا مختلفين. لا تشمل التنزيل من Google Play أو الروابط الخارجية المباشرة. قد تتأثر بالتكرار أو حظر الاتصال أو الزيارات الآلية. ضغطات حسابات الإدارة مستبعدة. نحفظ مجموعًا يوميًا فقط دون هوية من قام بالتحميل.</small></section>');
+  content.insertAdjacentHTML('beforeend','<section class="panel visitor-dashboard" id="android-download-stats" data-no-translate><div class="visitor-dashboard-heading"><div><h2>تحميل تطبيق أندرويد</h2><p>طلبات التنزيل من الموقع وإحصائية الملف عند المستضيف.</p></div><button type="button" class="outline" data-refresh-downloads>تحديث العدد</button></div><section class="visitor-report-panel"><h3>تنزيلات ملف التطبيق عند المستضيف</h3><div class="visitor-metrics"><article class="visitor-metric"><span>التنزيلات المسجّلة للملف الحالي</span><strong data-host-download-count>—</strong><small>إحصائية مستقلة من GitHub</small></article></div><p data-host-download-status role="status"></p><small class="muted">يشمل التنزيل من الموقع والرابط المباشر، والتكرار والاختبارات. لا يثبت اكتمال كل تنزيل أو تثبيت التطبيق، ولا يمثل أشخاصًا مختلفين. العدد خاص بملف APK الحالي؛ قد يبدأ من جديد عند استبدال ملف الإصدار. لا يشمل Google Play.</small></section><h3>طلبات التحميل من الموقع</h3><div class="visitor-metrics" data-download-values></div><p role="status" data-download-status></p><small class="muted">هذه طلبات بدء تنزيل، وليست تأكيدًا لاكتمال التحميل أو تثبيت التطبيق، ولا تمثل أشخاصًا مختلفين. لا تشمل التنزيل من Google Play أو الروابط الخارجية المباشرة. قد تتأثر بالتكرار أو حظر الاتصال أو الزيارات الآلية. ضغطات حسابات الإدارة مستبعدة. نحفظ مجموعًا يوميًا فقط دون هوية من قام بالتحميل.</small></section>');
   content.querySelector('[data-refresh-downloads]').onclick=load;load();
  }
  new MutationObserver(sync).observe(document.querySelector('#app'),{childList:true});
