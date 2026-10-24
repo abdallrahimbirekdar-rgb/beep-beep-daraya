@@ -86,3 +86,26 @@
 @media(min-width:1050px){#app .sf-catalog .products{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:700px){#app .storefront .store-identity{padding:14px!important}#app .storefront img.store-image{height:210px!important;max-height:210px!important}#app .sf-catalog{display:block!important}#app .sf-catalog .cart{position:static;margin-top:20px}.sf-primary-actions{gap:6px}#app .sf-primary-actions>*{font-size:13px;padding:9px 12px!important}.sf-section-nav{margin-bottom:14px}.sf-section-nav button{padding:9px 12px;font-size:13px}#app .sf-catalog .products{gap:10px}#app .sf-catalog .product>div{padding:10px}#app .sf-catalog .product h3{font-size:15px}#app .sf-catalog .product .price{font-size:16px}.sf-information,#app .sf-offers{padding:15px}#app .sf-photos figure:first-of-type img{height:230px}}
 @media(prefers-reduced-motion:reduce){#app .sf-catalog .product .product-image{transition:none}}
+
+/* Four visible shop entry cards, including QR arrivals. */
+#app .sf-section-nav{position:static;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;overflow:visible;padding:12px 0;margin:0 0 18px;border:0;box-shadow:none;background:transparent}
+#app .sf-section-nav .sf-section-tile{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;min-width:0;min-height:150px;padding:12px 9px;white-space:normal;border:1px solid #ded4b8;border-radius:18px;background:linear-gradient(145deg,#fffdf8,#f7f0dd);color:#173b35;text-align:center;box-shadow:0 4px 14px #173b3508}
+#app .sf-section-tile:disabled{opacity:.6;cursor:default}
+.sf-tile-visual{display:flex;align-items:center;justify-content:center;gap:4px;width:100%;height:56px;color:#a37b28}
+.sf-tile-visual svg{width:38px;height:38px}
+.sf-tile-thumbnails{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px;max-width:150px;height:64px;overflow:hidden;border-radius:10px}
+.sf-tile-thumbnails img{display:block;width:100%;height:30px;object-fit:cover;border-radius:5px;background:#eee8d7}
+.sf-tile-thumbnails img:only-child{grid-column:1/-1;height:64px}
+.sf-tile-title{font-size:15px;line-height:1.5;overflow-wrap:anywhere}
+.sf-tile-note{font-size:11px;font-weight:400;line-height:1.5;color:#697363}
+.sf-contact-actions{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.sf-contact-actions a{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:10px 16px;border-radius:12px;background:#173b35;color:#fff}
+.sf-tools{margin:24px 0;padding:16px;border:1px solid #e7dfcd;border-radius:18px;background:#fffdf9;scroll-margin-top:20px}
+.sf-tools>h2{font-size:21px;color:#173b35;margin:0 0 12px}
+.sf-tools>.sf-more{display:block}
+.sf-tools>.sf-more>summary{display:none}
+.sf-tools .sf-more-items{position:static;width:100%;max-height:none;padding:0;border:0;box-shadow:none;background:transparent}
+.sf-tools>button{margin:8px;min-height:44px}
+#sf-products,#sf-offers,#sf-info{scroll-margin-top:20px}
+@media(max-width:700px){#app .storefront img.store-image{height:135px!important;max-height:135px!important}#app .storefront .store-identity{padding:8px 12px!important}#app .storefront .sf-heading h1{font-size:23px!important;margin:4px 0!important}.sf-subtitle{display:none}#app .sf-section-nav .sf-section-tile{min-height:138px}.sf-tile-title{font-size:14px}}
+@media(hover:hover){#app .sf-section-tile:not(:disabled):hover{border-color:#b38b36;background:#fff5d9}}

@@ -42,23 +42,31 @@
  gallery=function(p){baseGallery.apply(this,arguments);galleryView(document.querySelector('#modal-body .gallery'));};
  function sectionNav(banner){
   const nav=root.querySelector('.sf-section-nav');if(!nav)return;
-  const layout=root.querySelector('.store-layout'),offers=root.querySelector('.shop-current-offers'),photos=root.querySelector('.place-photo-gallery'),info=root.querySelector('.sf-information');
+  const layout=root.querySelector('.store-layout'),offers=root.querySelector('.shop-current-offers'),info=root.querySelector('.sf-information'),extras=root.querySelector('.sf-tools');
   if(offers){
-   const box=offers.querySelector('[data-current-shop-offers]');
-   // Keep the host mounted: the offers module uses its presence to avoid repeat fetches.
-   offers.hidden=!box?.querySelector('.shop-offer,.community-offer,[data-offer-id]');
-   offers.classList.add('sf-offers');offers.id='sf-offers';
+   // Keep the host and card controls mounted while offers load asynchronously.
+   offers.hidden=false;offers.classList.add('sf-offers');offers.id='sf-offers';
    const intro=offers.querySelector(':scope>p');if(intro&&!intro.closest('details')){const details=make('details','sf-follow-help'),summary=make('summary','',t('كيف تعمل المتابعة؟','How following works','Wie funktioniert das Folgen?'));details.append(summary,intro);offers.append(details);}
    if(layout&&offers.previousElementSibling!==layout)layout.after(offers);
   }
-  const entries=[[layout,t(banner.dataset.service==='1'?'الخدمات':'المنتجات','Products & services','Produkte & Leistungen'),'sf-products'],[offers?.hidden?null:offers,t('العروض','Offers','Angebote'),'sf-offers'],[photos,t('الصور','Photos','Bilder'),'sf-photos'],[info,t('معلومات المحل','Information','Informationen'),'sf-info']].filter(([n])=>n);
-  entries.forEach(([node,,id])=>node.id=id);
-  const key=entries.map(x=>x[2]).join('|')+'|'+document.documentElement.lang;
-  if(nav.dataset.sections===key)return;nav.dataset.sections=key;nav.replaceChildren();
-  sectionObserver?.disconnect();
-  const active=id=>nav.querySelectorAll('button').forEach(b=>{const on=b.dataset.target===id;b.classList.toggle('active',on);if(on)b.setAttribute('aria-current','location');else b.removeAttribute('aria-current');});
-  entries.forEach(([node,label,id],i)=>{const button=make('button','',label);button.type='button';button.dataset.target=id;button.onclick=()=>{go(node);active(id);};nav.append(button);if(!i)active(id);});
-  if('IntersectionObserver' in window){sectionObserver=new IntersectionObserver(rows=>{const entry=rows.filter(x=>x.isIntersecting).sort((a,b)=>a.boundingClientRect.top-b.boundingClientRect.top)[0];if(entry)active(entry.target.id);},{rootMargin:'-8% 0px -55% 0px',threshold:0});entries.forEach(([n])=>sectionObserver.observe(n));}
+  const images=[...layout?.querySelectorAll('.product img')||[]].slice(0,4).map(img=>img.dataset.lazySrc||img.currentSrc||img.getAttribute('src')).filter(Boolean);
+  const entries=[
+   [layout,t(banner.dataset.service==='1'?'الخدمات':'المنتجات','Products & services','Produkte & Leistungen'),'sf-products','products',t('شاهد الصور والأسعار','See photos and prices','Fotos und Preise ansehen')],
+   [info,t('التواصل ومعلومات المحل','Contact & information','Kontakt & Informationen'),'sf-info','contact',t('العنوان، الاتصال وأوقات الدوام','Address, phone and hours','Adresse, Telefon und Öffnungszeiten')],
+   [offers,t('العروض والمتابعة','Offers & following','Angebote & Folgen'),'sf-offers','offers',t('العروض وبطاقات المحل','Offers and shop cards','Angebote und Geschäftskarten')],
+   [extras,t('الصور وباقي الأدوات','Photos & more tools','Fotos & weitere Werkzeuge'),'sf-tools','tools',t('الصور، المشاركة والمزيد','Photos, sharing and more','Fotos, Teilen und mehr')]
+  ];
+  const key=entries.map(x=>x[0]?x[2]:'-').join('|')+'|'+document.documentElement.lang+'|'+JSON.stringify(images);
+  if(nav.dataset.sections===key)return;nav.dataset.sections=key;nav.replaceChildren();sectionObserver?.disconnect();
+  const icons={products:'<rect x="4" y="5" width="16" height="15" rx="3"/><path d="M8 5V3m8 2V3M4 10h16"/>',contact:'<path d="M20 10c0 6-8 11-8 11S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/>',offers:'<path d="m3 12 9-9h8v8l-9 9Z"/><circle cx="16" cy="7" r="1"/><path d="m8 13 5-5m-5 1h.01m4 4h.01"/>',tools:'<rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/>'};
+  entries.forEach(([node,label,id,kind,note])=>{
+   const button=make('button','sf-section-tile sf-tile-'+kind);button.type='button';button.dataset.target=id;
+   const visual=make('span','sf-tile-visual');visual.setAttribute('aria-hidden','true');
+   if(kind==='products'&&images.length){visual.classList.add('sf-tile-thumbnails');images.forEach(src=>{const img=make('img');img.src=src;img.alt='';img.width=72;img.height=60;img.decoding='async';img.onerror=()=>img.remove();visual.append(img);});}
+   else visual.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">'+icons[kind]+'</svg>';
+   button.append(visual,make('strong','sf-tile-title',label),make('span','sf-tile-note',node?note:t('غير متاح حاليًا','Not available yet','Derzeit nicht verfügbar')));
+   button.disabled=!node;if(node){node.id=id;button.setAttribute('aria-controls',id);button.onclick=()=>go(node);}nav.append(button);
+  });
  }
  function enhance(id){
   const s=stores.find(x=>x.id===id&&x.active&&!x.deleted_at),banner=root.querySelector('.store-banner');if(!s||!banner||banner.dataset.storefront)return;
@@ -98,6 +106,12 @@
   if(cover){const button=make('button','sf-cover-button');button.type='button';button.setAttribute('aria-label',t('تكبير صورة المحل','Enlarge shop photo','Geschäftsfoto vergrößern'));cover.before(button);button.append(cover);cover.loading='eager';cover.decoding='async';button.onclick=()=>showPhotos([cover]);}
   const photos=root.querySelector('.place-photo-gallery');
   if(photos){photos.classList.add('sf-photos');const heading=make('h2','',t('صور من المحل','Inside the business','Einblicke ins Geschäft'));heading.dataset.noTranslate='';photos.prepend(heading);const images=[...photos.querySelectorAll('img')];images.forEach((img,i)=>{const button=make('button','sf-photo-button');button.type='button';button.setAttribute('aria-label',t('تكبير الصورة','Enlarge photo','Bild vergrößern')+' '+(i+1));img.before(button);button.append(img);img.loading='lazy';button.onclick=()=>showPhotos(images,i);});info.before(photos);}
+  // Put the four entry cards directly below the shop identity. Reuse live controls.
+  const extras=make('section','sf-tools');extras.dataset.noTranslate='';extras.append(make('h2','',t('الصور وباقي الأدوات','Photos & more tools','Fotos & weitere Werkzeuge')));
+  more.open=true;extras.append(more);if(photos)extras.append(photos);root.append(extras);
+  const contacts=make('div','sf-contact-actions');
+  [...quick.children].forEach(node=>{if(node.classList.contains('sf-browse'))node.remove();else if(node.matches('a[href^="tel:"],.sf-directions'))contacts.append(node);else extras.append(node);});
+  infoTitle.after(contacts);quick.remove();
   sectionNav(banner);
  }
  function refresh(){
@@ -108,7 +122,7 @@
  }
  const base=renderStore;renderStore=function(id){const result=base.apply(this,arguments);enhance(id);return result;};
  // An offer can arrive after the page renders; do not poll or reload any catalog data.
- new MutationObserver(records=>{if(!records.some(r=>r.target===root||r.target.closest?.('[data-current-shop-offers]')))return;if(queued)return;queued=true;requestAnimationFrame(()=>{queued=false;refresh();});}).observe(root,{childList:true,subtree:true});
+ new MutationObserver(records=>{if(!records.some(r=>r.target===root||r.target.closest?.('.shop-current-offers,.store-layout')))return;if(queued)return;queued=true;requestAnimationFrame(()=>{queued=false;refresh();});}).observe(root,{childList:true,subtree:true});
  root.addEventListener('click',e=>{root.querySelectorAll('.sf-more[open]').forEach(menu=>{if(!menu.contains(e.target))menu.open=false;});});
  root.addEventListener('keydown',e=>{if(e.key==='Escape')root.querySelectorAll('.sf-more[open]').forEach(menu=>{menu.open=false;menu.querySelector('summary').focus();});});
  let menuFrame=0;const adjustMenus=()=>{if(menuFrame||!root.querySelector('.sf-more[open]'))return;menuFrame=requestAnimationFrame(()=>{menuFrame=0;root.querySelectorAll('.sf-more[open]').forEach(positionMenu);});};
