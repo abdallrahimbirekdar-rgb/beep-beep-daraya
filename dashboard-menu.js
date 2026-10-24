@@ -63,6 +63,7 @@
  ];
  // Each shortcut retains its original anchor and click handlers.
  const adminTools=[
+  ['#admin-notifications','moderation',['إشعارات الإدارة','Admin notifications','Verwaltungsbenachrichtigungen'],['الأحداث الجديدة والبلاغات والطلبات','New events, reports and requests','Neue Ereignisse, Meldungen und Anträge'],'reports'],
   ['#business-reviews','shops',['طلبات إنشاء المحلات والخدمات','Business page requests','Anträge für Geschäftsseiten'],['معاينة الطلبات الجديدة والموافقة عليها','Review and approve new requests','Neue Anträge prüfen und freigeben'],'new-section'],
   ['#dashboard/stores','shops',['المحلات والأماكن','Shops and places','Geschäfte und Orte'],['إضافة الأماكن وتعديل صفحاتها وعناوينها','Add places and edit pages and addresses','Orte hinzufügen und Seiten bearbeiten'],'stores'],
   ['#dashboard/products','shops',['المنتجات والخدمات','Products and services','Produkte und Dienste'],['تعديل منتجات المحلات والصور والأسعار','Manage shop products, photos and prices','Produkte, Fotos und Preise verwalten'],'products'],
