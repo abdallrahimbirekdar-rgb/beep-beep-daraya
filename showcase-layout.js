@@ -20,6 +20,40 @@
   const update=()=>{const query=input.value.trim().toLocaleLowerCase();let count=0;root.querySelectorAll('[data-demo-item]').forEach(n=>{const r=rows[Number(n.dataset.demoItem)];n.hidden=!!(selected&&r[7]!==selected)||!r[language()].toLocaleLowerCase().includes(query);if(!n.hidden)count++;});root.querySelector('[data-demo-empty]').hidden=count>0;chips.querySelectorAll('button').forEach(b=>{const active=b.dataset.group===selected;b.classList.toggle('selected',active);b.setAttribute('aria-pressed',String(active));});};
   ['',...sourceGroups].forEach((group,i)=>{const b=document.createElement('button');b.type='button';b.className='outline';b.dataset.group=group;b.textContent=i?labels[key][i-1]:t('الكل','All','Alle');b.onclick=()=>{selected=group;update();};chips.append(b);});input.closest('label').before(chips);input.oninput=update;update();
   const extras=root.querySelector('[data-demo-extras]');if(extras){const details=document.createElement('details');details.className='showcase-owner-tools';const summary=document.createElement('summary');summary.textContent=t('اكتشف باقي إمكانيات الصفحة وأدوات صاحب المحل','Explore more page features and owner tools','Weitere Seitenfunktionen und Anbieterwerkzeuge');extras.before(details);details.append(summary,extras);for(const node of [...root.children].filter(n=>n.matches('.demo-social,.demo-video')))extras.prepend(node);}
+  // Demo pages bypass renderStore, so give them the same four entry cards.
+  const info=root.querySelector('.demo-info'),tools=root.querySelector('.showcase-owner-tools');
+  if(info){
+   const actions=hero.querySelector('.demo-actions');if(actions)info.prepend(actions);
+   const social=extras?.querySelector('.demo-social');if(social)info.append(social);
+  }
+  const offers=extras?.querySelector('[data-demo-offer]')?.closest('section');
+  if(offers){offers.classList.add('showcase-demo-offers');root.append(offers);}
+  if(tools){
+   tools.querySelector(':scope>summary').after(exportBox);
+   const switcher=root.querySelector('.showcase-demo-links');if(switcher)tools.append(switcher);
+   const qr=root.querySelector('.demo-qr-panel');if(qr)tools.append(qr);
+   root.append(tools);
+  }
+  const nav=document.createElement('nav');nav.className='sf-section-nav showcase-section-cards';nav.setAttribute('aria-label',t('أقسام صفحة المحل','Shop page sections','Bereiche der Geschäftsseite'));nav.dataset.noTranslate='';
+  const icons={contact:'<path d="M20 10c0 6-8 11-8 11S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/>',offers:'<path d="m3 12 9-9h8v8l-9 9Z"/><circle cx="16" cy="7" r="1"/>',tools:'<rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/>'};
+  const entries=[
+   [catalog,'products',t(menu?'المنتجات والمينو':'المنتجات',menu?'Products & menu':'Products',menu?'Produkte & Speisekarte':'Produkte'),t('شاهد الصور والأسعار','See photos and prices','Fotos und Preise ansehen')],
+   [info,'contact',t('التواصل ومعلومات المحل','Contact & information','Kontakt & Informationen'),t('العنوان وأوقات الدوام','Address and hours','Adresse und Öffnungszeiten')],
+   [offers,'offers',t('عروض المحل','Shop offers','Geschäftsangebote'),t('شاهد مثال العروض والخصومات','See example offers','Beispielangebote ansehen')],
+   [tools,'tools',t('الصور وباقي الأدوات','Photos & more tools','Fotos & weitere Werkzeuge'),t('الصور، المشاركة ورمز QR','Photos, sharing and QR','Fotos, Teilen und QR')]
+  ];
+  entries.forEach(([target,kind,label,note])=>{
+   if(!target)return;target.id='showcase-'+kind;
+   const card=document.createElement('button');card.type='button';card.className='sf-section-tile sf-tile-'+kind;card.dataset.target=target.id;card.setAttribute('aria-controls',target.id);
+   const visual=document.createElement('span');visual.className='sf-tile-visual';visual.setAttribute('aria-hidden','true');
+   if(kind==='products'){
+    visual.classList.add('sf-tile-thumbnails');rows.slice(0,4).forEach(row=>{const img=document.createElement('img');img.src=new URL(row[5],location.href).href;img.alt='';img.width=72;img.height=60;img.decoding='async';visual.append(img);});
+   }else visual.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">'+icons[kind]+'</svg>';
+   const title=document.createElement('strong');title.className='sf-tile-title';title.textContent=label;
+   const hint=document.createElement('span');hint.className='sf-tile-note';hint.textContent=note;card.append(visual,title,hint);
+   card.onclick=()=>{if(target.tagName==='DETAILS')target.open=true;target.scrollIntoView({behavior:window.matchMedia?.('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'});target.setAttribute('tabindex','-1');target.focus({preventScroll:true});};nav.append(card);
+  });
+  hero.after(nav);
   const old=root.querySelector('[data-demo-pdf]');if(old){old.textContent=t(menu?'إنشاء المينو مع QR':'إنشاء الكتالوج مع QR',menu?'Create menu with QR':'Create catalog with QR',menu?'Speisekarte mit QR erstellen':'Katalog mit QR erstellen');old.onclick=button.onclick;}
  };
 })();

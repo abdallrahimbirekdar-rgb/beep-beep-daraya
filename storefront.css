@@ -109,3 +109,16 @@
 #sf-products,#sf-offers,#sf-info{scroll-margin-top:20px}
 @media(max-width:700px){#app .storefront img.store-image{height:135px!important;max-height:135px!important}#app .storefront .store-identity{padding:8px 12px!important}#app .storefront .sf-heading h1{font-size:23px!important;margin:4px 0!important}.sf-subtitle{display:none}#app .sf-section-nav .sf-section-tile{min-height:138px}.sf-tile-title{font-size:14px}}
 @media(hover:hover){#app .sf-section-tile:not(:disabled):hover{border-color:#b38b36;background:#fff5d9}}
+
+/* Demo shops have a separate hero; keep their four cards in the first view too. */
+#app .rich-showcase>.demo-hero{display:flex;flex-direction:column;align-items:stretch;gap:8px;margin:10px 0 0;padding:10px;background:#fffdf8;border-color:#e7dfcd}
+#app .rich-showcase>.demo-hero .demo-image{display:block;width:100%;height:210px;object-fit:cover;border-radius:12px}
+#app .rich-showcase>.demo-hero h1{font-size:28px;margin:4px 0;line-height:1.4;color:#173b35}
+#app .rich-showcase>.demo-hero p,#app .rich-showcase>.demo-hero small,#app .rich-showcase .showcase-kicker{display:none}
+#app .rich-showcase>.showcase-section-cards{margin-top:0}
+#app .rich-showcase .demo-info>.demo-actions{grid-column:1/-1;margin:12px 0}
+#app .rich-showcase .demo-info>.demo-social{grid-column:1/-1}
+#app .rich-showcase>.showcase-owner-tools>.showcase-export{margin:12px 0}
+#app .rich-showcase>.showcase-owner-tools:not([open])>*:not(summary){display:none!important}
+#showcase-products,#showcase-contact,#showcase-offers,#showcase-tools{scroll-margin-top:20px}
+@media(max-width:700px){#app .rich-showcase>.demo-hero .demo-image{height:125px}#app .rich-showcase>.demo-hero h1{font-size:23px}#app .rich-showcase>.demo-notice{padding:6px 9px;margin:6px 0;font-size:11px;line-height:1.5}#app .rich-showcase>.demo-top{margin-bottom:6px;font-size:12px;gap:6px}#app .rich-showcase>.demo-top button{font-size:12px;padding:7px 10px}}
