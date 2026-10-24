@@ -1,18 +1,18 @@
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs');
 const {JSDOM}=require('jsdom');
-function app(key='restaurant',language='ar'){
+function app(key='restaurant',language='ar',ordering=false){
  const dom=new JSDOM('<main id="app"></main><button id="account"></button><a id="dashboard-link"></a>',{url:'https://damascus-shop.com/#example/'+key,runScripts:'outside-only',pretendToBeVisual:true}),c=dom.window;
  c.ShahinI18n={language};c.DARAYA_SECTORS=[['restaurant','مطعم','Restaurant','Restaurant'],['apparel','ملابس','Clothes','Kleidung']];
  c.$=s=>c.document.querySelector(s);c.esc=v=>String(v??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('"','&quot;');c.money=n=>n+' SYP';
  c.matchesCategory=()=>true;c.renderStore=()=>{};c.renderHome=()=>{};c.render=()=>{};c.directoryKind=s=>s.kind;c.stores=[];c.filter='restaurant';c.search='';c.browseFavorites=false;
  c.matchMedia=()=>({matches:true});c.scrollTo=()=>{};c.HTMLElement.prototype.scrollIntoView=function(){c.lastScroll=this;};c.modal=html=>{c.lastModal=html;};c.parsePlaceVideo=()=>({});c.videoSurface=()=>c.document.createElement('div');c.videoLinkError=()=>'';
  c.QRCode=class{static CorrectLevel={M:0};constructor(){this._oQRCode={getModuleCount:()=>1,isDark:()=>true};}};c.DarayaCatalogPdf={open(){c.pdfOpened=true;}};
- for(const file of ['showcase-products.js','category-demos.js','demo-owner-features.js','showcase-layout.js'])c.eval(fs.readFileSync(file,'utf8'));
- c.render();return {dom,c,$:c.$};
+ for(const file of ['shop-section-view.js','showcase-products.js','category-demos.js','demo-owner-features.js','showcase-layout.js'])c.eval(fs.readFileSync(file,'utf8'));
+ if(ordering)c.eval(fs.readFileSync('demo-ordering.js','utf8'));c.render();return {dom,c,$:c.$};
 }
 test('pizza demo shows four entry cards immediately after its hero, with actual pizza photos',()=>{
  const a=app();assert.match(a.$('h1').textContent,/بيتزا التنور/);const nav=a.$('.showcase-section-cards');assert.equal(nav.children.length,4);assert.equal(nav.previousElementSibling,a.$('.demo-hero'));assert.equal(a.$('.demo-hero .demo-actions'),null);assert.equal(nav.querySelectorAll('img').length,4);assert.match(nav.querySelector('img').src,/images\/showcase\/pizza-/);
- for(const card of nav.children){card.click();const target=a.c.document.getElementById(card.getAttribute('aria-controls'));assert.equal(a.c.lastScroll,target);assert.equal(a.c.document.activeElement,target);}
+ for(const card of nav.children){card.click();const target=a.c.document.getElementById(card.getAttribute('aria-controls'));assert.equal(a.c.lastScroll,a.$('.sf-section-return'));assert.equal(a.c.document.activeElement,target);}
  assert.equal(a.$('.showcase-owner-tools').open,true);assert.equal(a.$('.showcase-owner-tools').firstElementChild.tagName,'SUMMARY');a.dom.window.close();
 });
 test('moving demo controls preserves search, basket, contact, offer and PDF actions',()=>{
@@ -21,4 +21,19 @@ test('moving demo controls preserves search, basket, contact, offer and PDF acti
 });
 test('all rich demo types and languages retain four working cards without duplicates on rerender',()=>{
  for(const key of ['restaurant','apparel','syrian'])for(const lang of ['ar','en','de']){const a=app(key,lang);a.c.render();assert.equal(a.c.document.querySelectorAll('.showcase-section-cards').length,1);assert.equal(a.$('.showcase-section-cards').children.length,4);assert.ok(a.$('#showcase-contact [data-demo-contact]'));assert.ok(a.$('#showcase-tools [data-demo-qr-code]'));a.dom.window.close();}
+});
+test('QR demo arrival shows only cards; products and basket open together and tools stay closed',()=>{
+ const a=app(),hidden=n=>n.classList.contains('sf-section-collapsed');
+ for(const id of ['showcase-products','showcase-contact','showcase-offers','showcase-tools'])assert.ok(hidden(a.$('#'+id)));
+ assert.ok(hidden(a.$('.demo-basket')));assert.equal(a.$('.sf-section-return').hidden,true);
+ a.$('[data-target="showcase-products"]').click();assert.ok(!hidden(a.$('#showcase-products')));assert.ok(!hidden(a.$('.demo-basket')));assert.ok(hidden(a.$('#showcase-tools')));assert.ok(hidden(a.$('.showcase-section-cards')));
+ a.$('.sf-section-return').click();assert.ok(hidden(a.$('.demo-basket')));assert.ok(!hidden(a.$('.showcase-section-cards')));
+ a.$('[data-target="showcase-tools"]').click();assert.ok(!hidden(a.$('#showcase-tools')));assert.equal(a.$('#showcase-tools').open,true);assert.ok(hidden(a.$('#showcase-products')));a.dom.window.close();
+});
+
+test('the full pizza order demo keeps its late cart strip within the products section',async()=>{
+ const a=app('restaurant','ar',true);await new Promise(r=>setTimeout(r,0));const collapsed=n=>n.classList.contains('sf-section-collapsed');
+ assert.ok(collapsed(a.$('.demo-cart-strip')));assert.ok(collapsed(a.$('.demo-dispatch-workspace')));
+ a.$('[data-target="showcase-products"]').click();a.$('[data-demo-add]').click();assert.equal(a.$('.demo-cart-strip').hidden,false);assert.ok(!collapsed(a.$('.demo-cart-strip')));a.$('[data-open-demo-basket]').click();assert.equal(a.$('.demo-basket').hidden,false);assert.ok(!collapsed(a.$('.demo-basket')));assert.ok(a.$('[data-demo-checkout]'));
+ a.$('.sf-section-return').click();assert.ok(collapsed(a.$('.demo-cart-strip')));assert.ok(collapsed(a.$('.demo-basket')));a.$('[data-target="showcase-tools"]').click();assert.ok(!collapsed(a.$('.demo-dispatch-workspace')));a.dom.window.close();
 });

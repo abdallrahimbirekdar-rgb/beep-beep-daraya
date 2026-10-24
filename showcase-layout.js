@@ -51,9 +51,10 @@
    }else visual.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">'+icons[kind]+'</svg>';
    const title=document.createElement('strong');title.className='sf-tile-title';title.textContent=label;
    const hint=document.createElement('span');hint.className='sf-tile-note';hint.textContent=note;card.append(visual,title,hint);
-   card.onclick=()=>{if(target.tagName==='DETAILS')target.open=true;target.scrollIntoView({behavior:window.matchMedia?.('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'});target.setAttribute('tabindex','-1');target.focus({preventScroll:true});};nav.append(card);
+   card.setAttribute('aria-expanded','false');card.onclick=()=>view.open(target.id,card);nav.append(card);
   });
   hero.after(nav);
+  const view=window.DarayaShopSections({root,hero,nav,sections:entries.map(([node,kind])=>({node,id:'showcase-'+kind,related:kind==='products'?[root.querySelector('.demo-basket')]:[]})),backLabel:t('‹ العودة إلى أقسام المحل','‹ Back to shop sections','‹ Zurück zu den Geschäftsbereichen')});
   const old=root.querySelector('[data-demo-pdf]');if(old){old.textContent=t(menu?'إنشاء المينو مع QR':'إنشاء الكتالوج مع QR',menu?'Create menu with QR':'Create catalog with QR',menu?'Speisekarte mit QR erstellen':'Katalog mit QR erstellen');old.onclick=button.onclick;}
  };
 })();

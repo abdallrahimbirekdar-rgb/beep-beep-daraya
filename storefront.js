@@ -56,6 +56,7 @@
    [offers,t('العروض والمتابعة','Offers & following','Angebote & Folgen'),'sf-offers','offers',t('العروض وبطاقات المحل','Offers and shop cards','Angebote und Geschäftskarten')],
    [extras,t('الصور وباقي الأدوات','Photos & more tools','Fotos & weitere Werkzeuge'),'sf-tools','tools',t('الصور، المشاركة والمزيد','Photos, sharing and more','Fotos, Teilen und mehr')]
   ];
+  const view=window.DarayaShopSections({root,hero:banner,nav,sections:entries.map(([node,,id])=>({node,id})),backLabel:t('‹ العودة إلى أقسام المحل','‹ Back to shop sections','‹ Zurück zu den Geschäftsbereichen')});
   const key=entries.map(x=>x[0]?x[2]:'-').join('|')+'|'+document.documentElement.lang+'|'+JSON.stringify(images);
   if(nav.dataset.sections===key)return;nav.dataset.sections=key;nav.replaceChildren();sectionObserver?.disconnect();
   const icons={products:'<rect x="4" y="5" width="16" height="15" rx="3"/><path d="M8 5V3m8 2V3M4 10h16"/>',contact:'<path d="M20 10c0 6-8 11-8 11S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/>',offers:'<path d="m3 12 9-9h8v8l-9 9Z"/><circle cx="16" cy="7" r="1"/><path d="m8 13 5-5m-5 1h.01m4 4h.01"/>',tools:'<rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/>'};
@@ -65,7 +66,7 @@
    if(kind==='products'&&images.length){visual.classList.add('sf-tile-thumbnails');images.forEach(src=>{const img=make('img');img.src=src;img.alt='';img.width=72;img.height=60;img.decoding='async';img.onerror=()=>img.remove();visual.append(img);});}
    else visual.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">'+icons[kind]+'</svg>';
    button.append(visual,make('strong','sf-tile-title',label),make('span','sf-tile-note',node?note:t('غير متاح حاليًا','Not available yet','Derzeit nicht verfügbar')));
-   button.disabled=!node;if(node){node.id=id;button.setAttribute('aria-controls',id);button.onclick=()=>go(node);}nav.append(button);
+   button.setAttribute('aria-expanded',String(view.active===id));button.disabled=!node;if(node){node.id=id;button.setAttribute('aria-controls',id);button.onclick=()=>view.open(id,button);}nav.append(button);
   });
  }
  function enhance(id){
