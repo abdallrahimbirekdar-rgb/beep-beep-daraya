@@ -78,7 +78,7 @@
   if(direction){direction.classList.add('sf-directions');direction.textContent=t('↗ الاتجاهات','↗ Directions','↗ Route');quick.append(direction);}
   if(phone){phone.textContent=t('اتصال','Call','Anrufen');quick.append(phone);}
   if(actions)tools.append(actions);
-  banner.querySelectorAll('.shop-catalog-download').forEach(b=>tools.append(b));
+  banner.querySelectorAll('.shop-catalog-download').forEach(b=>{if(b.hasAttribute('data-catalog-pdf')){b.classList.add('sf-catalog-create');quick.append(b);}else tools.append(b);});
   const customer=root.querySelector('.store-customer-tools');
   if(customer){const share=customer.querySelector('button');if(share){share.classList.add('sf-share');share.textContent=t('مشاركة','Share','Teilen');quick.append(share);}}
   if(s.description?.trim()){const subtitle=make('p','sf-subtitle',s.description.trim().split('\n')[0]);subtitle.title=s.description;heading.after(subtitle);}

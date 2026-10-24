@@ -3,12 +3,12 @@ function setup(language='ar'){
  const nodes={},qr=[],banners=[],previews=[];
  const node=selector=>nodes[selector]||(nodes[selector]={innerHTML:'',hidden:false,classList:{remove(){}},before(n){banners.push(n);}});
  const c={window:{ShahinI18n:{language},addEventListener(){},scrollTo(){},darayaHomeShowsResults:()=>true,darayaSectorKey:k=>k},location:{hash:'#example/restaurant',href:'https://damascus-shop.com/'},document:{querySelectorAll:selector=>selector==='[data-demo-add]'?Array.from({length:3},(_,i)=>{const n=node('add-'+i);n.dataset={demoAdd:String(i)};return n;}):selector==='[data-demo-item]'?Array.from({length:3},(_,i)=>{const n=node('item-'+i);n.dataset={demoItem:String(i)};return n;}):[],createElement:()=>({dataset:{}})},$:node,esc:v=>String(v??''),photo:(src,alt)=>'<img src="'+src+'" alt="'+alt+'">',money:n=>n+' SYP',URL,Blob,QRCode:class{static CorrectLevel={M:0};constructor(box,options){qr.push(options.text);this._oQRCode={getModuleCount:()=>1,isDark:()=>true};}},filter:'restaurant',search:'',browseFavorites:false,stores:[],matchesCategory:()=>true,directoryKind:s=>s.kind,renderHome(){},renderStore(id){previews.push(id);},render(){},updateCustomerNav(){},modal(){}};
- vm.createContext(c);vm.runInContext(fs.readFileSync('business-sectors.js','utf8').split('(() =>')[0],c);vm.runInContext(fs.readFileSync('category-demos.js','utf8'),c);
+ vm.createContext(c);vm.runInContext(fs.readFileSync('business-sectors.js','utf8').split('(() =>')[0],c);vm.runInContext(fs.readFileSync('showcase-products.js','utf8'),c);vm.runInContext(fs.readFileSync('category-demos.js','utf8'),c);
  return {c,nodes,qr,banners,previews};
 }
-test('one showcase exists per sector except mosques, with three illustrated entries',()=>{
- const {c}=setup(),keys=c.window.DarayaDemos.keys();assert.equal(keys.length,15);assert.equal(new Set(keys).size,15);assert.ok(!keys.includes('mosque'));
- for(const key of keys){const rows=c.window.DarayaDemos.items[key];assert.equal(rows.length,3);for(const r of rows)assert.ok(fs.existsSync(r[5]),r[5]);}
+test('sector demos and the Syrian restaurant contain illustrated products',()=>{
+ const {c}=setup(),keys=c.window.DarayaDemos.keys();assert.equal(keys.length,16);assert.equal(new Set(keys).size,16);assert.ok(!keys.includes('mosque'));
+ for(const key of keys){const rows=c.window.DarayaDemos.items[key];assert.equal(rows.length,['restaurant','apparel','syrian'].includes(key)?16:3);for(const r of rows)assert.ok(fs.existsSync(r[5]),r[5]);}
 });
 test('all demo pages render with fictional address, correct QR URL and no real checkout',()=>{
  for(const lang of ['ar','en','de']){
@@ -38,10 +38,12 @@ test('category banner links to exactly one demo and leaves mosque section unchan
 
 test('basket totals and product search are local demonstrations',()=>{
  const {c,nodes}=setup();c.render();nodes['add-0'].onclick();nodes['add-0'].onclick();nodes['add-1'].onclick();
- assert.match(nodes['[data-demo-basket]'].innerHTML,/215000 SYP/);
+ assert.match(nodes['[data-demo-basket]'].innerHTML,/185000 SYP/);
  nodes['[data-demo-clear]'].onclick();assert.match(nodes['[data-demo-basket]'].innerHTML,/0 SYP/);
- nodes['[data-demo-search]'].oninput({target:{value:'برغر'}});assert.equal(nodes['item-0'].hidden,true);assert.equal(nodes['item-1'].hidden,false);assert.equal(nodes['item-2'].hidden,true);
+ nodes['[data-demo-search]'].oninput({target:{value:'بيبروني'}});assert.equal(nodes['item-0'].hidden,true);assert.equal(nodes['item-1'].hidden,false);assert.equal(nodes['item-2'].hidden,true);
 });
 
 
 test("review shop remains accessible by its direct preview link",()=>{const {c,previews}=setup(),id="a5e8abe7-974a-416c-a570-858d6fd03572";c.stores.push({id,kind:"restaurant",is_example:true});c.renderStore(id);assert.deepEqual(previews,[id]);});
+
+test('rich marketing examples have distinct product photos, descriptions and groups',()=>{const {c}=setup();for(const key of ['restaurant','apparel','syrian']){const rows=c.window.DarayaDemos.items[key];assert.equal(new Set(rows.map(r=>r[5])).size,16);assert.ok(new Set(rows.map(r=>r[7])).size>=3);assert.ok(rows.every(r=>r[6]&&r[3]>0));}assert.ok(c.window.DarayaDemos.items.syrian.some(r=>r[0].includes('سودة')));assert.ok(c.window.DarayaDemos.items.syrian.some(r=>r[0]==='فتوش'));});
