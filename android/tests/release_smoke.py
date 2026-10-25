@@ -38,8 +38,8 @@ try:
     # The clean test device gets the optional native reminders prompt.
     adb('shell','input','keyevent','4')
     capture('01-home','home')
-    capture('02-map','map')
-    capture('03-restaurant-sections','example/restaurant')
+    capture('02-restaurant-sections','example/restaurant')
+    capture('03-apparel-sections','example/apparel')
     capture('04-school-services','store/f44d9750-a872-43a9-b5eb-0a4128bb0f80')
     crashes=adb('logcat','-d','-b','crash').decode(errors='replace')
     (OUT/'crash-log.txt').write_text(crashes)
