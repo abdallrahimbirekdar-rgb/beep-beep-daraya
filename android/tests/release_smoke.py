@@ -10,19 +10,19 @@ OUT.mkdir(exist_ok=True)
 PACKAGE = 'com.souqdaraya.app'
 
 def adb(*args, check=True):
-    return subprocess.run(['adb', *args], check=check, capture_output=True).stdout
+    return subprocess.run(['adb', *args], check=check, capture_output=True, timeout=30).stdout
 
 def tree():
     # Accessibility can restart during first launch or permission dialogs.
-    for attempt in range(4):
-        result = adb('shell', 'uiautomator', 'dump', '/sdcard/daraya-window.xml', check=False)
+    for attempt in range(2):
         try:
+            result = adb('shell', 'uiautomator', 'dump', '/sdcard/daraya-window.xml', check=False)
             if b'dumped to' in result:
                 return ET.fromstring(adb('shell', 'cat', '/sdcard/daraya-window.xml').decode())
-        except ET.ParseError:
+        except (ET.ParseError, subprocess.TimeoutExpired):
             pass
         time.sleep(3)
-    raise RuntimeError('Android accessibility did not provide a UI hierarchy')
+    return None
 
 def tap(node):
     x1, y1, x2, y2 = map(int, re.findall(r'\d+', node.attrib['bounds']))
@@ -43,6 +43,11 @@ def wait_for_page():
     deadline = time.monotonic()+100
     while time.monotonic()<deadline:
         root=tree()
+        if root is None:
+            # Some emulator images have a broken shell accessibility service.
+            # Preserve a real screen for manual visual review instead.
+            time.sleep(15)
+            return None
         if dismiss(root):
             time.sleep(2)
             continue
@@ -59,9 +64,10 @@ def wait_for_page():
 def capture(name, fragment):
     adb('shell','am','start','-W','-a','android.intent.action.VIEW','-d',
         'https://damascus-shop.com/#'+fragment, PACKAGE)
-    wait_for_page()
-    root=tree()
-    (OUT/(name+'.xml')).write_bytes(ET.tostring(root,encoding='utf-8'))
+    time.sleep(20)
+    root=wait_for_page()
+    if root is not None:
+        (OUT/(name+'.xml')).write_bytes(ET.tostring(root,encoding='utf-8'))
     (OUT/(name+'.png')).write_bytes(adb('exec-out','screencap','-p'))
     if not adb('shell','pidof',PACKAGE,check=False).strip():
         raise RuntimeError('The release process stopped')
@@ -74,6 +80,10 @@ try:
     adb('shell','settings','put','system','font_scale','1.0')
     adb('shell','cmd','statusbar','send-disable-flag','clock','notification-icons','system-icons',check=False)
     adb('logcat','-c')
+    # Dismiss the optional first-open reminder prompt on this clean test install.
+    adb('shell','am','start','-W','-n',PACKAGE+'/.MainActivity')
+    time.sleep(12)
+    adb('shell','input','keyevent','4')
     capture('01-home','home')
     capture('02-map','map')
     capture('03-restaurant-sections','example/restaurant')

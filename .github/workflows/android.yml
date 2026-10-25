@@ -8,10 +8,11 @@ permissions:
   contents: write
 concurrency:
   group: shahin-android
-  cancel-in-progress: false
+  cancel-in-progress: true
 jobs:
   apk:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     env:
       ANDROID_KEYSTORE_PATH: /tmp/daraya-release.jks
       ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
@@ -66,6 +67,7 @@ jobs:
           target: google_apis
           arch: x86_64
           profile: pixel_2
+          emulator-boot-timeout: 180
           disable-animations: true
           script: python3 android/tests/release_smoke.py
       - name: Retain release smoke-test evidence
