@@ -5,23 +5,34 @@
  window.DarayaShopSections=({root,hero,nav,sections,backLabel})=>{
   let view=views.get(root);
   if(view?.hero===hero){view.sections=sections;view.sync();return view;}
-  view?.observer.disconnect();
+  view?.dispose();
   const back=document.createElement('button');back.type='button';back.className='sf-section-return';back.dataset.noTranslate='';back.textContent=backLabel;back.hidden=true;nav.after(back);
-  view={hero,nav,sections,active:null,back,trigger:null};views.set(root,view);
+  view={hero,nav,sections,active:null,back,trigger:null,disposed:false};views.set(root,view);
+  const managed=new Set();
+  view.dispose=()=>{
+   if(view.disposed)return;view.disposed=true;view.observer?.disconnect();
+   managed.forEach(node=>{node.classList.remove('sf-section-collapsed');node.removeAttribute('inert');delete node.dataset.sfSection;});
+   nav.classList.remove('sf-section-collapsed');nav.removeAttribute('inert');back.remove();delete hero.dataset.sfSectionView;
+   if(views.get(root)===view)views.delete(root);
+  };
+  const current=()=>!view.disposed&&hero.parentElement===root&&nav.parentElement===root;
   const direct=node=>{while(node&&node.parentElement!==root)node=node.parentElement;return node;};
   view.sync=()=>{
+   // The shared #app also renders home, maps and accounts. Stop at navigation.
+   if(!current()){view.dispose();return;}
    const groups=new Map();view.sections.forEach(({id,node,related=[]})=>{[node,...related].filter(Boolean).forEach(n=>{const top=direct(n);if(top)groups.set(top,id);});});
    [...root.children].forEach(node=>{
     if(node===hero||node===nav||node===back||node.matches('.simple-back,.topline,.shop-back-row,.demo-top,.demo-notice'))return;
     const catalogId=view.sections.find(x=>x.id.endsWith('products'))?.id;
     const id=groups.get(node)||(node.matches('.demo-cart-strip,.demo-basket')?catalogId:null)||(node.matches('.public-shop-section')?'sf-info':view.sections.at(-1)?.id);
-    node.dataset.sfSection=id;const hide=id!==view.active;node.classList.toggle('sf-section-collapsed',hide);node.toggleAttribute('inert',hide);
+    managed.add(node);node.dataset.sfSection=id;const hide=id!==view.active;node.classList.toggle('sf-section-collapsed',hide);node.toggleAttribute('inert',hide);
    });
    hero.dataset.sfSectionView=view.active||'sections';
    nav.classList.toggle('sf-section-collapsed',!!view.active);nav.toggleAttribute('inert',!!view.active);back.hidden=!view.active;
    nav.querySelectorAll('[data-target]').forEach(card=>card.setAttribute('aria-expanded',String(card.dataset.target===view.active)));
   };
   view.open=(id,trigger)=>{
+   if(!current()){view.dispose();return;}
    const entry=view.sections.find(x=>x.id===id);if(!entry?.node)return;
    view.active=id;view.trigger=trigger||nav.querySelector('[data-target="'+id+'"]');
    if(entry.node.tagName==='DETAILS')entry.node.open=true;

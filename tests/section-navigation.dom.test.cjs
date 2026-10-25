@@ -1,0 +1,14 @@
+const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs');
+const {JSDOM}=require('jsdom');
+function setup(){const dom=new JSDOM('<main id="app"></main>',{url:'https://damascus-shop.com/#store/s',runScripts:'outside-only'}),c=dom.window;c.matchMedia=()=>({matches:true});c.HTMLElement.prototype.scrollIntoView=()=>{};c.eval(fs.readFileSync('shop-section-view.js','utf8'));return {dom,c,root:c.document.querySelector('#app'),wait:()=>new Promise(r=>setTimeout(r,0))};}
+function shop(a){a.root.innerHTML='<section class="hero">الصفحة الخدمية</section><nav><button data-target="products">البرامج</button></nav><section class="products">برنامج تعليمي</section><section class="info">العنوان</section>';const [hero,nav,products,info]=a.root.children;const view=a.c.DarayaShopSections({root:a.root,hero,nav,sections:[{id:'products',node:products},{id:'info',node:info}],backLabel:'العودة إلى أقسام الصفحة'});return {view,hero,nav,products,info};}
+test('returning to the directory disconnects section hiding and leaves home content usable',async()=>{
+ const a=setup(),s=shop(a);s.view.open('info');assert.ok(s.products.hasAttribute('inert'));a.c.location.hash='#home';a.root.innerHTML='<section class="home"><button>الأقسام</button></section><section class="directory">دليل داريا</section>';await a.wait();
+ assert.equal(s.view.disposed,true);for(const n of a.root.children){assert.ok(!n.classList.contains('sf-section-collapsed'));assert.ok(!n.hasAttribute('inert'));}const later=a.c.document.createElement('section');later.textContent='نتائج البحث';a.root.append(later);await a.wait();assert.ok(!later.hasAttribute('inert'));assert.ok(!later.classList.contains('sf-section-collapsed'));a.dom.window.close();
+});
+test('switching between shops replaces the old observer; repeated back navigation never hides other pages',async()=>{
+ const a=setup();for(let i=0;i<4;i++){const first=shop(a);const second=shop(a);await a.wait();assert.equal(first.view.disposed,true);assert.equal(second.view.disposed,false);assert.ok(second.info.classList.contains('sf-section-collapsed'));second.view.open('products');assert.ok(!second.products.hasAttribute('inert'));a.root.innerHTML='<section class="map"><button>افتح الموقع</button></section>';await a.wait();assert.equal(second.view.disposed,true);assert.ok(!a.root.firstElementChild.hasAttribute('inert'));}a.dom.window.close();
+});
+test('leaving a page with a reused section restores visibility and ignores stale open callbacks',async()=>{
+ const a=setup(),s=shop(a),reused=s.info;a.root.replaceChildren(reused);await a.wait();assert.ok(!reused.hasAttribute('inert'));assert.ok(!reused.classList.contains('sf-section-collapsed'));s.view.open('products');assert.ok(!reused.hasAttribute('inert'));assert.equal(a.root.querySelector('.sf-section-return'),null);a.dom.window.close();
+});
