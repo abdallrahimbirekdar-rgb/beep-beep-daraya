@@ -1,5 +1,5 @@
 plugins { id 'com.android.application' }
-def releaseCode = (System.getenv('ANDROID_VERSION_CODE') ?: '5').toInteger()
+def releaseCode = (System.getenv('ANDROID_VERSION_CODE') ?: '134').toInteger()
 def signingReady = ['ANDROID_KEYSTORE_PATH', 'ANDROID_KEYSTORE_PASSWORD', 'ANDROID_KEY_ALIAS', 'ANDROID_KEY_PASSWORD'].every { System.getenv(it) }
 if (gradle.startParameter.taskNames.any { it.toLowerCase().contains('release') } && !signingReady) {
  throw new GradleException('Release signing is not configured. Set the four ANDROID signing variables; never use a generated debug key for releases.')
@@ -7,7 +7,7 @@ if (gradle.startParameter.taskNames.any { it.toLowerCase().contains('release') }
 android {
  namespace 'com.souqdaraya.app'
  compileSdk 36
- defaultConfig { applicationId 'com.souqdaraya.app'; minSdk 24; targetSdk 36; versionCode releaseCode; versionName '1.4.11' }
+ defaultConfig { applicationId 'com.souqdaraya.app'; minSdk 24; targetSdk 36; versionCode releaseCode; versionName '1.4.12' }
  signingConfigs {
   release {
    if (signingReady) {
@@ -18,10 +18,19 @@ android {
    }
   }
  }
- buildTypes { release { minifyEnabled false; debuggable false; signingConfig signingConfigs.release } }
+ buildTypes {
+  release {
+   minifyEnabled true
+   shrinkResources true
+   proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+   debuggable false
+   signingConfig signingConfigs.release
+  }
+ }
  compileOptions { sourceCompatibility JavaVersion.VERSION_17; targetCompatibility JavaVersion.VERSION_17 }
 }
 
 
 dependencies { implementation 'androidx.webkit:webkit:1.12.1'; implementation 'androidx.core:core:1.15.0' }
+
 

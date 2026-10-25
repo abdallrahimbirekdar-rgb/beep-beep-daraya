@@ -50,6 +50,30 @@ jobs:
       - name: Build APK
         working-directory: android
         run: gradle --no-daemon :app:assembleRelease :app:bundleRelease
+      - name: Stage optimized release
+        run: |
+          cp android/app/build/outputs/apk/release/app-release.apk souq-daraya.apk
+          test -s android/app/build/outputs/mapping/release/mapping.txt
+      - name: Enable emulator acceleration
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - name: Check optimized release and capture app screenshots
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          target: google_apis
+          arch: x86_64
+          profile: pixel_2
+          disable-animations: true
+          script: python3 android/tests/release_smoke.py
+      - name: Retain release smoke-test evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: daraya-release-check
+          path: android-release-check/
       - name: Verify and publish APK
         env:
           GH_TOKEN: ${{ github.token }}
@@ -60,10 +84,12 @@ jobs:
           sha256sum souq-daraya.apk > souq-daraya.apk.sha256
           cp android/app/build/outputs/bundle/release/app-release.aab souq-daraya.aab
           jarsigner -verify souq-daraya.aab
-          NOTES='Daraya Android 1.4.11. Local offer reminders with an admin-managed schedule, preserved pending alarms, a first-open consent prompt and simple on/off controls; diagnostic options removed. Signed with the permanent release key. Future builds using this key support in-place updates. Older builds signed with disposable development keys may require a one-time reinstall. Internet required. The legacy release tag is retained for existing website download links.'
-          gh release view android-v1.3.0 >/dev/null 2>&1 || gh release create android-v1.3.0 --target "$GITHUB_SHA" --title 'Daraya Android 1.4.11' --notes "$NOTES"
-          gh release edit android-v1.3.0 --title 'Daraya Android 1.4.11' --notes "$NOTES"
-          gh release upload android-v1.3.0 souq-daraya.apk souq-daraya.apk.sha256 souq-daraya.aab --clobber
+          cp android/app/build/outputs/mapping/release/mapping.txt souq-daraya-mapping.txt
+          (cd android-release-check && zip ../souq-daraya-screenshots.zip *.png)
+          NOTES='Daraya Android 1.4.12. R8 code optimization and resource shrinking enabled. Includes current standalone admin notifications and service-page layouts. Release launch and public pages checked on an Android emulator. Signed with the permanent release key. Future builds using this key support in-place updates. Older builds signed with disposable development keys may require a one-time reinstall. Internet required. The legacy release tag is retained for existing website download links.'
+          gh release view android-v1.3.0 >/dev/null 2>&1 || gh release create android-v1.3.0 --target "$GITHUB_SHA" --title 'Daraya Android 1.4.12' --notes "$NOTES"
+          gh release edit android-v1.3.0 --title 'Daraya Android 1.4.12' --notes "$NOTES"
+          gh release upload android-v1.3.0 souq-daraya.apk souq-daraya.apk.sha256 souq-daraya.aab souq-daraya-mapping.txt souq-daraya-screenshots.zip --clobber
           APK_ASSET_ID=$(gh api "repos/$GITHUB_REPOSITORY/releases/tags/android-v1.3.0" --jq '.assets[] | select(.name == "souq-daraya.apk") | .id')
           gh api --method PATCH "repos/$GITHUB_REPOSITORY/releases/assets/$APK_ASSET_ID" -f label="daraya-version-code:$ANDROID_VERSION_CODE"
       - uses: actions/upload-artifact@v4
@@ -72,8 +98,11 @@ jobs:
           path: |
             souq-daraya.apk
             souq-daraya.aab
+            souq-daraya-mapping.txt
+            souq-daraya-screenshots.zip
       - name: Remove private signing file
         if: always()
         run: rm -f "$ANDROID_KEYSTORE_PATH"
+
 
 
