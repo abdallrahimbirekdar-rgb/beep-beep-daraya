@@ -14,8 +14,10 @@
  function row(n){return '<article class="admin-notice '+(n.read?'is-read':'is-unread')+'" data-notice-id="'+n.id+'"><div class="admin-notice-content"><small>'+esc(t(...(groups[n.category]||groups.all)))+' · '+esc(date(n.created_at))+'</small><h3><span class="admin-notice-dot" aria-hidden="true"></span>'+esc(n.title)+'</h3>'+(n.detail?'<p>'+esc(n.detail)+'</p>':'')+'<span class="admin-notice-read-label">'+t(n.read?'مقروء':'غير مقروء',n.read?'Read':'Unread',n.read?'Gelesen':'Ungelesen')+'</span></div><div class="admin-notice-actions"><button type="button" data-notice-open="'+n.id+'">'+t('فتح العنصر','Open item','Eintrag öffnen')+'</button>'+(!n.read?'<button type="button" class="outline" data-notice-read="'+n.id+'">'+t('تمت القراءة','Mark read','Als gelesen markieren')+'</button>':'')+'</div></article>';}
  function header(){return '<div class="admin-inbox-heading"><div><span class="eyebrow">'+t('اللوحة الرئيسية','Main dashboard','Hauptübersicht')+'</span><h1>'+t('إشعارات الإدارة','Admin notifications','Verwaltungsbenachrichtigungen')+'</h1><p>'+t('القراءة تخص حسابك؛ معالجة الطلب أو البلاغ تتم من قسمه.','Read status belongs to your account. Handle requests and reports in their own sections.','Der Lesestatus gilt für dein Konto. Bearbeite Anträge und Meldungen im jeweiligen Bereich.')+'</p></div><a class="button outline" href="#dashboard">'+t('اللوحة الرئيسية','Main dashboard','Hauptübersicht')+'</a></div>';}
  function pageShell(){
+  const entering=!app.classList.contains('admin-inbox-page');
   app.className='admin-inbox-page';
   app.innerHTML='<section class="panel" data-no-translate>'+header()+'<div class="admin-inbox-filters"><label>'+t('نوع الإشعار','Notification type','Benachrichtigungsart')+'<select data-notice-category>'+Object.entries(groups).map(([key,label])=>'<option value="'+key+'" '+(key===category?'selected':'')+'>'+esc(t(...label))+'</option>').join('')+'</select></label><label class="admin-inbox-check"><input type="checkbox" data-notice-unread '+(unreadOnly?'checked':'')+'>'+t('غير المقروء فقط','Unread only','Nur ungelesene')+'</label></div><div class="admin-inbox-toolbar"><button class="outline" type="button" data-notice-refresh>'+t('تحديث','Refresh','Aktualisieren')+'</button><button class="outline" type="button" data-notice-all>'+t('تحديد الكل كمقروء','Mark all read','Alle als gelesen markieren')+'</button><strong data-notice-count></strong></div><p class="admin-inbox-status" data-notice-status role="status" aria-live="polite"></p><div data-notice-list></div><div class="admin-inbox-pagination"><button class="outline" data-notice-prev>'+t('السابق','Previous','Zurück')+'</button><span data-notice-page></span><button class="outline" data-notice-next>'+t('التالي','Next','Weiter')+'</button></div></section>';
+  if(entering){window.scrollTo(0,0);const heading=app.querySelector('h1');heading.tabIndex=-1;heading.focus({preventScroll:true});}
   app.querySelector('[data-notice-category]').onchange=e=>{category=e.target.value;page=0;load();};
   app.querySelector('[data-notice-unread]').onchange=e=>{unreadOnly=e.target.checked;page=0;load();};
   app.querySelector('[data-notice-refresh]').onclick=()=>load();
@@ -38,8 +40,7 @@
    app.querySelector('[data-notice-next]').disabled=!data||(page+1)*30>=data.total||!!activeLoad;
    app.querySelector('[data-notice-page]').textContent=data?t('صفحة ','Page ','Seite ')+(page+1)+' / '+Math.max(1,Math.ceil(data.total/30)):'';
   }
-  const preview=document.querySelector('[data-admin-inbox-preview]');
-  if(preview){preview.innerHTML='<div class="admin-inbox-preview-head"><h2>'+t('آخر إشعارات الإدارة','Latest admin notifications','Neueste Verwaltungsbenachrichtigungen')+'</h2><a class="button outline" href="'+route+'">'+t('عرض الكل','View all','Alle anzeigen')+'</a></div>'+(error?'<p role="status">'+esc(error)+'</p>':data?data.items.slice(0,4).map(row).join('')||'<p>'+t('لا توجد إشعارات حتى الآن.','No notifications yet.','Noch keine Benachrichtigungen.')+'</p>':'<p>'+t('جارٍ التحميل…','Loading…','Wird geladen…')+'</p>');bindRows(preview);}
+
  }
  async function load(){
   if(!eligible())return;const uid=user.id,id=++ticket;
@@ -75,11 +76,12 @@
  function sync(){
   if(!eligible()){clear();return;}
   if(owner!==user.id){clear();owner=user.id;category='all';page=0;unreadOnly=false;}
-  if(!document.querySelector('[data-admin-inbox-bar]')){
+  // The inbox is a standalone screen; dashboard pages show only its shortcut.
+  document.querySelector('[data-admin-inbox-preview]')?.remove();
+  if(location.hash===route)document.querySelector('[data-admin-inbox-bar]')?.remove();
+  if(location.hash!==route&&!document.querySelector('[data-admin-inbox-bar]')){
    const bar=document.createElement('aside');bar.className='admin-inbox-bar';bar.dataset.adminInboxBar='';bar.dataset.noTranslate='';bar.innerHTML='<a href="'+route+'" class="admin-inbox-bell"><svg aria-hidden="true" width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9Z"/><path d="M9 21h6"/></svg> '+t('إشعارات الإدارة','Admin notifications','Verwaltungsbenachrichtigungen')+' <b data-notice-badge>…</b></a><span data-notice-bar-state role="status"></span>';app.before(bar);
   }
-  if(isHome()&&!app.querySelector('[data-admin-inbox-preview]')){const box=document.createElement('section');box.className='panel admin-inbox-preview';box.dataset.adminInboxPreview='';box.dataset.noTranslate='';const heading=app.querySelector('.admin-heading');if(heading)heading.after(box);else app.prepend(box);}
-  if(!isHome())app.querySelector('[data-admin-inbox-preview]')?.remove();
   if(!timer)timer=setInterval(()=>{if(!eligible()){clear();return;}if(document.visibilityState!=='hidden'&&navigator.onLine!==false&&!activeLoad)load();},20000);
   const view=location.hash===route?'inbox':isHome()?'home':'bar',changed=lastView!==view;lastView=view;
   paint();if((changed||!activeLoad)&&(changed||Date.now()-loadedAt>5000||location.hash===route))load();
@@ -97,3 +99,4 @@
  window.addEventListener('languagechange',()=>{if(location.hash===route)pageShell();document.querySelector('[data-admin-inbox-bar]')?.remove();sync();});
  window.DarayaAdminInbox={validFeed,safeTarget};sync();
 })();
+
