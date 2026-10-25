@@ -13,8 +13,16 @@ def adb(*args, check=True):
     return subprocess.run(['adb', *args], check=check, capture_output=True).stdout
 
 def tree():
-    adb('shell', 'uiautomator', 'dump', '/sdcard/daraya-window.xml')
-    return ET.fromstring(adb('shell', 'cat', '/sdcard/daraya-window.xml').decode())
+    # Accessibility can restart during first launch or permission dialogs.
+    for attempt in range(4):
+        result = adb('shell', 'uiautomator', 'dump', '/sdcard/daraya-window.xml', check=False)
+        try:
+            if b'dumped to' in result:
+                return ET.fromstring(adb('shell', 'cat', '/sdcard/daraya-window.xml').decode())
+        except ET.ParseError:
+            pass
+        time.sleep(3)
+    raise RuntimeError('Android accessibility did not provide a UI hierarchy')
 
 def tap(node):
     x1, y1, x2, y2 = map(int, re.findall(r'\d+', node.attrib['bounds']))
@@ -72,7 +80,8 @@ try:
     capture('04-school-services','store/f44d9750-a872-43a9-b5eb-0a4128bb0f80')
     crashes=adb('logcat','-d','-b','crash').decode(errors='replace')
     (OUT/'crash-log.txt').write_text(crashes)
-    if 'FATAL EXCEPTION' in crashes:
+    if re.search(r'Process: '+re.escape(PACKAGE)+r'[,\s]', crashes):
         raise RuntimeError('The optimized release crashed; see crash-log.txt')
 finally:
+    (OUT/'last-screen.png').write_bytes(adb('exec-out','screencap','-p',check=False))
     (OUT/'device-log.txt').write_bytes(adb('logcat','-d',check=False))
