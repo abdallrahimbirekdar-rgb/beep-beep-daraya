@@ -102,7 +102,7 @@
   root.append(info);
   const nav=make('nav','sf-section-nav');nav.dataset.noTranslate='';nav.setAttribute('aria-label',service?t('أقسام الصفحة','Page sections','Seitenbereiche'):t('أقسام صفحة المحل','Shop page sections','Bereiche der Geschäftsseite'));banner.after(nav);
   if(layout){layout.classList.add('sf-catalog');const h=layout.querySelector('h2');if(h){h.dataset.noTranslate='';h.textContent=service?directoryCatalogTitle(s):s.text_only?t('خدماتنا','Our services','Unsere Leistungen'):/restaurant|مطعم|فلافل|مأكولات/.test(s.category+' '+s.name)?t('قائمتنا','Our menu','Unsere Speisekarte'):t('منتجاتنا','Our products','Unsere Produkte');}
-   layout.querySelectorAll('.product').forEach(p=>{const description=p.querySelector('p.muted');if(description&&!description.textContent.trim())description.remove();const shares=[...p.querySelectorAll('.promo-public-share')];if(shares.length){const sharing=make('details','sf-product-share'),label=make('summary','',t('مشاركة المنتج','Share product','Produkt teilen'));sharing.dataset.noTranslate='';sharing.append(label,...shares);p.querySelector('h3')?.parentElement.append(sharing);}});
+   layout.querySelectorAll('.product').forEach(p=>{const description=p.querySelector('p.muted');if(description&&!description.textContent.trim())description.remove();const shares=[...p.querySelectorAll('.promo-public-share')];if(shares.length){const sharing=make('details','sf-product-share'),label=make('summary','',t('صورة للمشاركة','Share image','Bild zum Teilen'));sharing.dataset.noTranslate='';sharing.append(label,...shares);p.querySelector('h3')?.parentElement.append(sharing);}});
   }
   const cover=banner.querySelector('img.store-image');
   if(cover){const button=make('button','sf-cover-button');button.type='button';button.setAttribute('aria-label',service?t('تكبير الصورة','Enlarge photo','Bild vergrößern'):t('تكبير صورة المحل','Enlarge shop photo','Geschäftsfoto vergrößern'));cover.before(button);button.append(cover);cover.loading='eager';cover.decoding='async';button.onclick=()=>showPhotos([cover]);}
@@ -115,8 +115,11 @@
   [...quick.children].forEach(node=>{if(node.classList.contains('sf-browse'))node.remove();else if(node.matches('a[href^="tel:"],.sf-directions'))contacts.append(node);else extras.append(node);});
   infoTitle.after(contacts);quick.remove();
   sectionNav(banner);
+  const route=location.hash.slice(1).split('/'),sharedProduct=route[2]==='product'&&route[3];
+  if(sharedProduct&&banner.dataset.openedSharedProduct!==sharedProduct&&[...layout?.querySelectorAll('[data-promo-product-id]')||[]].some(card=>card.dataset.promoProductId===sharedProduct)){banner.dataset.openedSharedProduct=sharedProduct;window.DarayaShopSectionView?.(root)?.open('sf-products');}
  }
  function refresh(){
+  if(!root.ownerDocument.defaultView?.document)return;
   const banner=root.querySelector('.store-banner');if(!banner){sectionObserver?.disconnect();observed=null;return;}
   const id=banner.dataset.storefront||location.hash.split('/')[1];if(id)enhance(id);
   if(banner.dataset.storefront)sectionNav(banner);
