@@ -1,0 +1,10 @@
+/* Uploaded and catalogue images are always shown in full, including small previews. */
+html body img,html body #app#app img,html body #modal#modal img{object-fit:contain!important;object-position:center!important}
+#app#app .storefront img.store-image,#app#app .rich-showcase>.demo-hero .demo-image{height:auto!important;min-height:0!important;max-height:440px!important;aspect-ratio:auto!important}
+#app#app .sf-catalog .product .product-image{aspect-ratio:auto!important;height:auto!important;max-height:420px!important;transform:none!important}
+#app#app .product:hover img,#app#app .sf-cover-button:hover img{transform:none!important}
+.image-preview img,.business-photo img,.business-preview>img{height:auto!important;max-width:100%!important;object-fit:contain!important}
+.clear-user-feedback{position:fixed;top:max(12px,env(safe-area-inset-top));inset-inline:12px;margin-inline:auto;width:calc(100% - 24px);max-width:620px;max-height:70vh;max-height:70dvh;overflow:auto;z-index:2147483000;background:#fff8f4;color:#742218;border:2px solid #ad3a26;border-radius:16px;box-shadow:0 8px 36px #0004;padding:18px 20px;text-align:start;font-size:17px;line-height:1.8}
+.clear-user-feedback[hidden]{display:none!important}.clear-user-feedback>strong{display:block;font-size:20px;color:#8e281a}.clear-user-feedback p{margin:8px 0 14px;white-space:pre-line;overflow-wrap:anywhere}.feedback-actions{display:flex;flex-wrap:wrap;gap:10px}.feedback-actions button{min-height:44px;white-space:normal}.feedback-actions button[hidden]{display:none!important}
+input[aria-invalid=true],select[aria-invalid=true],textarea[aria-invalid=true]{border:2px solid #ad3a26!important;box-shadow:0 0 0 2px #ad3a2622}
+#app .error,#modal .error{border:2px solid #ad3a26;background:#fff4ee;color:#8e281a;font-weight:700;font-size:16px;line-height:1.8;padding:16px;overflow-wrap:anywhere}

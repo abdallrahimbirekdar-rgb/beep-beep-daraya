@@ -19,6 +19,7 @@
  function phone(value){let n=String(value||'').replace(/[٠-٩]/g,c=>String('٠١٢٣٤٥٦٧٨٩'.indexOf(c))).replace(/[۰-۹]/g,c=>String('۰۱۲۳۴۵۶۷۸۹'.indexOf(c))).replace(/[\s().-]/g,'');if(n.startsWith('00'))n='+'+n.slice(2);if(/^09\d{8}$/.test(n))n='+963'+n.slice(1);if(/^9639\d{8}$/.test(n))n='+'+n;return n;}
  function payload(form){const f=new FormData(form);return {kind:f.get('kind'),name:String(f.get('name')||'').trim(),address:String(f.get('address')||'').trim(),contact_phone:phone(f.get('contact_phone')),contact_method:f.get('contact_method'),telegram_username:String(f.get('telegram_username')||'').trim().replace(/^@/,''),latitude:form.elements.latitude.value||null,longitude:form.elements.longitude.value||null,description:String(f.get('description')||'').trim()};}
  function missing(p,image){const items=[];if(!p.name)items.push('اسم النشاط');if(p.address.length<3)items.push('العنوان');if(!image)items.push('صورة الواجهة أو النشاط');if(!/^\+[1-9][0-9]{7,14}$/.test(p.contact_phone))items.push('رقم تواصل صحيح');return items;}
+ function missingMessage(required){const names={'اسم النشاط':t('اسم النشاط','business name','Name des Betriebs'),'العنوان':t('العنوان','address','Adresse'),'صورة الواجهة أو النشاط':t('صورة الواجهة أو النشاط','business photo','Foto des Betriebs'),'رقم تواصل صحيح':t('رقم تواصل صحيح','a valid contact number','gültige Telefonnummer')};const list=required.map(key=>names[key]||key).join('، ');return t('لا يمكن إرسال الطلب بعد. المعلومات المطلوبة: '+list+'. أكملها ثم اضغط إرسال.','Your request cannot be sent yet. Please add: '+list+'. Then send it again.','Der Antrag kann noch nicht gesendet werden. Bitte ergänze: '+list+'. Sende ihn danach erneut.');}
  async function preparePhoto(file){
   const allowed=['image/jpeg','image/png','image/webp','image/heic','image/heif'];
   if(!(allowed.includes(file.type)||!file.type&&/\.(jpe?g|png|webp|heic|heif)$/i.test(file.name||''))||file.size>20971520)throw Error('اختر صورة JPG أو PNG أو WebP أو HEIC لا تتجاوز 20 ميغابايت.');
@@ -28,9 +29,9 @@
   try{
    if(!bitmap.width||!bitmap.height||bitmap.width*bitmap.height>60000000)throw Error('الصورة كبيرة جدًا. اختر صورة أصغر.');
    const canvas=document.createElement('canvas');let blob;
-   for(const edge of [1200,960,720]){
+   for(const edge of [1600,1400,1200,960,720]){
     const scale=Math.min(1,edge/Math.max(bitmap.width,bitmap.height));canvas.width=Math.max(1,Math.round(bitmap.width*scale));canvas.height=Math.max(1,Math.round(bitmap.height*scale));const ctx=canvas.getContext('2d');if(!ctx)throw Error('تعذر تجهيز الصورة. اختر صورة أصغر.');ctx.fillStyle='#ffffff';ctx.fillRect(0,0,canvas.width,canvas.height);ctx.drawImage(bitmap,0,0,canvas.width,canvas.height);
-    for(const type of ['image/webp','image/jpeg']){for(const q of [.8,.65,.5,.35]){blob=await new Promise(resolve=>canvas.toBlob(resolve,type,q));if(blob?.type!==type)break;if(blob.size<=400000)break;}if(blob?.type===type&&blob.size<=400000)break;}
+    for(const type of ['image/webp','image/jpeg']){for(const q of [.92,.86,.8,.72,.65]){blob=await new Promise(resolve=>canvas.toBlob(resolve,type,q));if(blob?.type!==type)break;if(blob.size<=400000)break;}if(blob?.type===type&&blob.size<=400000)break;}
     if(blob&&['image/webp','image/jpeg'].includes(blob.type)&&blob.size<=400000)break;
    }
    if(!blob||!['image/webp','image/jpeg'].includes(blob.type)||blob.size>400000)throw Error('تعذر تجهيز الصورة. اختر صورة أصغر.');
@@ -81,7 +82,7 @@
   form.querySelector('[data-business-preview]').onclick=()=>{if(preparing){status(notice,'انتظر اكتمال تجهيز الصورة.');return;}modal('<section class="business-application"><h1>معاينة طلبك</h1><p>هذه معاينة خاصة؛ الصفحة لا تظهر للزوار قبل موافقة الإدارة.</p>'+preview({...payload(form),facade_data:image})+'</section>');};
   form.onsubmit=async e=>{e.preventDefault();if(working)return;if(preparing){status(notice,'انتظر اكتمال تجهيز الصورة.');return;}const submitting=e.submitter?.value==='submit',designing=e.submitter?.value==='design',designSection=e.submitter?.dataset.designSection||'overview',data=payload(form);
    if(data.telegram_username&&!/^[A-Za-z][A-Za-z0-9_]{4,31}$/.test(data.telegram_username)){optional.open=true;status(notice,'تحقق من اسم مستخدم تيليجرام؛ اكتب الاسم دون رابط.',true);form.elements.telegram_username.focus();return;}
-   if(submitting&&!a.store_id){const required=missing(data,image);if(required.length){showMissing=true;status(notice,'أكمل المعلومات المحددة أدناه لإرسال الطلب.',true);checklist();notice.focus();focusField(required[0]);return;}}
+   if(submitting&&!a.store_id){const required=missing(data,image);if(required.length){showMissing=true;status(notice,missingMessage(required),true);checklist();notice.focus();focusField(required[0]);return;}}
    working=true;const buttons=[...form.querySelectorAll('button')];buttons.forEach(b=>b.disabled=true);status(notice,submitting?'جاري إرسال طلب المعاينة…':'جاري حفظ المسودة…');
    const uid=user?.id;try{if(!uid)throw Error('سجل الدخول أولاً');if(image!==a.facade_data)data.facade_data=image;a=await rpc('save_business_application',{p_id:a.id,p_revision:a.revision||0,p_data:data});if(designing){
  const sid=await rpc('prepare_business_application_store',{p_id:a.id,p_revision:a.revision});
