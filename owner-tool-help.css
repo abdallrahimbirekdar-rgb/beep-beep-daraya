@@ -1,0 +1,10 @@
+.owner-tool-card{display:flex;flex-direction:column;min-width:0;border:1px solid #dfd3b5;border-radius:14px;background:#fffdf7;overflow:hidden}
+.owner-tool-card>.dashboard-menu-card{flex:1;border:0!important;border-radius:0!important;box-shadow:none!important;margin:0!important;min-height:130px!important}
+.owner-tool-hint{display:block;font-size:14px!important;font-weight:400;line-height:1.8;color:#576b60;white-space:normal}
+.owner-info-button{display:block;min-height:44px;padding:10px 14px!important;margin:0!important;background:#f1e9d5!important;color:#173b35!important;border:0;border-radius:0!important;font-size:14px!important;text-align:center;cursor:pointer;line-height:1.6}
+.owner-info-button:focus-visible,.owner-guide-links a:focus-visible{outline:3px solid #98712d;outline-offset:-3px}
+.owner-section-guide{border:1px solid #d9c895;border-radius:14px;background:#fff9e9;padding:16px;margin-bottom:18px;line-height:1.9}
+.owner-section-guide p{font-size:17px;margin:0 0 10px}.owner-section-guide .owner-info-button{border-radius:9px!important}
+.owner-guide-links{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}.owner-guide-links a{display:flex;align-items:center;justify-content:center;min-height:44px;padding:8px 14px;border:1px solid #d8c9a3;border-radius:9px;color:#173b35;text-decoration:none;background:white;font-size:15px}
+.owner-help-dialog{max-width:640px;line-height:2;font-size:18px}.owner-help-dialog h2{font-size:24px}.owner-help-dialog ol,.owner-driver-steps{padding-inline-start:26px}.owner-help-dialog li,.owner-driver-steps li{padding-inline-start:5px;margin-bottom:16px}.owner-driver-steps{font-size:16px;line-height:1.9;background:#fff9e9;border-radius:12px;padding:18px 32px;margin:16px 0}.owner-help-dialog button{min-height:48px;font-size:17px}
+@media(max-width:600px){.owner-tool-card>.dashboard-menu-card{padding:12px 8px!important;min-height:150px!important}.owner-tool-hint{font-size:13px!important}.owner-section-guide{padding:14px}.owner-help-dialog{font-size:17px}.owner-guide-links a{flex:1 1 130px}.owner-driver-steps{font-size:16px}}

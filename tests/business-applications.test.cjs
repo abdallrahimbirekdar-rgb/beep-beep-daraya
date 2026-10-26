@@ -71,7 +71,7 @@ test("returned applications can be edited and resubmitted; stale withdrawal cann
 });
 function page(user=true){
  const dom=new JSDOM("<main id=app></main><dialog id=modal></dialog>",{url:"https://example.com/#business-application/new",runScripts:"outside-only"}),w=dom.window;
- const calls=[];w.user=user?{id:uid}:null;w.admin=false;w.esc=v=>String(v??"").replace(/[&<>\"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]));w.render=()=>{};w.renderCustomerAccount=()=>{};w.renderDashboard=()=>{};w.mine=()=>[];w.reload=async()=>{};
+ const calls=[];w.user=user?{id:uid}:null;w.admin=false;w.esc=v=>String(v??"").replace(/[&<>\"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]));w.render=()=>{};w.renderCustomerAccount=()=>{};w.renderDashboard=()=>{};w.mine=()=>[];w.merchantSections=[];w.reload=async()=>{};
  w.storeCoordinates=s=>s.latitude!==null&&s.latitude!==undefined&&s.latitude!==""&&s.longitude!==null&&s.longitude!==undefined&&s.longitude!==""&&Number.isFinite(Number(s.latitude))&&Number.isFinite(Number(s.longitude))?[Number(s.latitude),Number(s.longitude)]:null;
  w.storeLocationFields=s=>`<input type=hidden name=latitude value="${s.latitude??""}"><input type=hidden name=longitude value="${s.longitude??""}">`;
  w.bindStoreLocation=()=>{};w.modal=html=>{w.document.querySelector("#modal").innerHTML=html;};
@@ -81,11 +81,11 @@ function page(user=true){
 test("missing requirements block submission but allow saving a private draft",async()=>{
  const p=page();try{
  const f=p.form();assert.ok(f);const submit=f.querySelector("button[value=submit]"),save=f.querySelector("button[value=save]");
- await f.onsubmit({preventDefault(){},submitter:submit});assert.equal(p.calls.length,0);assert.match(p.w.document.querySelector("#business-form-status").textContent,/موقع GPS/);
+ await f.onsubmit({preventDefault(){},submitter:submit});assert.equal(p.calls.length,0);assert.match(p.w.document.querySelector("[data-business-checklist]").textContent,/اسم النشاط/);
  f.elements.name.value="اختبار";await f.onsubmit({preventDefault(){},submitter:save});assert.equal(p.calls[0].name,"save_business_application");assert.match(p.w.location.hash,/business-application\/[0-9a-f-]+/);
  assert.equal(p.w.BusinessApplications.phone("٠٩٩٩٩٩٩٩٩٩"),"+963999999999");
  assert.equal(p.w.BusinessApplications.phone("0049 123456789"),"+49123456789");
- assert.ok(p.w.BusinessApplications.missing({...data,latitude:null},image).includes("موقع GPS"));
+ assert.deepEqual(Array.from(p.w.BusinessApplications.missing({...data,latitude:null,longitude:null},image)),[]);
  }finally{p.dom.window.close();}
 });
 test("signed-out applicants see login and cannot save or publish",()=>{
