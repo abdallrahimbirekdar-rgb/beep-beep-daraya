@@ -1,0 +1,6 @@
+{
+  "name": "souq-daraya-site-build",
+  "private": true,
+  "scripts": { "test:assets": "python tests/frontend_assets_test.py" },
+  "devDependencies": { "terser": "5.46.0" }
+}

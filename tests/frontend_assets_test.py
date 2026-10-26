@@ -50,4 +50,38 @@ class FrontendAssetsTests(unittest.TestCase):
             inline = '<head></head><script defer src="a.js"></script><script>window.route=1</script><script defer src="b.js"></script>'
             self.assertEqual(inline,module.bundle_html(root,inline))
 
+    def test_large_groups_split_at_script_boundaries_in_original_order(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            for name in ['a.js', 'b.js', 'c.js', 'd.js']:
+                (root/name).write_text("'use strict';/*" + 'x'*90000 + '*/window.events.push('+json.dumps(name)+');')
+            html = '<head></head>'+''.join(f'<script defer src="{name}.js"></script>' for name in 'abcd')
+            result = module.bundle_html(root, html)
+            urls = re.findall(r'<script defer src="([^"]+)"', result)
+            self.assertEqual(len(urls), 2)
+            self.assertTrue(all((root/name).stat().st_size < module.MAX_SCRIPT_BYTES for name in urls))
+            self.assertIn('a.js', (root/urls[0]).read_text())
+            self.assertIn('d.js', (root/urls[1]).read_text())
+
+    def test_lazy_management_is_not_an_eager_script_and_keeps_order(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            for name in ['one.js', 'two.js']:
+                (root/name).write_text("'use strict';window.events.push("+json.dumps(name)+');')
+            html = '<head></head>'+''.join(f'<script type="application/x-daraya-feature" data-feature="management" data-src="{name}"></script>' for name in ['one.js', 'two.js'])
+            result = module.bundle_html(root, html)
+            self.assertEqual(result.count('data-feature="management"'), 1)
+            self.assertNotIn(' defer ', result)
+            url = re.search(r'data-src="([^"]+)"', result)[1]
+            code = (root/url).read_text()
+            self.assertLess(code.index('one.js'), code.index('two.js'))
+
+    def test_minification_preserves_global_bindings_and_arabic_text(self):
+        sources = {'a.js': "'use strict';const name='سوق داريا';let count=1;function globalAction(){count++;return name;}",
+                   'b.js': "'use strict';globalAction();window.answer=[count,name];"}
+        helper = Path(__file__).parents[1]/'scripts/minify_frontend.cjs'
+        optimized = json.loads(subprocess.check_output(['node', str(helper)], input=json.dumps(sources).encode()))
+        code = "const vm=require('node:vm'),c=vm.createContext({window:{}});"+''.join('vm.runInContext('+json.dumps(value)+',c);' for value in optimized.values())+"process.stdout.write(JSON.stringify(c.window.answer));"
+        self.assertEqual(json.loads(subprocess.check_output(['node','-e',code])), [2,'سوق داريا'])
+
 if __name__=='__main__': unittest.main()

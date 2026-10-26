@@ -23,6 +23,12 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Install asset optimizer
+        run: npm ci --ignore-scripts --no-audit --no-fund
       - uses: actions/configure-pages@v5
       - name: Generate public shop pages
         run: python scripts/build_seo.py

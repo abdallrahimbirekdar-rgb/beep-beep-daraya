@@ -2,8 +2,8 @@
 (() => {
   const nativeApp=/ShahinAndroid\//.test(navigator.userAgent);
   if(nativeApp)document.querySelectorAll('[data-android-download]').forEach(el=>{el.hidden=true;});
-  const signature=doc=>Array.from(doc.querySelectorAll('script[src],link[rel="stylesheet"]'))
-    .map(el=>el.getAttribute('src')||el.getAttribute('href')).join('|');
+  const signature=doc=>Array.from(doc.querySelectorAll('script[defer][src],script[data-feature][data-src],link[rel="stylesheet"]'))
+    .map(el=>el.getAttribute('src')||el.getAttribute('data-src')||el.getAttribute('href')).join('|');
   const current=signature(document);
   let lastCheck=0,checking=false,pending=false,dirty=false,reloading=false;
   document.addEventListener('input',e=>{if(e.target.id!=='search')dirty=true;},true);
