@@ -25,7 +25,7 @@
   const route=location.hash.slice(1).split('/');
   const needed=route[0]==='dashboard'&&user&&!fullLoaded||route[0]==='store'&&valid(route[1])&&Date.now()-(loaded.get(route[1])||0)>=TTL;
   if(!needed)return false;
-  if(!pending){pending=true;navigation=true;const requestedHash=location.hash;$('#app').innerHTML='<section class="panel" role="status"><p>جاري تحميل بيانات الصفحة…</p></section>';
+  if(!pending){pending=true;navigation=true;const requestedHash=location.hash;$('#app').innerHTML='<section class="panel" role="status"><p class="loading">جاري تحميل بيانات الصفحة…</p></section>';
    reload().then(()=>{pending=false;navigation=false;render();}).catch(()=>{pending=false;navigation=false;fullLoaded=false;loaded.delete(route[1]);if(location.hash!==requestedHash){render();return;}$('#app').innerHTML='<section class="panel"><p>تعذر تحميل البيانات. حاول مرة أخرى.</p><button id="retry-demand">إعادة المحاولة</button></section>';$('#retry-demand').onclick=()=>render();});
   }return true;
  }

@@ -85,3 +85,9 @@ html[dir="ltr"] .hero-copy h1{font-size:clamp(36px,4vw,62px);letter-spacing:-1.5
 #app .portrait-store-card .store-summary:empty{display:none!important}
 
 .google-auth-choice{margin:16px 0 22px;padding:16px;border:1px solid #d7bd76;border-radius:16px;background:#fffaf0}.google-auth-choice .google-auth-intro{margin:0 0 12px!important;font-size:17px!important;font-weight:700;color:#173b35}.google-auth-choice .google-auth-button{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;min-height:48px;padding:12px!important;background:#fff!important;border:1px solid #747775!important;border-radius:8px;color:#1f1f1f!important;font-size:14px!important;font-weight:500;box-shadow:0 2px 5px #0001}.google-auth-button img{width:20px;height:20px;object-fit:contain;flex:0 0 20px}.google-auth-button:hover{background:#f8faff!important}.google-auth-button:focus-visible{outline:3px solid #4285f4;outline-offset:3px}.google-auth-button:disabled{opacity:.6}.google-auth-choice small{display:block;margin-top:10px;line-height:1.7;color:#526054}.google-auth-divider{margin-top:16px;padding-top:12px;border-top:1px solid #ded9cd;font-size:13px;text-align:center;color:#59625c}
+
+/* Visible immediately with the existing loading text; no image or script request. */
+.loading{display:flex;align-items:center;justify-content:center;gap:14px;min-height:140px;flex-wrap:wrap;line-height:1.8}
+.loading::before{content:"";display:block;flex:0 0 32px;width:32px;height:32px;box-sizing:border-box;border:3px solid #d7bd743d;border-top-color:#173b35;border-inline-end-color:#bd963b;border-radius:50%;animation:daraya-loading-spin .85s linear infinite}
+@keyframes daraya-loading-spin{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){.loading::before{animation:none}}
