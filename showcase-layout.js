@@ -40,7 +40,7 @@
    [catalog,'products',t(menu?'المنتجات والمينو':'المنتجات',menu?'Products & menu':'Products',menu?'Produkte & Speisekarte':'Produkte'),t('شاهد الصور والأسعار','See photos and prices','Fotos und Preise ansehen')],
    [info,'contact',t('التواصل ومعلومات المحل','Contact & information','Kontakt & Informationen'),t('العنوان وأوقات الدوام','Address and hours','Adresse und Öffnungszeiten')],
    [offers,'offers',t('عروض المحل','Shop offers','Geschäftsangebote'),t('شاهد مثال العروض والخصومات','See example offers','Beispielangebote ansehen')],
-   [tools,'tools',t('الصور وباقي الأدوات','Photos & more tools','Fotos & weitere Werkzeuge'),t('الصور، المشاركة ورمز QR','Photos, sharing and QR','Fotos, Teilen und QR')]
+   [tools,'tools',t('الصور والفيديو','Photos and video','Fotos und Videos'),t('شاهد صور الصفحة والفيديو','View page photos and video','Seitenfotos und Videos ansehen')]
   ];
   entries.forEach(([target,kind,label,note])=>{
    if(!target)return;target.id='showcase-'+kind;

@@ -4,10 +4,10 @@
  const views=new WeakMap();
  window.DarayaShopSections=({root,hero,nav,sections,backLabel})=>{
   let view=views.get(root);
-  if(view?.hero===hero){view.sections=sections;view.sync();return view;}
+  if(view?.hero===hero){view.baseSections=sections;view.sections=[...sections,...view.extraSections.values()];view.sync();return view;}
   view?.dispose();
   const back=document.createElement('button');back.type='button';back.className='sf-section-return';back.dataset.noTranslate='';back.textContent=backLabel;back.hidden=true;nav.after(back);
-  view={hero,nav,sections,active:null,back,trigger:null,disposed:false};views.set(root,view);
+  view={hero,nav,sections,baseSections:sections,extraSections:new Map(),active:null,back,trigger:null,disposed:false};views.set(root,view);
   const managed=new Set();
   view.dispose=()=>{
    if(view.disposed)return;view.disposed=true;view.observer?.disconnect();
@@ -31,6 +31,7 @@
    nav.classList.toggle('sf-section-collapsed',!!view.active);nav.toggleAttribute('inert',!!view.active);back.hidden=!view.active;
    nav.querySelectorAll('[data-target]').forEach(card=>card.setAttribute('aria-expanded',String(card.dataset.target===view.active)));
   };
+  view.registerSection=entry=>{view.extraSections.set(entry.id,entry);view.sections=[...view.baseSections,...view.extraSections.values()];view.sync();};
   view.open=(id,trigger)=>{
    if(!current()){view.dispose();return;}
    const entry=view.sections.find(x=>x.id===id);if(!entry?.node)return;
@@ -43,4 +44,5 @@
   view.sync();view.observer=new MutationObserver(()=>view.sync());view.observer.observe(root,{childList:true});
   return view;
  };
+ window.DarayaShopSectionView=root=>views.get(root);
 })();
