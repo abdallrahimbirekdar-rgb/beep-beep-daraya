@@ -165,7 +165,7 @@ if __name__ == '__main__':
     output.mkdir(exist_ok=True)
     # Publish only website assets; never publish source, tests, database scripts or APK sources.
     for item in source.iterdir():
-        if item.is_file() and (item.suffix in {'.html','.js','.css','.webmanifest','.png','.ico','.svg','.webp'} or item.name in {'CNAME','.nojekyll'}):
+        if item.is_file() and (item.suffix in {'.html','.js','.css','.webmanifest','.png','.ico','.svg','.webp'} or item.name in {'CNAME','.nojekyll','android-play-release.json'}):
             shutil.copy2(item,output/item.name)
         elif item.name in {'images','thumbnails','fonts'} and item.is_dir():
             shutil.copytree(item,output/item.name,dirs_exist_ok=True)
