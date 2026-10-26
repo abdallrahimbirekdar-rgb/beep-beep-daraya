@@ -7,7 +7,7 @@ function app(key='restaurant',language='ar',ordering=false){
  c.matchesCategory=()=>true;c.renderStore=()=>{};c.renderHome=()=>{};c.render=()=>{};c.directoryKind=s=>s.kind;c.stores=[];c.filter='restaurant';c.search='';c.browseFavorites=false;
  c.matchMedia=()=>({matches:true});c.scrollTo=()=>{};c.HTMLElement.prototype.scrollIntoView=function(){c.lastScroll=this;};c.modal=html=>{c.lastModal=html;};c.parsePlaceVideo=()=>({});c.videoSurface=()=>c.document.createElement('div');c.videoLinkError=()=>'';
  c.QRCode=class{static CorrectLevel={M:0};constructor(){this._oQRCode={getModuleCount:()=>1,isDark:()=>true};}};c.DarayaCatalogPdf={open(){c.pdfOpened=true;}};
- for(const file of ['shop-section-view.js','showcase-products.js','category-demos.js','demo-owner-features.js','showcase-layout.js'])c.eval(fs.readFileSync(file,'utf8'));
+ for(const file of ['section-menus.js','shop-section-view.js','showcase-products.js','category-demos.js','demo-owner-features.js','showcase-layout.js'])c.eval(fs.readFileSync(file,'utf8'));
  if(ordering)c.eval(fs.readFileSync('demo-ordering.js','utf8'));c.render();return {dom,c,$:c.$};
 }
 test('pizza demo shows four entry cards immediately after its hero, with actual pizza photos',()=>{
@@ -41,19 +41,19 @@ test('the full pizza order demo keeps its late cart strip within the products se
 test('pizza owner demo adds a driver by name and phone, shows a demo code and completes assigned delivery',()=>{
  const a=app('restaurant','ar',true);try{
  a.$('[data-target="showcase-tools"]').click();
- const f=a.$('[data-add-demo-driver]');assert.ok(f);assert.equal(f.elements.email,undefined);assert.equal(f.querySelectorAll('input').length,2);
+ a.$('[data-dispatch-body] [data-section-key=drivers]').click();const f=a.$('[data-add-demo-driver]');assert.ok(f);assert.equal(f.elements.email,undefined);assert.equal(f.querySelectorAll('input').length,2);
  f.elements.name.value='<img src=x onerror=bad>';f.dispatchEvent(new a.c.Event('submit',{bubbles:true,cancelable:true}));
  assert.equal(a.$('[data-demo-driver-code]').value,'0000 0000 0000');assert.equal(a.$('[data-accept-demo-driver]'),null);assert.match(a.$('.demo-driver-card').textContent,/جاهز/);assert.equal(a.$('.demo-driver-card img'),null);
- a.$('[data-seed-demo-order]').click();assert.equal(a.$('[data-assign-demo-driver]').disabled,false);a.$('[data-assign-demo-driver]').click();assert.match(a.$('[data-assign-demo-driver]').textContent,/تم حفظ/);
+ a.$('[data-dispatch-body] .section-menu-back').click();a.$('[data-dispatch-body] [data-section-key=orders]').click();a.$('[data-seed-demo-order]').click();assert.equal(a.$('[data-assign-demo-driver]').disabled,false);a.$('[data-assign-demo-driver]').click();assert.match(a.$('[data-assign-demo-driver]').textContent,/تم حفظ/);
  a.$('[data-owner-prepare]').click();a.$('[data-owner-prepare]').click();a.$('[data-dispatch-view="driver"]').click();assert.ok(a.$('[data-driver-advance]'));a.$('[data-driver-advance]').click();a.$('[data-driver-advance]').click();assert.match(a.$('[data-dispatch-body]').textContent,/تم تسليم الطلب/);
  }finally{a.dom.window.close();}
 });
 test('demo tool shortcuts and help keep working in Arabic, English and German',()=>{
  for(const lang of ['ar','en','de']){const a=app('restaurant',lang,true);try{
- a.$('[data-target="showcase-tools"]').click();const tools=a.$('.demo-tool-shortcuts');assert.equal(tools.querySelectorAll('button').length,3);
- a.$('[data-demo-tool="drivers"]').click();assert.equal(a.c.lastScroll,a.$('[data-demo-driver-setup]'));assert.equal(a.$('[data-add-demo-driver] input[type=email]'),null);
- a.$('[data-demo-tool="orders"]').click();assert.equal(a.c.lastScroll,a.$('[data-demo-customer-orders]'));
- a.$('[data-demo-tool="delivery"]').click();assert.equal(a.c.lastScroll,a.$('[data-demo-delivery-settings]'));
+ a.$('[data-target="showcase-tools"]').click();const tools=a.$('[data-dispatch-body] .section-menu-grid');assert.equal(tools.querySelectorAll('button').length,3);
+ a.$('[data-dispatch-body] [data-section-key=drivers]').click();assert.equal(a.$('[data-demo-driver-setup]').hidden,false);assert.equal(a.$('[data-demo-customer-orders]').hidden,true);assert.equal(a.$('[data-add-demo-driver] input[type=email]'),null);
+ a.$('[data-dispatch-body] .section-menu-back').click();a.$('[data-dispatch-body] [data-section-key=orders]').click();assert.equal(a.$('[data-demo-customer-orders]').hidden,false);
+ a.$('[data-dispatch-body] .section-menu-back').click();a.$('[data-dispatch-body] [data-section-key=delivery]').click();assert.equal(a.$('[data-demo-delivery-settings]').hidden,false);
  const copy=a.$('.demo-dispatch-workspace').textContent;assert.equal(/[\u0621-\u064a]/.test(copy),lang==='ar');assert.ok(a.$('.demo-tool-help summary'));
  }finally{a.dom.window.close();}}
 });
