@@ -18,6 +18,7 @@ function refreshLabel(){
 }
 function sync(){
  const parts=location.hash.slice(1).split('/');
+ document.body?.classList?.toggle('compact-shop-chrome',['store','example'].includes(parts[0]));
  const managing=parts[0]==='dashboard';
  const shopPanel=managing&&(!admin||parts[1]==='setup');
  const s=shopPanel?(mine().find(x=>x.id===parts[2])||mine()[0]):null;
