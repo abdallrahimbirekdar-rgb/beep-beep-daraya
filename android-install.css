@@ -9,14 +9,14 @@ header .header-app-actions{display:flex;align-items:center;gap:7px;flex:0 0 auto
 .android-install-logo{display:block;object-fit:contain;border-radius:14px;margin-bottom:12px}
 #android-install-dialog h2{margin:0 0 8px;font-size:24px;line-height:1.5;padding-inline-end:15px}
 .android-install-intro{margin:0 0 18px;color:#69776e;font-size:14px;line-height:1.7}
-.android-play-soon,.android-apk-link{display:flex;align-items:center;gap:12px;box-sizing:border-box;padding:15px;border:1px solid #dcded4;border-radius:16px;margin-block:10px;text-decoration:none;line-height:1.6}
-.android-play-soon{background:#f2f3ec;color:#6c766c}
-.android-play-soon>span,.android-apk-link>span:first-child{font-size:25px;flex:none}
-.android-play-soon strong,.android-apk-link strong{display:block;font-size:16px}
-.android-play-soon small,.android-apk-link small{display:block;font-size:12px;font-weight:400}
-.android-apk-link{background:#173b35;color:#fff!important;border-color:#173b35;box-shadow:0 5px 15px #173b3515}
-.android-apk-link small{color:#e8f0e9!important}.android-apk-link:hover{background:#225448}.android-apk-link:focus-visible,#android-app-button:focus-visible{outline:3px solid #c3a148;outline-offset:3px}
+.android-play-link,.android-apk-link{display:flex;align-items:center;gap:12px;box-sizing:border-box;padding:15px;border:1px solid #dcded4;border-radius:16px;margin-block:10px;text-decoration:none;line-height:1.6}
+.android-play-link{background:#173b35;color:#fff!important;border-color:#173b35;box-shadow:0 5px 15px #173b3515}.android-play-link small{color:#e8f0e9!important}.android-play-link:hover{background:#225448}
+.android-play-link>span,.android-apk-link>span:first-child{font-size:25px;flex:none}
+.android-play-link strong,.android-apk-link strong{display:block;font-size:16px}
+.android-play-link small,.android-apk-link small{display:block;font-size:12px;font-weight:400}
+.android-apk-link{background:#fff9e6;color:#173b35!important;border-color:#d3bd77}
+.android-apk-link small{color:#69776e!important}.android-apk-link:hover{background:#f5eac8}.android-play-link:focus-visible,.android-apk-link:focus-visible,#android-app-button:focus-visible{outline:3px solid #c3a148;outline-offset:3px}
 .android-install-steps{margin-top:20px;border-top:1px solid #e7dec8;padding-top:14px}
-.android-install-steps h3{font-size:16px;margin:0 0 10px}.android-install-steps ol{padding-inline-start:23px;margin:0;line-height:1.9;font-size:14px}.android-install-steps li+li{margin-top:8px}.android-install-steps p,.android-install-note-inline{font-size:12px;line-height:1.8;color:#69776e;margin:12px 0 0}
+.android-install-steps summary{cursor:pointer;font-weight:700;font-size:16px;margin:0 0 10px}.android-install-steps ol{padding-inline-start:23px;margin:0;line-height:1.9;font-size:14px}.android-install-steps li+li{margin-top:8px}.android-install-steps p,.android-install-note-inline{font-size:12px;line-height:1.8;color:#69776e;margin:12px 0 0}
 @media(max-width:420px){header:has(.header-app-actions){gap:6px!important;flex-wrap:nowrap!important;padding-inline:10px!important}html header:has(#android-app-button:not([hidden])) .brand{min-width:0!important;flex:1 1 auto!important;max-width:none!important}html header:has(#android-app-button:not([hidden])) .brand-wordmark{width:100%!important;max-width:155px!important}header .header-app-actions{gap:5px}header .header-app-actions #menu-toggle{min-width:73px!important;padding:7px 8px!important;font-size:14px!important}#android-app-button{padding:7px 8px!important;font-size:11px!important}}
 @media(max-width:340px){#android-app-button{padding-inline:6px!important}header .header-app-actions #menu-toggle{min-width:68px!important;font-size:13px!important}}
