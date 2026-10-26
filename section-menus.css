@@ -7,7 +7,7 @@
 @media(min-width:800px){.section-menu-grid{grid-template-columns:repeat(3,minmax(0,1fr));max-width:900px}.section-menu-grid>.section-menu-tile{max-height:240px}}
 @media(max-width:380px){.section-menu-grid{gap:8px}.section-menu-grid>.section-menu-tile{padding:10px!important}.section-menu-tile strong{font-size:15px}.section-menu-tile small{font-size:12px}}
 /* Site navigation styles also target nav elements; section menus use the full content width. */
-.section-menu-grid{width:100%!important;max-width:100%!important;flex:none!important}.section-menu-grid>.section-menu-tile{max-width:none!important}.admin-menu-organized>[data-admin-group]{grid-column:1/-1}
+.section-menu-grid{width:100%!important;max-width:100%!important;flex:none!important}.section-menu-grid>.section-menu-tile{max-width:none!important}
 
 .demo-dispatch-tabs{width:100%!important;max-width:100%!important}.demo-dispatch-tabs>button{aspect-ratio:1;width:100%;max-width:none!important;min-height:0!important}.section-menu-back[hidden]{display:none!important}
 

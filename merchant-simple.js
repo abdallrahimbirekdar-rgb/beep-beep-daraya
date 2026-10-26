@@ -4,13 +4,12 @@
  const say=(ar,en,de)=>({ar,en,de})[window.ShahinI18n?.language||'ar'];
  const labels={
   overview:()=>say('الرئيسية','Home','Start'),
-  orders:()=>say('طلبات الزبائن','Customer orders','Kundenbestellungen'),
+  orders:()=>say('طلباتي','My orders','Meine Bestellungen'),
   products:()=>say('منتجاتي وأسعاري','My products and prices','Produkte und Preise'),
   details:()=>say('معلومات متجري','My shop details','Geschäftsdaten'),
   photos:()=>say('صور متجري','My shop photos','Geschäftsfotos'),
   hours:()=>say('أوقات العمل','Opening hours','Öffnungszeiten'),
-  delivery:()=>say('إعدادات الطلب والتوصيل','Order and delivery settings','Bestell- und Liefereinstellungen'),
-  drivers:()=>say('سائقو التوصيل','Delivery drivers','Lieferfahrer')
+  delivery:()=>say('الطلب والتوصيل','Orders and delivery','Bestellung und Lieferung')
  };
  function fold(nodes,title,className='merchant-extra'){
   const visible=nodes.filter(n=>n&&!n.hidden);
