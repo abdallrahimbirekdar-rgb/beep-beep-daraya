@@ -1,6 +1,6 @@
 'use strict';
 (() => {
- const app=document.querySelector('#app'),siteMenu=document.querySelector('#site-menu');
+ const app=document.querySelector('#app');
  const t=(ar,en,de)=>({ar,en,de}[window.ShahinI18n?.language||'ar']||ar);
  const back=()=>t('‹ العودة إلى الأقسام','‹ Back to sections','‹ Zurück zu den Bereichen');
  const mounted=new WeakMap();let queued=false;
@@ -74,12 +74,6 @@
   nav.hidden=!!tableTab;host.hidden=!tableTab;host.toggleAttribute('inert',!tableTab);back.hidden=!tableTab;
   back.onclick=()=>{tableTab=null;nav.hidden=false;host.hidden=true;host.setAttribute('inert','');back.hidden=true;nav.querySelector('button')?.focus({preventScroll:true});nav.scrollIntoView?.({block:'start'});};
  }
- function sideMenuSections(){
-  if(!siteMenu||mounted.get(siteMenu)?.valid())return;
-  const groups=[...siteMenu.querySelectorAll(':scope > .side-menu-group')].filter(n=>!n.hidden);if(groups.length<2)return;
-  const support=siteMenu.querySelector(':scope > [data-support-links]');
-  mount(siteMenu,[...groups.map((n,i)=>{const title=n.querySelector('h2,summary,.side-menu-toggle')?.textContent?.trim()||t('خيارات أخرى','More options','Weitere Optionen');return group('menu-'+i,window.ShahinI18n?.translate?.(title)||title,['🏪','👤','🗺️','🌐','📱','📖'][i]||'▦',[n]);}),...(support?[group('privacy',t('الدعم والخصوصية','Support and privacy','Hilfe und Datenschutz'),'🛡️',[support])]:[])],t('أقسام المزيد','More sections','Weitere Bereiche'),key=>{const index=Number(String(key).replace('menu-',''));const group=groups[index];if(!group)return;const items=group.querySelector('.side-menu-items');if(items)items.hidden=false;const toggle=group.querySelector('.side-menu-toggle');if(toggle){toggle.hidden=true;toggle.setAttribute('aria-expanded','true');}});
- }
  const parentBacks=new Map();
  function updateTrail(){
   const bars=[...app.querySelectorAll('.section-menu-bar')].filter(n=>!n.hidden&&!n.closest('[inert],.sf-section-collapsed')&&!n.parentElement.closest('[hidden]'));
@@ -88,7 +82,7 @@
   else {for(const [b,hidden] of parentBacks)if(b.isConnected)b.hidden=hidden;parentBacks.clear();}
  }
  app.addEventListener('daraya-section-state',updateTrail);
- function adapt(){queued=false;observer.disconnect();try{demoTools();merchantMenu();driverSections();customerSections();applicationSections();workspaceSections();adminSections();tableSections();sideMenuSections();updateTrail();}finally{observer.observe(app,{childList:true,subtree:true});if(siteMenu)observer.observe(siteMenu,{childList:true,subtree:true});}}
+ function adapt(){queued=false;observer.disconnect();try{demoTools();merchantMenu();driverSections();customerSections();applicationSections();workspaceSections();adminSections();tableSections();updateTrail();}finally{observer.observe(app,{childList:true,subtree:true});}}
  const observer=new MutationObserver(()=>{if(queued)return;queued=true;queueMicrotask(adapt);});
  window.DarayaRefreshSectionMenus=adapt;adapt();
  window.addEventListener('hashchange',()=>{tableTab=null;tableRoute='';if(!queued){queued=true;queueMicrotask(adapt);}});
