@@ -18,3 +18,13 @@
 .business-application [role=status].error{color:#9d2626;font-weight:700}
 .business-application{padding-bottom:calc(24px + env(safe-area-inset-bottom))!important;scroll-margin-bottom:100px}
 @media(max-width:600px){.business-application .business-step{padding:12px}.business-application .business-submit-panel{padding:12px}.business-application .business-submit-panel .form-actions{grid-template-columns:1fr}.business-application .form-actions button{white-space:normal}.business-application .business-step legend{font-size:17px}}
+
+/* One continuous form: every business detail is directly below the previous one. */
+#business-application-form .form-grid{display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:0!important}
+#business-application-form .span2{grid-column:auto!important}
+#business-application-form>.business-step{border:0!important;background:transparent!important;padding:0!important;margin:0!important;min-width:0}
+#business-application-form>.business-step>legend{position:absolute;width:1px;height:1px;padding:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.business-request-row{border:1px solid #dbe3db;border-radius:12px;background:#fff;padding:12px}
+.business-request-list .business-request-row>a{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;padding:6px;border:0;min-height:44px;color:#173b35;text-decoration:none}
+.business-request-list .business-request-row>a small{width:100%}
+.business-request-row .business-delete-request{margin-top:8px;min-height:44px}

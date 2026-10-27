@@ -50,15 +50,9 @@
    const p=document.createElement('p');const available=typeof canStoreOrder==='function'?canStoreOrder(s):s.online_ordering!==false;
    p.textContent=available?t('اختر المنتجات من القائمة وأضفها إلى السلة، ثم أكمل بيانات طلبك.','Choose items from the list, add them to the basket, then complete your order details.','Artikel auswählen, in den Warenkorb legen und Bestellangaben ergänzen.'):t('الطلبات عبر الموقع غير متاحة حاليًا. يمكنك التواصل مع المحل للاستفسار.','Website orders are not available now. Contact the shop for details.','Onlinebestellungen sind derzeit nicht verfügbar. Wende dich an das Geschäft.');orders.append(p);
    if(s.delivery_enabled){const d=document.createElement('p');d.textContent=t('التوصيل متاح حسب المناطق والرسوم التي يحددها المحل.','Delivery depends on the shop’s areas and fees.','Lieferung nach Gebieten und Gebühren des Geschäfts.');orders.append(d);}if(s.pickup_enabled){const p=document.createElement('p');p.textContent=t('يتوفر الاستلام من المحل.','Pickup from the shop is available.','Abholung im Geschäft ist möglich.');orders.append(p);}
-   const button=document.createElement('button');button.type='button';button.textContent=available?t('اختر المنتجات وابدأ طلبك','Choose products and start an order','Produkte wählen und Bestellung beginnen'):t('التواصل مع المحل','Contact the shop','Geschäft kontaktieren');button.onclick=()=>view.open(available?'sf-products':'sf-info',button);orders.append(button);const history=document.createElement('a');history.href='#my-orders';history.className='button outline';history.textContent=t('متابعة طلباتي','View my orders','Meine Bestellungen ansehen');orders.append(history);page.append(orders);
+   const button=document.createElement('button');button.type='button';button.textContent=available?t('اختر المنتجات وابدأ طلبك','Choose products and start an order','Produkte wählen und Bestellung beginnen'):t('التواصل مع المحل','Contact the shop','Geschäft kontaktieren');button.onclick=()=>view.open(available?'sf-products':'sf-info',button);orend(button);const history=document.createElement('a');history.href='#my-orders';history.className='button outline';history.textContent=t('متابعة طلباتي','View my orders','Meine Bestellungen ansehen');orders.append(history);page.append(orders);
   }
   if(orders)topTile(page,orders,orders.id,t('الطلبات والتوصيل','Orders and delivery','Bestellungen und Lieferung'),t('ابدأ طلبك وتعرّف على الاستلام والتوصيل','Order, pickup and delivery options','Bestellung, Abholung und Lieferung'),'🚚');
- }
- function applicationSections(){
-  const form=app.querySelector('#business-application-form');if(!form||mounted.get(form)?.valid())return;
-  const steps=[...form.querySelectorAll(':scope > fieldset')];if(steps.length<2)return;
-  const extras=[...form.querySelectorAll(':scope > details,:scope > .business-design-tools')];
-  mount(form,[...steps.map((n,i)=>group('step-'+i,[t('اسم النشاط وصورته','Business name and photo','Name und Foto'),t('العنوان والموقع الاختياري','Address and optional map location','Adresse und freiwilliger Kartenstandort'),t('بيانات التواصل','Contact details','Kontaktangaben')][i]||'', ['🏪','📍','☎️'][i]||'▦',[n])),group('extras',t('أدوات وتفاصيل اختيارية','Optional tools and details','Freiwillige Werkzeuge und Angaben'),'🧰',extras)],t('أقسام طلب إنشاء الصفحة','Page request sections','Bereiche des Seitenantrags'));
  }
  const parentBacks=new Map();
  function updateTrail(){
@@ -68,7 +62,7 @@
   else {for(const [b,hidden] of parentBacks)if(b.isConnected)b.hidden=hidden;parentBacks.clear();}
  }
  app.addEventListener('daraya-section-state',updateTrail);
- function adapt(){queued=false;observer.disconnect();try{demoTools();publicShopTools();applicationSections();updateTrail();}finally{observer.observe(app,{childList:true,subtree:true});}}
+ function adapt(){queued=false;observer.disconnect();try{demoTools();publicShopTools();updateTrail();}finally{observer.observe(app,{childList:true,subtree:true});}}
  const observer=new MutationObserver(()=>{if(queued)return;queued=true;queueMicrotask(adapt);});
  window.DarayaRefreshSectionMenus=adapt;adapt();
  window.addEventListener('hashchange',()=>{if(!queued){queued=true;queueMicrotask(adapt);}});
