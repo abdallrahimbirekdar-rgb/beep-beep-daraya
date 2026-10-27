@@ -5,3 +5,7 @@ verify_jwt = false
 [functions.driver-code]
 verify_jwt = false
 # Auth user and store ownership are validated by the handler and binding RPC.
+
+[functions.resolve-map-link]
+verify_jwt = false
+# The handler validates the current Auth user through /auth/v1/user before resolving a link.

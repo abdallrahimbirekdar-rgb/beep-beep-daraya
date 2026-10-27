@@ -22,8 +22,7 @@ function directoryBindForm(form,s){
  if((info||service)&&form.elements.online_ordering){form.elements.online_ordering.checked=false;form.elements.delivery_enabled.checked=false;form.elements.pickup_enabled.checked=false;form.elements.online_ordering.dispatchEvent(new Event('change'));}
  };
  form.elements.page_mode.onchange=sync;form.elements.directory_kind.onchange=sync;sync();
- if(form.elements.latitude){const el=form.querySelector('.store-location-editor');el.insertAdjacentHTML('afterbegin','<label>رابط GPS بإحداثيات واضحة<input name="gps_link" type="url" placeholder="https://www.google.com/maps?q=33.458,36.236"><small>يدعم رابطاً يحتوي الإحداثيات. للرابط المختصر استخدم تحديد الموقع على الخريطة.</small></label><p data-gps-link-status role="status"></p>');
- form.elements.gps_link.onchange=e=>{const raw=e.target.value;const match=raw.match(/(?:@|[?&](?:q|query|ll)=)(-?\d+(?:\.\d+)?),\s*(-?\d+(?:\.\d+)?)/);const status=form.querySelector('[data-gps-link-status]');if(!raw){status.textContent='';e.target.setCustomValidity('');return;}const point=match&&storeCoordinates({latitude:match[1],longitude:match[2]});if(point){form.elements.latitude.value=point[0];form.elements.longitude.value=point[1];status.textContent='تم استخراج الموقع. راجعه على الخريطة قبل الحفظ.';e.target.setCustomValidity('');}else{status.textContent='هذا الرابط لا يحتوي إحداثيات واضحة. حدد الموقع بالخريطة أو GPS.';e.target.setCustomValidity('حدد الموقع بالخريطة أو أدخل رابطاً بإحداثيات واضحة');}};}
+
 }
 const directoryEditStore=editStore;editStore=function(s={}){directoryEditStore(s);directoryBindForm($('#edit-form'),s);};
 const directoryMerchantEditor=merchantEditor;merchantEditor=function(s,section){directoryMerchantEditor(s,section);if(section==='details')directoryBindForm($('#merchant-editor'),s);};
