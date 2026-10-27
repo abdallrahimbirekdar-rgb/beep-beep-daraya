@@ -186,3 +186,7 @@
 #app .sf-info-refined .sf-info-accordion-item [data-visit-store]{margin:0 0 10px;min-height:56px;padding:10px;background:#fff;border:1px solid #e8dfcc}
 #app .sf-info-refined .sf-info-accordion-item .public-hours{padding:0;background:transparent;border:0}
 @media(max-width:400px){#app .sf-info-refined .sf-info-accordion-item>.shop-info-panel{padding:10px}#app .sf-info-refined .sf-info-accordion-item>.sf-info-row{padding:10px;min-height:62px}}
+#app .sf-information.sf-info-refined{width:100%;max-width:820px;box-sizing:border-box;margin-inline:auto}
+#app .sf-info-refined .sf-info-accordion{align-items:stretch;width:100%;max-width:100%;box-sizing:border-box}
+#app .sf-info-refined .sf-info-accordion-item{width:100%;max-width:100%;box-sizing:border-box;flex:none}
+#app .sf-info-refined .sf-info-accordion-item>.shop-info-panel{width:100%;max-width:100%;box-sizing:border-box}
