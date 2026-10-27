@@ -6,7 +6,14 @@
  const columns='id,store_id,name,description,price,image,available,translations,section,gallery,option_groups,revision,stock_tracking';
  const management=()=>!!user&&location.hash.startsWith('#dashboard');
  const valid=id=>typeof id==='string'&&/^[0-9a-f-]{36}$/i.test(id);
- function ids(){const result=new Set();const route=location.hash.slice(1).split('/');if(route[0]==='store'&&valid(route[1]))result.add(route[1]);if(valid(cartStore))result.add(cartStore);else{try{const saved=JSON.parse(localStorage.getItem('shahin-cart'));if(valid(saved?.cartStore))result.add(saved.cartStore);}catch{}}return [...result];}
+ function routeStoreId(){
+  const route=location.hash.slice(1).split('/');if(route[0]==='store'&&valid(route[1]))return route[1];
+  if(location.hash)return null;
+  const match=String(location.pathname||'').match(/^\/darayya\/([^/]+)\/?$/);if(!match||typeof stores==='undefined'||typeof placeSlug!=='function')return null;
+  let slug;try{slug=decodeURIComponent(match[1]);}catch{return null;}
+  return stores.find(s=>s.active&&!s.deleted_at&&placeSlug(s)===slug)?.id||null;
+ }
+ function ids(){const result=new Set(),sid=routeStoreId();if(valid(sid))result.add(sid);if(valid(cartStore))result.add(cartStore);else{try{const saved=JSON.parse(localStorage.getItem('shahin-cart'));if(valid(saved?.cartStore))result.add(saved.cartStore);}catch{}}return [...result];}
  async function pages(build){const rows=[];for(let offset=0;;offset+=1000){const r=await build().range(offset,offset+999);if(r.error)throw r.error;rows.push(...(r.data||[]));if((r.data||[]).length<1000)return rows;}}
  async function fetchStores(build){const uid=user?.id||'public';if(navigation&&!management()&&storeCache?.uid===uid&&Date.now()-storeCache.at<TTL)return {data:JSON.parse(storeCache.json)};const rows=await pages(build);storeCache={uid,at:Date.now(),json:JSON.stringify(rows)};return {data:rows};}
  async function fetchProducts(){
@@ -22,11 +29,11 @@
  }
  function deferRender(){
   if(!api||passwordRecovery)return false;
-  const route=location.hash.slice(1).split('/');
-  const needed=route[0]==='dashboard'&&user&&!fullLoaded||route[0]==='store'&&valid(route[1])&&Date.now()-(loaded.get(route[1])||0)>=TTL;
+  const route=location.hash.slice(1).split('/'),sid=routeStoreId();
+  const needed=route[0]==='dashboard'&&user&&!fullLoaded||valid(sid)&&Date.now()-(loaded.get(sid)||0)>=TTL;
   if(!needed)return false;
   if(!pending){pending=true;navigation=true;const requestedHash=location.hash;$('#app').innerHTML='<section class="panel" role="status"><p class="loading">جاري تحميل بيانات الصفحة…</p></section>';
-   reload().then(()=>{pending=false;navigation=false;render();}).catch(()=>{pending=false;navigation=false;fullLoaded=false;loaded.delete(route[1]);if(location.hash!==requestedHash){render();return;}$('#app').innerHTML='<section class="panel"><p>تعذر تحميل البيانات. حاول مرة أخرى.</p><button id="retry-demand">إعادة المحاولة</button></section>';$('#retry-demand').onclick=()=>render();});
+   reload().then(()=>{pending=false;navigation=false;render();}).catch(()=>{pending=false;navigation=false;fullLoaded=false;loaded.delete(sid);if(location.hash!==requestedHash){render();return;}$('#app').innerHTML='<section class="panel"><p>تعذر تحميل البيانات. حاول مرة أخرى.</p><button id="retry-demand">إعادة المحاولة</button></section>';$('#retry-demand').onclick=()=>render();});
   }return true;
  }
  window.DarayaDemand={fetchStores,fetchProducts,deferRender,ids,pages,get navigation(){return navigation;},get management(){return management();}};
