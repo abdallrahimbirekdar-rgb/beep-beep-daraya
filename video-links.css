@@ -25,3 +25,5 @@
 .store-header-media{max-width:760px;margin-inline:auto}
 .store-header-media>.store-image{order:0}
 .store-header-media>.place-video-panel{order:1}
+
+.shop-video-item+.shop-video-item{border-top:1px solid #ded5ba;margin-top:24px;padding-top:20px}.shop-video-item h3{font-size:18px;color:#173b35}.place-video-panel{min-width:0}#merchant-videos-form textarea{width:100%;min-height:220px;box-sizing:border-box;overflow-wrap:anywhere}#merchant-videos-form .form-actions{position:static!important;flex-wrap:wrap}#merchant-videos-form [data-shop-video-preview-list]>.place-video-surface{margin-block:20px}

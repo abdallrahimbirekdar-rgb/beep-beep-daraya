@@ -11,8 +11,8 @@ function app(key='restaurant',language='ar',ordering=false){
 }
 const tick=()=>new Promise(r=>setTimeout(r,0));
 function integrate(w){w.eval(fs.readFileSync('section-menus.js','utf8'));w.eval(fs.readFileSync('section-menu-integration.js','utf8'));}
-test('demo has seven main cards, separates orders and other tools from photos, and preserves unfinished input',async()=>{
- const a=app('restaurant','ar',true);try{integrate(a.c);await tick();assert.equal(a.$('.showcase-section-cards').children.length,7);
+test('demo has eight main cards, separates orders and other tools from photos, and preserves unfinished input',async()=>{
+ const a=app('restaurant','ar',true);try{integrate(a.c);await tick();assert.equal(a.$('.showcase-section-cards').children.length,8);
  a.$('[data-target="showcase-tools"]').click();const photos=a.$('#showcase-tools');assert.equal(photos.querySelector('.demo-dispatch-workspace'),null);assert.equal(photos.querySelector('.showcase-export'),null);
  a.$('.sf-section-return').click();a.$('[data-target="showcase-orders"]').click();assert.equal(a.$('#showcase-orders').classList.contains('sf-section-collapsed'),false);assert.ok(a.$('#showcase-orders .demo-dispatch-workspace'));
  const body=a.$('[data-dispatch-body]');assert.equal(a.$('[data-demo-driver-setup]').hidden,true);assert.equal(a.$('[data-demo-customer-orders]').hidden,true);body.querySelector('[data-section-key=drivers]').click();a.$('[data-add-demo-driver] [name=name]').value='اسم لم يُحفظ بعد';body.querySelector('.section-menu-back').click();body.querySelector('[data-section-key=drivers]').click();assert.equal(a.$('[data-add-demo-driver] [name=name]').value,'اسم لم يُحفظ بعد');body.querySelector('.section-menu-back').click();

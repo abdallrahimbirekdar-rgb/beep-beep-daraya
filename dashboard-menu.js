@@ -5,7 +5,7 @@
  const app=document.getElementById('app');
  let lastRoute='';
  const adminHome=()=>!location.hash||['#dashboard','#dashboard/','#dashboard/home'].includes(location.hash);
- const icons={"stores":"🏪","details":"🪪","photos":"📸","products":"🛍️","delivery":"🚚","drivers":"🛵","hours":"⏰","reports":"📊","orders":"📋","new-section":"🆕","tools":"🗓️","workspace-tools":"🧰","overview":"🏠","help":"📖","accounts":"👥","statistics":"📈","notebook":"📝","usage":"⚡","plans":"👑","bans":"🛡️","document":"📄","offer-reminders":"🔔","offer-display":"💎","facebook":"📣"};
+ const icons={"stores":"🏪","details":"🪪","photos":"📸","videos":"🎬","products":"🛍️","delivery":"🚚","drivers":"🛵","hours":"⏰","reports":"📊","orders":"📋","new-section":"🆕","tools":"🗓️","workspace-tools":"🧰","overview":"🏠","help":"📖","accounts":"👥","statistics":"📈","notebook":"📝","usage":"⚡","plans":"👑","bans":"🛡️","document":"📄","offer-reminders":"🔔","offer-display":"💎","facebook":"📣"};
  const iconMarkup=key=>'<span class="dashboard-color-icon" aria-hidden="true">'+(icons[key]||icons.document)+'</span>';
  window.DarayaDashboardIcon=iconMarkup;
  function link(href,label){const a=document.createElement('a');a.href=href;a.textContent=label;a.dataset.noTranslate='';return a;}

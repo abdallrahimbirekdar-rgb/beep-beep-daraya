@@ -55,7 +55,7 @@
    [layout,service?directoryCatalogTitle(page):t(banner.dataset.service==='1'?'الخدمات':'المنتجات','Products & services','Produkte & Leistungen'),'sf-products','products',t('شاهد الصور والأسعار','See photos and prices','Fotos und Preise ansehen')],
    [info,service?t('التواصل والمعلومات','Contact & information','Kontakt & Informationen'):t('التواصل ومعلومات المحل','Contact & information','Kontakt & Informationen'),'sf-info','contact',t('العنوان، الاتصال وأوقات الدوام','Address, phone and hours','Adresse, Telefon und Öffnungszeiten')],
    [offers,service?t('الإعلانات والمتابعة','News & following','Neuigkeiten & Folgen'):t('العروض والمتابعة','Offers & following','Angebote & Folgen'),'sf-offers','offers',service?t('الإعلانات وآخر المستجدات','News and updates','Neuigkeiten und Updates'):t('العروض وبطاقات المحل','Offers and shop cards','Angebote und Geschäftskarten')],
-   [extras,t('الصور والفيديو','Photos and video','Fotos und Videos'),'sf-tools','tools',t('شاهد الصور الإضافية','View extra photos','Weitere Fotos ansehen')]
+   [extras,t('صور المتجر','Shop photos','Geschäftsfotos'),'sf-tools','tools',t('شاهد الصور الإضافية','View extra photos','Weitere Fotos ansehen')]
   ];
   const view=window.DarayaShopSections({root,hero:banner,nav,sections:entries.map(([node,,id])=>({node,id})),backLabel:service?t('‹ العودة إلى أقسام الصفحة','‹ Back to page sections','‹ Zurück zu den Seitenbereichen'):t('‹ العودة إلى أقسام المحل','‹ Back to shop sections','‹ Zurück zu den Geschäftsbereichen')});
   const key=entries.map(x=>x[0]?x[2]:'-').join('|')+'|'+document.documentElement.lang+'|'+JSON.stringify(images);
@@ -109,7 +109,7 @@
   const photos=root.querySelector('.place-photo-gallery');
   if(photos){photos.classList.add('sf-photos');const heading=make('h2','',service?t('معرض الصور','Photo gallery','Bildergalerie'):t('صور من المحل','Inside the business','Einblicke ins Geschäft'));heading.dataset.noTranslate='';photos.prepend(heading);const images=[...photos.querySelectorAll('img')];images.forEach((img,i)=>{const button=make('button','sf-photo-button');button.type='button';button.setAttribute('aria-label',t('تكبير الصورة','Enlarge photo','Bild vergrößern')+' '+(i+1));img.before(button);button.append(img);img.loading='lazy';button.onclick=()=>showPhotos(images,i);});info.before(photos);}
   // Put the four entry cards directly below the shop identity. Reuse live controls.
-  const extras=make('section','sf-tools');extras.dataset.noTranslate='';extras.append(make('h2','',t('الصور والفيديو','Photos and video','Fotos und Videos')));
+  const extras=make('section','sf-tools');extras.dataset.noTranslate='';extras.append(make('h2','',t('صور المتجر','Shop photos','Geschäftsfotos')));
   more.open=true;extras.append(more);if(photos)extras.append(photos);root.append(extras);
   const contacts=make('div','sf-contact-actions');
   [...quick.children].forEach(node=>{if(node.classList.contains('sf-browse'))node.remove();else if(node.matches('a[href^="tel:"],.sf-directions'))contacts.append(node);else extras.append(node);});

@@ -54,6 +54,15 @@
   }
   if(orders)topTile(page,orders,orders.id,t('الطلبات والتوصيل','Orders and delivery','Bestellungen und Lieferung'),t('ابدأ طلبك وتعرّف على الاستلام والتوصيل','Order, pickup and delivery options','Bestellung, Abholung und Lieferung'),'🚚');
  }
+ function shopVideos(){
+  const banner=app.querySelector('.store-banner[data-storefront]'),demo=app.querySelector('.showcase-owner-tools');
+  const page=banner?.parentElement||demo?.parentElement;if(!page)return;
+  const id=banner?'sf-videos':'showcase-videos';let section=page.querySelector('#'+id);
+  if(!section){section=document.createElement('section');section.id=id;section.className='panel place-video-panel';section.dataset.noTranslate='';const h=document.createElement('h2');h.textContent=t('فيديوهات المتجر','Shop videos','Geschäftsvideos');section.append(h);page.append(section);}
+  if(demo)for(const video of page.querySelectorAll('.demo-video'))if(!section.contains(video))section.append(video);
+  if(!section.querySelector('.place-video-surface,.demo-video')&&!section.querySelector('p')){const p=document.createElement('p');p.textContent=t('لم يضف المتجر فيديوهات بعد.','This shop has not added videos yet.','Dieses Geschäft hat noch keine Videos hinzugefügt.');section.append(p);}
+  topTile(page,section,id,t('فيديوهات المتجر','Shop videos','Geschäftsvideos'),t('شاهد فيديوهات المتجر','Watch shop videos','Geschäftsvideos ansehen'),'▶');
+ }
  const parentBacks=new Map();
  function updateTrail(){
   const bars=[...app.querySelectorAll('.section-menu-bar')].filter(n=>!n.hidden&&!n.closest('[inert],.sf-section-collapsed')&&!n.parentElement.closest('[hidden]'));
@@ -62,7 +71,7 @@
   else {for(const [b,hidden] of parentBacks)if(b.isConnected)b.hidden=hidden;parentBacks.clear();}
  }
  app.addEventListener('daraya-section-state',updateTrail);
- function adapt(){queued=false;observer.disconnect();try{demoTools();publicShopTools();updateTrail();}finally{observer.observe(app,{childList:true,subtree:true});}}
+ function adapt(){queued=false;observer.disconnect();try{demoTools();publicShopTools();shopVideos();updateTrail();}finally{observer.observe(app,{childList:true,subtree:true});}}
  const observer=new MutationObserver(()=>{if(queued)return;queued=true;queueMicrotask(adapt);});
  window.DarayaRefreshSectionMenus=adapt;adapt();
  window.addEventListener('hashchange',()=>{if(!queued){queued=true;queueMicrotask(adapt);}});
