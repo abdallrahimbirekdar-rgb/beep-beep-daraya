@@ -134,3 +134,37 @@
 /* Stack shop information controls as full-width rectangular rows. */
 #app .sf-information .sf-contact-actions,#app .sf-information .shop-info-tabs{display:grid;grid-template-columns:minmax(0,1fr);gap:10px;width:100%;margin:12px 0}
 #app .sf-information .sf-contact-actions>*,#app .sf-information .shop-info-tabs button{box-sizing:border-box;width:100%;max-width:100%;min-width:0;min-height:48px;margin:0;padding:12px 16px;border-radius:12px;display:flex;align-items:center;justify-content:flex-start;text-align:start;white-space:normal;overflow-wrap:anywhere}
+
+/* Clear, compact information rows with a shared gold icon system. */
+#app .sf-information.sf-info-refined{padding:18px;margin:16px 0;background:#fffefa;border:1px solid #e5dcc7;border-radius:20px;box-shadow:0 6px 24px #70571a06}
+#app .sf-info-refined>h2{margin:0 0 16px;font-size:21px;line-height:1.5;color:#403a2d}
+#app .sf-info-refined .sf-contact-actions,#app .sf-info-refined .shop-info-tabs{display:grid;grid-template-columns:minmax(0,1fr);gap:9px;margin:0 0 14px;padding:0;width:100%}
+#app .sf-info-refined .sf-info-row{display:flex;align-items:center;justify-content:flex-start;gap:12px;box-sizing:border-box;width:100%;max-width:100%;min-width:0;min-height:66px;padding:11px 13px;margin:0;border:1px solid #e6dfcf;border-radius:13px;background:#fff;color:#443e31;box-shadow:none;text-align:start;text-decoration:none;white-space:normal;line-height:1.55;font-size:14px;cursor:pointer}
+#app .sf-info-refined .sf-contact-actions .sf-info-row{background:#fbf6e9;border-color:#e3d2a5}
+#app .sf-info-refined .sf-info-row-icon,#app .sf-info-refined .social-network-icon{display:grid;place-items:center;flex:0 0 36px;width:36px;height:36px;border-radius:11px;background:#f7efd9;color:#927126}
+#app .sf-info-refined .sf-info-row-icon svg,#app .sf-info-refined .social-network-icon svg{display:block;width:21px;height:21px}
+#app .sf-info-refined .sf-info-row-copy{display:flex;flex:1 1 0;min-width:0;flex-direction:column;gap:2px;align-items:flex-start}
+#app .sf-info-refined .sf-info-row-copy strong{display:block;color:inherit;font-size:15px;font-weight:750;line-height:1.55;overflow-wrap:anywhere}
+#app .sf-info-refined .sf-info-row-copy small{display:block;margin:0;color:#827969;font-size:12px;font-weight:400;line-height:1.5;overflow-wrap:anywhere}
+#app .sf-info-refined .sf-info-row-copy .sf-info-phone-number{font-variant-numeric:tabular-nums;letter-spacing:.3px}
+#app .sf-info-refined .sf-info-row-chevron{display:grid;place-items:center;flex:0 0 20px;color:#a69b83}
+#app .sf-info-refined .sf-info-row-chevron svg{width:18px;height:18px}
+#app .sf-info-refined .sf-info-row[aria-expanded="true"]{border-color:#c7a354;border-inline-start:3px solid #b58c32;padding-inline-start:11px;background:linear-gradient(110deg,#fffdf5,#f8efd8);color:#5d481e}
+#app .sf-info-refined .sf-info-row[aria-expanded="true"] .sf-info-row-icon{background:#ead8a8;color:#6d521b}
+#app .sf-info-refined .sf-info-row[aria-expanded="true"] .sf-info-row-chevron{color:#8b6925}
+#app .sf-info-refined .sf-info-row[aria-expanded="true"] .sf-info-row-chevron svg{transform:rotate(180deg)}
+#app .sf-info-refined .shop-info-panel{padding:16px;margin:4px 0 12px;background:#fcfaf4;border:1px solid #ebe3d2;border-radius:14px;color:#514b40}
+#app .sf-info-refined .shop-info-panel p{margin:0;font-size:14px;line-height:1.9}
+#app .sf-info-refined .shop-info-panel .sf-contact-detail{display:flex;gap:12px;align-items:flex-start;margin:0 0 12px;padding:12px;border:1px solid #ebe3d2;border-radius:12px;background:#fff}
+#app .sf-info-refined .sf-contact-detail-copy{min-width:0;flex:1;overflow-wrap:anywhere;font-size:14px;line-height:1.8}
+#app .sf-info-refined .sf-contact-detail-copy>strong{display:block;font-size:12px;color:#8b7546;font-weight:600;margin-bottom:3px}
+#app .sf-info-refined .sf-contact-detail a{color:#66501f;text-decoration:underline;text-underline-offset:3px}
+#app .sf-info-refined .store-social-links{padding:0;margin:16px 0 0;border:0;background:transparent;box-shadow:none}
+#app .sf-info-refined .store-social-links>h2{font-size:15px;margin:0 0 10px;color:#514831}
+#app .sf-info-refined .store-social-buttons{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+#app .sf-info-refined .store-social-link{display:flex;align-items:center;justify-content:flex-start;gap:8px;min-width:0;min-height:52px;padding:8px 10px;border:1px solid #e8dfcb;border-radius:12px;background:#fff;color:#51472e;font-size:13px;text-decoration:none;overflow-wrap:anywhere}
+#app .sf-info-refined .store-social-link .social-network-icon{flex-basis:30px;width:30px;height:30px;border-radius:9px}
+#app .sf-info-refined .store-social-link .social-network-icon svg{width:18px;height:18px}
+#app .sf-info-refined .sf-info-row:focus-visible,#app .sf-info-refined .store-social-link:focus-visible{outline:3px solid #b18a37;outline-offset:3px}
+@media(hover:hover){#app .sf-info-refined .sf-info-row:hover,#app .sf-info-refined .store-social-link:hover{border-color:#bc9a51;background:#fffbf0}}
+@media(max-width:400px){#app .sf-information.sf-info-refined{padding:14px}#app .sf-info-refined .sf-info-row{gap:10px;padding:10px;min-height:62px}#app .sf-info-refined .sf-info-row-copy strong{font-size:14px}#app .sf-info-refined .sf-info-row-copy small{font-size:12px}}
