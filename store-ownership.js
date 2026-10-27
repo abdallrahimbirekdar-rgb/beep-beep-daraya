@@ -27,7 +27,13 @@
  }
  function makeButton(s){const button=document.createElement('button');button.type='button';button.className='outline';button.dataset.storeTransfer=s.id;button.dataset.noTranslate='';button.textContent=t('نقل المتجر لحساب آخر','Transfer shop to another account','Geschäft auf anderes Konto übertragen');button.onclick=()=>transferStore(s);return button;}
  const originalStores=dashboardStores;
- dashboardStores=function(ms){const result=originalStores.apply(this,arguments);if(!admin)return result;document.querySelectorAll('#dashboard-content [data-edit-store]').forEach(edit=>{const s=ms.find(s=>s.id===edit.dataset.editStore);if(!s||s.deleted_at||edit.parentElement.querySelector('[data-store-transfer]'))return;edit.after(makeButton(s));});return result;};
+ dashboardStores=function(ms){const result=originalStores.apply(this,arguments);if(!admin)return result;document.querySelectorAll('#dashboard-content [data-edit-store]').forEach(edit=>{const s=ms.find(s=>s.id===edit.dataset.editStore);if(!s||s.deleted_at)return;const target=edit.closest('.admin-place-card')?.querySelector('.admin-place-actions')||edit.parentElement;if(target.querySelector('[data-store-transfer]'))return;target.append(makeButton(s));});return result;};
  const originalDashboard=merchantDashboard;
- merchantDashboard=function(ms,s){const result=originalDashboard.apply(this,arguments);const actions=document.querySelector('.merchant-top .merchant-actions');if(admin&&s&&!s.deleted_at&&actions&&!actions.querySelector('[data-store-transfer]'))actions.append(makeButton(s));return result;};
+ merchantDashboard=function(ms,s){const result=originalDashboard.apply(this,arguments);if(!admin||!s||s.deleted_at)return result;
+  const nav=document.querySelector('.merchant-nav');if(nav&&!nav.querySelector('[data-store-transfer]')){const button=makeButton(s);button.classList.add('dashboard-menu-card');const icon=document.createElement('span');icon.dataset.dashboardIcon='';icon.setAttribute('aria-hidden','true');icon.textContent='⇄';button.prepend(icon);nav.append(button);}
+  const content=document.querySelector('.merchant-content');if(content&&!content.querySelector('[data-store-transfer]')){const panel=document.createElement('section');panel.className='panel store-transfer-panel';panel.dataset.noTranslate='';const title=document.createElement('h2');title.textContent=t('إدارة حساب المتجر','Shop account management','Geschäftskonto verwalten');panel.append(title,makeButton(s));content.prepend(panel);}
+  return result;
+ };
+ const originalEdit=editStore;
+ editStore=function(s){const result=originalEdit.apply(this,arguments);const form=document.querySelector('#edit-form');if(admin&&s?.id&&!s.deleted_at&&form&&!document.querySelector('#modal-body [data-store-transfer]')){const button=makeButton(s);button.style.marginBottom='16px';form.before(button);}return result;};
 })();
