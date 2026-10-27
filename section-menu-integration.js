@@ -62,6 +62,9 @@
   if(demo)for(const video of page.querySelectorAll('.demo-video'))if(!section.contains(video))section.append(video);
   if(!section.querySelector('.place-video-surface,.demo-video')&&!section.querySelector('p')){const p=document.createElement('p');p.textContent=t('لم يضف المتجر فيديوهات بعد.','This shop has not added videos yet.','Dieses Geschäft hat noch keine Videos hinzugefügt.');section.append(p);}
   topTile(page,section,id,t('فيديوهات المتجر','Shop videos','Geschäftsvideos'),t('شاهد فيديوهات المتجر','Watch shop videos','Geschäftsvideos ansehen'),'▶');
+  const nav=window.DarayaShopSectionView?.(page)?.nav;
+  const photos=nav?.querySelector('[data-target="'+(banner?'sf-tools':'showcase-tools')+'"]'),videos=nav?.querySelector('[data-target="'+id+'"]');
+  if(photos&&videos&&[...nav.children].indexOf(photos)<[...nav.children].indexOf(videos)){const slot=document.createComment('video position');videos.replaceWith(slot);photos.replaceWith(videos);slot.replaceWith(photos);}
  }
  const parentBacks=new Map();
  function updateTrail(){
