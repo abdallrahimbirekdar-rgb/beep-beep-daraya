@@ -1,5 +1,5 @@
 const test=require('node:test'),assert=require('node:assert/strict'),vm=require('node:vm'),fs=require('node:fs');
-const c={URL,merchantEditor(){},editStore(){},showStoreAddress(){}};vm.createContext(c);vm.runInContext(fs.readFileSync('store-location.js','utf8'),c);
+const c={URL,setTimeout,clearTimeout,merchantEditor(){},editStore(){},showStoreAddress(){}};vm.createContext(c);vm.runInContext(fs.readFileSync('store-location.js','utf8'),c);
 const shared='https://maps.app.goo.gl/vwabcBDMhPhg4Lui6?g_st=ac';
 const expanded='https://www.google.com/maps/place/Darayya/data=!4m6!3m5!1splace!7e2!8m2!3d33.4641999!4d36.232664299999996!18m1!1e1?g_st=ac';
 test('Google place coordinates take precedence over viewport; encoded and zero coordinates work',()=>{
@@ -12,7 +12,7 @@ test('Google place coordinates take precedence over viewport; encoded and zero c
 });
 test('short link resolves into saved fields, while pending lookup prevents premature save',async()=>{
  let complete; c.api={functions:{invoke:()=>new Promise(resolve=>complete=resolve)}};
- const input={value:shared,isConnected:true,setCustomValidity(v){this.error=v;}},status={};const form={elements:{gps_link:input,latitude:{value:''},longitude:{value:''}},querySelector:s=>s==='[data-gps-link-status]'?status:null};
+ const input={dataset:{},value:shared,isConnected:true,setCustomValidity(v){this.error=v;}},status={};const form={elements:{gps_link:input,latitude:{value:''},longitude:{value:''}},querySelector:s=>s==='[data-gps-link-status]'?status:null};
  c.bindStoreMapLink(form);const pending=input.onchange();assert.match(input.error,/انتظر/);complete({data:{latitude:33.4641999,longitude:36.2326643}});await pending;assert.equal(form.elements.latitude.value,33.4641999);assert.equal(input.error,'');
  const next=input.onchange();input.value='';input.oninput();complete({data:{latitude:9,longitude:9}});await next;assert.equal(form.elements.latitude.value,33.4641999);
 });
@@ -24,4 +24,8 @@ test('resolver follows the provided Google short link redirect and never fetches
  const blocked=[];const bad=edge.createHandler(async(url)=>{blocked.push(url);return url.includes('/auth/v1/user')?new Response('{}'):new Response(null,{status:302,headers:{location:'https://evil.com/maps?q=1,2'}});});
  assert.equal((await bad(request())).status,422);assert.equal(blocked.length,2);
  const unauth=edge.createHandler(async()=>new Response('',{status:401}));assert.equal((await unauth(request())).status,401);
+});
+test('lookup shows progress, disables save until resolved, and restores buttons on failure',async()=>{
+ const {JSDOM}=require('jsdom');const dom=new JSDOM('<form><input name="gps_link"><input name="latitude"><input name="longitude"><p data-gps-link-status></p><button type="submit">حفظ</button><button type="submit" disabled>حفظ غير متاح</button></form>',{url:'https://damascus-shop.com',runScripts:'outside-only'});const w=dom.window;
+ try{w.merchantEditor=()=>{};w.editStore=()=>{};w.showStoreAddress=()=>{};w.eval(fs.readFileSync('store-location.js','utf8')+';window.bindStoreMapLink=bindStoreMapLink;');let resolve;w.api={functions:{invoke:()=>new Promise(r=>resolve=r)}};const form=w.document.querySelector('form'),input=form.elements.gps_link,save=form.querySelector('button'),status=form.querySelector('p');input.value=shared;w.bindStoreMapLink(form);const pending=input.onchange();assert.equal(save.disabled,true);assert.equal(input.dataset.mapPending,'true');assert.equal(status.getAttribute('aria-busy'),'true');assert.ok(status.querySelector('.map-link-spinner'));resolve({data:{latitude:33.46,longitude:36.23}});await pending;assert.equal(save.disabled,false);assert.equal(form.querySelectorAll('button')[1].disabled,true);assert.equal(input.dataset.mapPending,'');assert.equal(status.querySelector('.map-link-spinner'),null);const failing=input.onchange();resolve({error:new Error('network')});await failing;assert.equal(save.disabled,false);assert.match(input.validationMessage,/تعذر/);assert.equal(input.dataset.mapPending,'');}finally{dom.window.close();}
 });

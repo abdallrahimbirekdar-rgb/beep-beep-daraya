@@ -20,19 +20,32 @@ function parseStoreMapPoint(raw){
 function isStoreMapLink(raw){try{const u=new URL(raw);return u.protocol==='https:'&&!u.username&&!u.password&&!u.port&&['maps.app.goo.gl','goo.gl','www.google.com','google.com','maps.google.com'].includes(u.hostname)&&(u.hostname==='maps.app.goo.gl'||u.pathname.startsWith('/maps'));}catch{return false;}}
 function bindStoreMapLink(form){
  const input=form.elements.gps_link,status=form.querySelector('[data-gps-link-status]');if(!input||!status)return;
- let sequence=0;
- input.oninput=()=>{sequence++;input.setCustomValidity('');status.textContent='';};
+ let sequence=0,restoreButtons=()=>{};
+ const pendingState=active=>{
+  restoreButtons();restoreButtons=()=>{};
+  input.dataset.mapPending=active?'true':'';status.setAttribute?.('aria-busy',String(active));
+  if(active){
+   input.removeAttribute?.('aria-invalid');
+   status.innerHTML='<span class="map-link-spinner" aria-hidden="true"></span><span>جاري استخراج الموقع من رابط خرائط Google…</span>';
+   const buttons=[...(form.querySelectorAll?.('button[type="submit"],button:not([type]),input[type="submit"]')||[])].filter(b=>!b.disabled);
+   buttons.forEach(b=>{b.disabled=true;b.setAttribute('aria-busy','true');});
+   restoreButtons=()=>buttons.forEach(b=>{b.disabled=false;b.removeAttribute('aria-busy');});
+  }
+ };
+ input.oninput=()=>{sequence++;pendingState(false);input.setCustomValidity('');input.removeAttribute?.('aria-invalid');status.textContent='';};
  input.onchange=async()=>{
  const raw=input.value.trim(),request=++sequence;if(!raw){input.setCustomValidity('');status.textContent='';return;}
  const fail=message=>{status.textContent=message;input.setCustomValidity(message);};
  if(!isStoreMapLink(raw)){fail('أدخل رابط مشاركة صحيحًا من خرائط Google يبدأ بـ https:// أو امسح الرابط وحدد الموقع على الخريطة.');return;}
- input.setCustomValidity('انتظر حتى يكتمل استخراج الموقع من الرابط.');status.textContent='جاري استخراج الموقع من رابط خرائط Google…';
+ pendingState(true);input.setCustomValidity('انتظر حتى يكتمل استخراج الموقع من الرابط.');
+ let timer;
  try{
  let point=parseStoreMapPoint(raw);
- if(!point){const {data,error}=await api.functions.invoke('resolve-map-link',{body:{url:raw}});if(error||data?.latitude==null||data?.longitude==null){let message=data?.error;try{message=message||(await error?.context?.json())?.error;}catch{}throw Error(message||'تعذر قراءة رابط الخرائط الآن. تحقق من الإنترنت وأعد لصقه، أو امسح الرابط وحدد الموقع على الخريطة.');}point=storeCoordinates(data);}
+ if(!point){const {data,error}=await Promise.race([api.functions.invoke('resolve-map-link',{body:{url:raw}}),new Promise((_,reject)=>{timer=setTimeout(()=>reject(Error('تعذر قراءة رابط الخرائط الآن. تحقق من الإنترنت وأعد لصقه، أو امسح الرابط وحدد الموقع على الخريطة.')),20000);})]);if(error||data?.latitude==null||data?.longitude==null){let message=data?.error;try{message=message||(await error?.context?.json())?.error;}catch{}throw Error(message||'تعذر قراءة رابط الخرائط الآن. تحقق من الإنترنت وأعد لصقه، أو امسح الرابط وحدد الموقع على الخريطة.');}point=storeCoordinates(data);}
  if(request!==sequence||!input.isConnected)return;
  if(!point)throw Error('تعذر استخراج مكان من الرابط. امسحه وحدد الموقع على الخريطة.');
  form.elements.latitude.value=point[0];form.elements.longitude.value=point[1];form.dispatchEvent?.(new Event('daraya:map-link'));input.setCustomValidity('');status.textContent='تم استخراج موقع المكان من الرابط. يمكنك مراجعته بزر تحديد موقع المتجر ثم حفظ البيانات.';
  }catch(error){if(request!==sequence||!input.isConnected)return;fail(error.message);}
+ finally{clearTimeout(timer);if(request===sequence)pendingState(false);}
  };
 }

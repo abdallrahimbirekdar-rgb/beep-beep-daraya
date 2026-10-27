@@ -11,3 +11,8 @@ input[aria-invalid=true],select[aria-invalid=true],textarea[aria-invalid=true]{b
 
 /* Keep the complete cover and the section cards visible together on phones. */
 @media(max-width:700px){#app#app .storefront img.store-image,#app#app .rich-showcase>.demo-hero .demo-image{height:clamp(96px,18vh,135px)!important;height:clamp(96px,18svh,135px)!important;max-height:135px!important}}
+
+[data-gps-link-status][aria-busy="true"]{display:flex;align-items:center;gap:8px;color:#173b35;background:#fff8df;border-radius:10px;padding:10px;font-weight:600}
+.map-link-spinner{display:inline-block;width:20px;height:20px;flex:0 0 20px;border:3px solid #e6d7ad;border-top-color:#a47d2b;border-radius:50%;animation:map-link-spin .9s linear infinite}
+@keyframes map-link-spin{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){.map-link-spinner{animation:none}}

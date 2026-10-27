@@ -26,6 +26,7 @@
  window.DarayaFeedback={show,close};
  document.addEventListener('invalid',event=>{
   const field=event.target;if(!field.matches?.('input,select,textarea'))return;event.preventDefault();
+  if(field.dataset.mapPending==='true')return;
   field.setAttribute('aria-invalid','true');if(!firstInvalid)firstInvalid=field;
   if(invalidQueued)return;invalidQueued=true;
   queueMicrotask(()=>{
