@@ -13,7 +13,7 @@ test('external players load and start only after visitor click',()=>{const nodes
 
 test('original video link works in the Android window and keeps source referrer',()=>{
  for(const [userAgent,target] of [['Chrome','_blank'],['Chrome ShahinAndroid/1.2','_self']]){
-  const context=vm.createContext({URL,navigator:{userAgent},document:{documentElement:{lang:'en'},createElement:()=>({dataset:{},children:[],append(...items){this.children.push(...items)}})}});
+  const context=vm.createContext({URL,navigator:{userAgent},document:{documentElement:{lang:'en'},createElement:()=>({dataset:{},children:[],setAttribute(k,v){this[k]=v;},append(...items){this.children.push(...items)}})}});
   vm.runInContext(code.slice(0,code.indexOf('function addVideoFields(')),context);
   const box=vm.runInContext("videoSurface(parsePlaceVideo('https://example.com/video-page'),'Demo')",context);
   const link=box.children.at(-1);
