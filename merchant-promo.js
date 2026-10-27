@@ -2,7 +2,7 @@
 (() => {
  const t=(ar,en,de)=>({ar,en,de}[window.ShahinI18n?.language||'ar']||ar);
  const productUrl=(s,p)=>'https://damascus-shop.com/#store/'+encodeURIComponent(s.id)+'/product/'+encodeURIComponent(p.id);
- const shareText=(s,p)=>[p.name+' — '+money(p.price),s.name,s.address?.trim(),s.contact_phone?.trim(),productUrl(s,p)].filter(Boolean).join('\n');
+ const shareText=(s,p)=>[p.name+(p.price==null?'':' — '+money(p.price)),s.name,s.address?.trim(),s.contact_phone?.trim(),productUrl(s,p)].filter(Boolean).join('\n');
  async function shareProduct(s,p){const text=shareText(s,p);try{if(navigator.share){await navigator.share({title:p.name,text});return;}await navigator.clipboard.writeText(text);toast(t('تم نسخ تفاصيل المنتج ورابطه','Product details and link copied','Produktdetails und Link kopiert'));}catch(e){if(e.name==='AbortError')return;modal('<h2>'+t('مشاركة المنتج','Share product','Produkt teilen')+'</h2><p>'+t('انسخ النص وأرسله لمن تريد','Copy this text and send it','Text kopieren und senden')+'</p><textarea readonly rows="7" style="width:100%">'+esc(text)+'</textarea>');}}
  function qrModel(url){const box=document.createElement('div');const qr=new QRCode(box,{text:url,width:256,height:256,correctLevel:QRCode.CorrectLevel.M,useSVG:true});return qr._oQRCode;}
  function drawQr(ctx,url,x,y,size){const model=qrModel(url),n=model.getModuleCount(),scale=Math.floor(size/(n+8)),actual=scale*(n+8),left=x+(size-actual)/2,top=y+(size-actual)/2;ctx.fillStyle='#fff';ctx.fillRect(x,y,size,size);ctx.fillStyle='#111';for(let row=0;row<n;row++)for(let col=0;col<n;col++)if(model.isDark(row,col))ctx.fillRect(left+(col+4)*scale,top+(row+4)*scale,scale,scale);}

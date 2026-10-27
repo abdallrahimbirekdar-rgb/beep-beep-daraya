@@ -78,7 +78,7 @@ window.ShahinI18n={translate,translationFor(text,target){return (catalogDictiona
   for(const group of record.option_groups||[]){add(group.name,group.name_en,group.name_de);for(const option of group.options)add(option.name,option.name_en,option.name_de);}
  }
  apply();
-},get language(){return lang;},money(n){return Number(n).toLocaleString(lang==='ar'?'ar-SY':lang==='en'?'en-GB':'de-DE')+(lang==='ar'?' ل.س':' SYP');},setLanguage(next){if(!['ar','en','de'].includes(next))return;lang=next;try{localStorage.setItem('shahin-language',lang);}catch{}apply();}};
+},get language(){return lang;},money(n){if(n==null||n==='')return '';return Number(n).toLocaleString(lang==='ar'?'ar-SY':lang==='en'?'en-GB':'de-DE')+(lang==='ar'?' ل.س':' SYP');},setLanguage(next){if(!['ar','en','de'].includes(next))return;lang=next;try{localStorage.setItem('shahin-language',lang);}catch{}apply();}};
 for(const name of ['confirm','alert']){const original=window[name].bind(window);window[name]=text=>original(translate(String(text)));}
 document.querySelector('#language').addEventListener('change',e=>window.ShahinI18n.setLanguage(e.target.value));
 apply();
