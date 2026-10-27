@@ -25,3 +25,18 @@ test('service saves cannot turn schools back into shops and English/German title
  const a=app();const f=new a.c.FormData();f.set('directory_kind','school');f.set('page_mode','business');const payload=a.c.directoryPagePayload(f,a.s);assert.equal(payload.text_only,true);assert.equal(payload.online_ordering,false);assert.equal(payload.delivery_enabled,false);assert.equal(payload.pickup_enabled,false);a.dom.window.close();
  for(const lang of ['en','de']){const b=app({lang});assert.ok(!/[\u0600-\u06ff]/.test(b.$('.sf-information>h2').textContent));assert.ok(!/[\u0600-\u06ff]/.test(b.$('[data-target="sf-products"] strong').textContent));b.dom.window.close();}
 });
+
+test('retail category changes keep the catalog open and show only matching products',()=>{
+ const a=app({kind:'shop'});a.c.products=[{id:'set',store_id:a.s.id,name:'طقم نسائي',section:'أطقم نسائية',available:true,price:5},{id:'lingerie',store_id:a.s.id,name:'لانجري',section:'لانجري',available:true,price:7}];a.c.renderStore(a.s.id);
+ a.$('[data-target="sf-products"]').click();
+ for(const section of ['أطقم نسائية','لانجري','all','أطقم نسائية']){
+  [...a.c.document.querySelectorAll('.menu-sections button')].find(b=>b.dataset.section===section).click();
+  assert.equal(a.$('#sf-products').classList.contains('sf-section-collapsed'),false);
+  assert.equal(a.$('.sf-section-nav').classList.contains('sf-section-collapsed'),true);
+  assert.equal(a.$('.menu-sections .selected').dataset.section,section);
+  assert.equal(a.$('.products').children.length,section==='all'?2:1);
+  if(section!=='all')assert.match(a.$('.products').textContent,section==='لانجري'?/لانجري/:/طقم نسائي/);
+  assert.equal(a.c.document.activeElement,a.$('.menu-sections .selected'));
+ }
+ a.$('.sf-section-return').click();assert.equal(a.$('.sf-section-nav').classList.contains('sf-section-collapsed'),false);a.dom.window.close();
+});
