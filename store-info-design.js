@@ -27,19 +27,39 @@
   const copy=document.createElement('span');copy.className='sf-info-row-copy';const strong=document.createElement('strong');strong.textContent=title;copy.append(strong);if(note){const small=document.createElement('small');small.textContent=note;copy.append(small);}control.replaceChildren(icon(kind),copy);if(chevron){const arrow=icon('chevron');arrow.className='sf-info-row-chevron';control.append(arrow);}
  }
  function network(href){try{const u=new URL(href,location.href),h=u.hostname.toLowerCase();if(u.protocol==='tel:')return 'phone';if(u.protocol==='mailto:')return 'mail';if(/(^|\.)(wa.me|whatsapp.com)$/.test(h))return 'whatsapp';if(/(^|\.)(facebook.com|fb.com|fb.me)$/.test(h))return 'facebook';if(/(^|\.)instagram.com$/.test(h))return 'instagram';if(/(^|\.)(t.me|telegram.me)$/.test(h))return 'telegram';if(/(^|\.)(youtube.com|youtu.be)$/.test(h))return 'youtube';if(/(^|\.)tiktok.com$/.test(h))return 'tiktok';}catch{}return 'website';}
+ function accordion(info){
+  const nav=info.querySelector('.shop-info-tabs');if(!nav)return;
+  nav.classList.add('sf-info-accordion');nav.setAttribute('role','group');
+  for(const button of [...nav.children].filter(n=>n.matches('button[aria-controls]'))){
+   const panel=document.getElementById(button.getAttribute('aria-controls'));if(!panel||!info.contains(panel))continue;
+   const item=document.createElement('section');item.className='sf-info-accordion-item';item.dataset.open='false';button.before(item);item.append(button,panel);
+   if(!button.id)button.id='sf-toggle-'+panel.id;
+   panel.setAttribute('role','region');panel.setAttribute('aria-labelledby',button.id);panel.hidden=true;button.setAttribute('aria-expanded','false');
+   button.onclick=()=>{
+    const open=panel.hidden;
+    for(const sibling of nav.querySelectorAll(':scope>.sf-info-accordion-item')){
+     const trigger=sibling.querySelector(':scope>button'),content=sibling.querySelector(':scope>.shop-info-panel');
+     if(content)content.hidden=true;if(trigger)trigger.setAttribute('aria-expanded','false');sibling.dataset.open='false';
+    }
+    panel.hidden=!open;button.setAttribute('aria-expanded',String(open));item.dataset.open=String(open);
+   };
+  }
+  for(const old of info.querySelectorAll('.shop-info-content'))if(!old.children.length)old.remove();
+ }
  function enhance(){
   if(!app.ownerDocument.defaultView?.document)return;
   for(const info of app.querySelectorAll('.sf-information')){
    info.classList.add('sf-info-refined');const heading=info.querySelector(':scope>h2');if(heading&&/تعرّف على المحل|About this business|Über dieses Geschäft/.test(heading.textContent))heading.textContent=t('معلومات المتجر','Shop information','Geschäftsinformationen');
    for(const a of info.querySelectorAll('.sf-contact-actions>a')){const call=a.getAttribute('href')?.startsWith('tel:');row(a,call?'phone':'directions',call?t('اتصل بالمتجر','Call the shop','Geschäft anrufen'):t('الاتجاهات على الخريطة','Get directions','Route auf der Karte'),call?a.getAttribute('href').slice(4):t('افتح المسار للوصول إلى المتجر','Find your way to the shop','Den Weg zum Geschäft finden'),false);if(call){const small=a.querySelector('small');if(small){small.dir='ltr';small.classList.add('sf-info-phone-number');}}}
-   for(const button of info.querySelectorAll('.shop-info-tabs button')){
+   for(const button of info.querySelectorAll('.shop-info-tabs>button')){
     if(button.dataset.sfInfoRow)continue;const text=button.textContent;let kind=/العنوان|Address|contact|Adresse|Kontakt/i.test(text)?'contact':/التوصيل|Delivery|Lieferung/i.test(text)?'delivery':/الدوام|hours|Öffnungszeiten/i.test(text)?'hours':/عن المحل|نبذة|About|Über/i.test(text)?'about':'info';
     const panel=document.getElementById(button.getAttribute('aria-controls'));if(panel)panel.dataset.sfInfoKind=kind;const details=labels[kind]?.();row(button,kind,details?.[0]||text,details?.[1]||'');
    }
+   accordion(info);
    for(const panel of info.querySelectorAll('.shop-info-panel[data-sf-info-kind="contact"]')){
-    for(const p of panel.querySelectorAll(':scope>p')){if(p.dataset.sfContactDetail)continue;p.dataset.sfContactDetail='';p.classList.add('sf-contact-detail');const a=p.querySelector('a'),kind=a?network(a.getAttribute('href')):'contact';const content=document.createElement('div');content.className='sf-contact-detail-copy';content.append(...p.childNodes);p.append(icon(kind),content);}
+    for(const p of panel.querySelectorAll(':scope>p')){if(p.hasAttribute('data-sf-contact-detail'))continue;p.dataset.sfContactDetail='';p.classList.add('sf-contact-detail');const a=p.querySelector('a'),kind=a?network(a.getAttribute('href')):'contact';const content=document.createElement('span');content.className='sf-contact-detail-copy';content.append(...p.childNodes);p.append(icon(kind),content);}
     for(const visit of panel.querySelectorAll('[data-visit-store]'))row(visit,'contact',t('عرض موقع المتجر','View shop location','Geschäftsstandort ansehen'),t('العنوان ومكان المتجر على الخريطة','Address and location on the map','Adresse und Standort auf der Karte'),false);
-    for(const a of panel.querySelectorAll('.store-social-link')){if(a.dataset.sfNetworkIcon)continue;a.dataset.sfNetworkIcon='';const badge=a.querySelector('.social-network-icon');if(badge){const svg=icon(network(a.getAttribute('href'))).firstElementChild;badge.replaceChildren(svg);}}
+    for(const a of panel.querySelectorAll('.store-social-link')){if(a.hasAttribute('data-sf-network-icon'))continue;a.dataset.sfNetworkIcon='';const badge=a.querySelector('.social-network-icon');if(badge){const svg=icon(network(a.getAttribute('href'))).firstElementChild;badge.replaceChildren(svg);}}
    }
   }
  }
