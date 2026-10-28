@@ -3,7 +3,7 @@
 (() => {
  const app=document.getElementById('app');if(!app)return;
  const t=(ar,en,de)=>({ar,en,de}[window.ShahinI18n?.language||'ar']||ar);
- const cleanViews=new Set();let queued=false,returnTo=null;
+ const cleanViews=new Set();let queued=false,returnTo=null,managementEntries=[];
  const currentStore=id=>stores.find(s=>s.id===id&&!s.deleted_at);
  const canEdit=s=>!!(user&&s&&!s.is_example&&!s._mosqueCatalog&&typeof mine==='function'&&mine().some(x=>x.id===s.id));
  const editHref=(s,key)=>typeof merchantHref==='function'?merchantHref(key,s):admin?'#dashboard/setup/'+s.id+'/'+key:'#dashboard/'+key+'/'+s.id;
@@ -25,7 +25,7 @@
   const content=document.createElement('div');content.id='dashboard-content';content.className='owner-inline-content';panel.append(head,content);
   const controls=host.querySelector(':scope>.owner-edit-controls');if(controls)controls.after(panel);else host.prepend(panel);
   panel.addEventListener('input',()=>panel.dataset.dirty='true');panel.addEventListener('change',()=>panel.dataset.dirty='true');
-  try{merchantEditor(s,key);}catch(error){panel.remove();returnTo=null;window.DarayaFeedback?.showError?.(error);return;}
+  try{if(key==='products')merchantProducts(s);else merchantEditor(s,key);}catch(error){panel.remove();returnTo=null;window.DarayaFeedback?.showError?.(error);return;}
   panel.scrollIntoView?.({block:'start',behavior:'auto'});const input=panel.querySelector('input:not([type=hidden]),textarea,select');input?.focus({preventScroll:true});
  }
  function editItem(id,pid){const existing=app.querySelector('.owner-inline-editor');if(existing&&!closeEditor(existing))return;const s=currentStore(id),p=pid&&products.find(p=>p.id===pid&&p.store_id===id);if(!canEdit(s)||pid&&!p)return;remember(s,'sf-products');editProduct(s,p||{});const dialog=document.getElementById('modal');if(dialog)dialog.dataset.ownerLiveEdit=id;}
@@ -37,11 +37,17 @@
    const medical=typeof directoryIsMedical==='function'&&directoryIsMedical(s);app.classList.add('owner-live-store');const cleanKey=user.id+':'+s.id;app.classList.toggle('owner-view-clean',cleanViews.has(cleanKey));
    if(!hero.querySelector('.owner-store-bar')){
     const bar=document.createElement('section');bar.className='owner-store-bar';bar.dataset.noTranslate='';bar.dataset.ownerStoreId=s.id;bar.dataset.ownerUserId=user.id;const label=document.createElement('strong');label.textContent=s.active?t('صفحة متجرك — يمكنك التعديل مباشرة','Your shop page — edit directly','Deine Geschäftsseite — direkt bearbeiten'):t('معاينة خاصة — المتجر غير منشور ولا يستقبل طلبات','Private preview — shop is not published and takes no orders','Private Vorschau — Geschäft ist nicht veröffentlicht und nimmt keine Bestellungen an');
-    const controls=document.createElement('div');controls.className='owner-store-navigation';controls.append(link(t('العودة إلى لوحة التحكم','Back to dashboard','Zurück zur Verwaltung'),editHref(s,'overview')));
+    const controls=document.createElement('div');controls.className='owner-store-navigation';if(admin)controls.append(link(t('إدارة المنصة','Platform admin','Plattformverwaltung'),'#dashboard/stores'));
+    const tools=document.createElement('details');tools.className='owner-management-tools';const summary=document.createElement('summary');summary.textContent=t('أدوات الإدارة','Management tools','Verwaltungswerkzeuge');tools.append(summary);const menu=document.createElement('div');
+    menu.append(...managementEntries);
+    for(const entry of managementEntries){const locked=entry.classList.contains('locked-plan-nav');entry.className='button outline'+(locked?' locked-plan-nav':'');entry.removeAttribute('aria-current');}
+    if(!menu.querySelector('a[href^="#merchant-help/"]'))menu.append(link(t('دليل صاحب المتجر','Shop owner guide','Geschäftsanleitung'),'#merchant-help/'+s.id));
+    tools.append(menu);controls.append(tools);
+    const owned=typeof mine==='function'?mine().filter(x=>!x.deleted_at&&!x.is_example):[];if(owned.length>1){const picker=document.createElement('select');picker.setAttribute('aria-label',t('اختيار المتجر','Choose shop','Geschäft auswählen'));for(const shop of owned){const option=document.createElement('option');option.value=shop.id;option.textContent=shop.name;option.selected=shop.id===s.id;picker.append(option);}picker.onchange=()=>{location.hash='#store/'+picker.value;};controls.append(picker);}
     const toggle=button(cleanViews.has(cleanKey)?t('إظهار أزرار التعديل','Show edit buttons','Bearbeitung einblenden'):t('إخفاء أزرار التعديل','Hide edit buttons','Bearbeitung ausblenden'),()=>{if(!canEdit(currentStore(s.id)))return;if(cleanViews.has(cleanKey))cleanViews.delete(cleanKey);else cleanViews.add(cleanKey);app.classList.toggle('owner-view-clean',cleanViews.has(cleanKey));toggle.textContent=cleanViews.has(cleanKey)?t('إظهار أزرار التعديل','Show edit buttons','Bearbeitung einblenden'):t('إخفاء أزرار التعديل','Hide edit buttons','Bearbeitung ausblenden');});controls.append(toggle);bar.append(label,controls);hero.prepend(bar);
    }
    actions(hero,s,'identity',row=>row.append(button(t('تعديل الاسم والمعلومات','Edit name and details','Name und Angaben bearbeiten'),()=>openInline(s.id,'details','sf-info')),button(t('تغيير صورة المتجر','Change shop photo','Geschäftsfoto ändern'),()=>openInline(s.id,'photos','sf-tools'))));
-   actions(app.querySelector('#sf-products'),s,'products',row=>row.append(button(t('+ إضافة منتج','+ Add product','+ Produkt hinzufügen'),()=>editItem(s.id)),link(t('إدارة جميع المنتجات','Manage all products','Alle Produkte verwalten'),editHref(s,'products'))));
+   actions(app.querySelector('#sf-products'),s,'products',row=>row.append(button(t('+ إضافة منتج','+ Add product','+ Produkt hinzufügen'),()=>editItem(s.id)),button(t('إدارة المنتجات والأقسام','Manage products and categories','Produkte und Kategorien verwalten'),()=>openInline(s.id,'products','sf-products'))));
    actions(app.querySelector('#sf-info'),s,'details',row=>{row.append(button(t('تعديل معلومات المتجر والتواصل','Edit shop and contact details','Geschäfts- und Kontaktdaten bearbeiten'),()=>openInline(s.id,'details','sf-info')));if(!medical)row.append(button(t('تعديل أوقات الدوام','Edit opening hours','Öffnungszeiten bearbeiten'),()=>openInline(s.id,'hours','sf-info')));});
    actions(app.querySelector('#sf-tools'),s,'photos',row=>row.append(button(t('تعديل صورة المتجر وإضافة صور','Edit shop photo and add photos','Geschäftsfoto bearbeiten und Bilder hinzufügen'),()=>openInline(s.id,'photos','sf-tools'))));
    if(!medical)actions(app.querySelector('#sf-videos'),s,'videos',row=>row.append(button(t('إضافة الفيديوهات وتعديلها','Add and edit videos','Videos hinzufügen und bearbeiten'),()=>openInline(s.id,'videos','sf-videos'))));
@@ -54,10 +60,35 @@
   const s=currentStore(id),privatePreview=canEdit(s)&&!s.active,active=s?.active,open=s?.is_open;
   const oldBar=app.querySelector('.owner-store-bar'),liveState=canEdit(s)&&oldBar?.dataset.ownerStoreId===id&&oldBar.dataset.ownerUserId===user.id?{uid:user.id,id,section:view()?.active}:null;
   const dialog=document.getElementById('modal');if(returnTo&&(app.querySelector('.owner-inline-editor [data-save-committed="true"]')||dialog?.querySelector('[data-save-committed="true"]')&&(dialog.dataset.ownerLiveEdit===id||app.querySelector('.owner-inline-editor'))))returnTo.ready=true;
+  // Retain the original tool nodes and their access checks/handlers, then render
+  // only the storefront. No second dashboard is mounted beside it.
+  managementEntries=[];
+  if(canEdit(s)){
+   previousDashboard.call(this,mine(),s,'overview');
+   const editorRoutes=['overview',...Object.keys(editableSections)].map(key=>editHref(s,key));
+   managementEntries=[...app.querySelectorAll('.merchant-nav a,.merchant-nav [data-store-transfer]')].filter(a=>!a.hidden&&!editorRoutes.includes(a.getAttribute('href')));
+   app.classList.remove('professional-home','dashboard-menu-home','dashboard-menu-section','dashboard-menu-layout');
+   delete app.dataset.dashboardSection;delete app.dataset.dashboardRoute;
+  }
   let result;try{if(privatePreview){s.active=true;s.is_open=false;}result=previousStore.apply(this,arguments);}finally{if(privatePreview){s.active=active;s.is_open=open;}}
   enhance();const restore=returnTo?.ready?returnTo:liveState;if(restore&&restore.uid===user?.id&&restore.id===id){if(returnTo?.ready)returnTo=null;requestAnimationFrame(()=>{if(!app.ownerDocument.defaultView?.document)return;if(pageStore()?.id!==id||user?.id!==restore.uid)return;window.DarayaRefreshSectionMenus?.();enhance();if(restore.section)view()?.open(restore.section);});}return result;
  };
- const previousDashboard=merchantDashboard;merchantDashboard=function(ms,s,section){const result=previousDashboard.apply(this,arguments);if(!canEdit(s))return result;const home=!section||section==='overview';for(const a of app.querySelectorAll('.merchant-preview')){a.dataset.noTranslate='';a.textContent=home?t('فتح متجري والتعديل','Open and edit my shop','Mein Geschäft öffnen und bearbeiten'):t('العودة إلى صفحة متجري','Back to my shop page','Zurück zu meiner Geschäftsseite');a.title=t('شاهد صفحة متجرك وعدّل أقسامها مباشرة','See your shop page and edit its sections directly','Geschäftsseite ansehen und Bereiche direkt bearbeiten');}for(const back of app.querySelectorAll('.dashboard-menu-back')){back.dataset.noTranslate='';back.textContent=t('العودة إلى لوحة التحكم','Back to dashboard','Zurück zur Verwaltung');}return result;};
+ const previousDashboard=merchantDashboard;
+ const editableSections={details:'sf-info',photos:'sf-tools',hours:'sf-info',videos:'sf-videos',delivery:'sf-orders',products:'sf-products'};
+ merchantDashboard=function(ms,s,section){
+  if(canEdit(s)&&(!section||['overview','stores'].includes(section)||editableSections[section])){
+   // Old dashboard links open the same shop surface, never a second edit menu.
+   history.replaceState(history.state,'','#store/'+s.id);
+   app.classList.remove('professional-home','dashboard-menu-home','dashboard-menu-section','dashboard-menu-layout');
+   delete app.dataset.dashboardSection;delete app.dataset.dashboardRoute;
+   renderStore(s.id);
+   if(editableSections[section]){window.DarayaRefreshSectionMenus?.();enhance();openInline(s.id,section,editableSections[section]);}
+   return;
+  }
+  const result=previousDashboard.apply(this,arguments);if(!canEdit(s))return result;
+  for(const a of app.querySelectorAll('.merchant-preview,.dashboard-menu-back')){a.dataset.noTranslate='';a.href='#store/'+s.id;a.textContent=t('العودة إلى لوحة متجري','Back to my shop','Zurück zu meinem Geschäft');}
+  return result;
+ };
  document.getElementById('modal')?.addEventListener('close',()=>{const dialog=document.getElementById('modal');const saved=!!dialog.querySelector('[data-save-committed="true"]');if(saved&&returnTo)returnTo.ready=true;if(!dialog.dataset.ownerLiveEdit)return;if(!saved)returnTo=null;delete dialog.dataset.ownerLiveEdit;});
  app.addEventListener('click',event=>{if(!event.target.closest?.('.menu-sections [data-section]'))return;const panel=app.querySelector('.owner-inline-editor');if(!panel)return;if(!closeEditor(panel)){event.preventDefault();event.stopImmediatePropagation();}else returnTo=null;},true);
  window.addEventListener('hashchange',()=>{if(!location.hash.startsWith('#store/'))returnTo=null;enhance();});
