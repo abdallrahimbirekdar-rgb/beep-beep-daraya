@@ -7,7 +7,13 @@
  const currentStore=id=>stores.find(s=>s.id===id&&!s.deleted_at);
  const canEdit=s=>!!(user&&s&&!s.is_example&&!s._mosqueCatalog&&typeof mine==='function'&&mine().some(x=>x.id===s.id));
  const editHref=(s,key)=>typeof merchantHref==='function'?merchantHref(key,s):admin?'#dashboard/setup/'+s.id+'/'+key:'#dashboard/'+key+'/'+s.id;
- const pageStore=()=>location.hash.split('/')[0]==='#store'?currentStore(location.hash.split('/')[1]):null;
+ const pageStore=()=>{
+  if(location.hash.split('/')[0]==='#store')return currentStore(location.hash.split('/')[1]);
+  if(location.hash||typeof placeSlug!=='function')return null;
+  const match=location.pathname.match(/^\/darayya\/([^/]+)\/?$/);if(!match)return null;
+  let slug;try{slug=decodeURIComponent(match[1]);}catch{return null;}
+  return stores.find(s=>s.active&&!s.deleted_at&&placeSlug(s)===slug)||null;
+ };
  const view=()=>window.DarayaShopSectionView?.(app);
  const button=(label,action,cls='outline')=>{const b=document.createElement('button');b.type='button';b.className=cls;b.textContent=label;b.onclick=e=>{e.preventDefault();e.stopPropagation();action();};return b;};
  const link=(label,href,cls='button outline')=>{const a=document.createElement('a');a.className=cls;a.textContent=label;a.href=href;return a;};
@@ -78,6 +84,7 @@
  merchantDashboard=function(ms,s,section){
   if(canEdit(s)&&(!section||['overview','stores'].includes(section)||editableSections[section])){
    // Old dashboard links open the same shop surface, never a second edit menu.
+   cleanViews.delete(user.id+':'+s.id);
    history.replaceState(history.state,'','#store/'+s.id);
    app.classList.remove('professional-home','dashboard-menu-home','dashboard-menu-section','dashboard-menu-layout');
    delete app.dataset.dashboardSection;delete app.dataset.dashboardRoute;
