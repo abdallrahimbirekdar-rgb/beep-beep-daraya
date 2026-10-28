@@ -1,0 +1,15 @@
+const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),{JSDOM}=require('jsdom');
+function setup({role='owner',items=[]}={}){
+ const dom=new JSDOM('<main id="app"></main><dialog id="modal"><div id="modal-body"></div></dialog>',{url:'https://damascus-shop.com/#store/shop',runScripts:'outside-only',pretendToBeVisual:true}),w=dom.window;
+ w.user=role==='visitor'?null:{id:role,email:role+'@example.com'};w.admin=role==='admin';w.stores=[{id:'shop',name:'سوبر ماركت بيت العائلة',active:true,is_open:true,description:'متجر',address:'داريا',owner_email:'owner@example.com'}];w.products=items;
+ w.mine=()=>w.stores.filter(s=>w.user&&(w.admin||s.owner_email===w.user.email));w.merchantHref=(key,s)=>'#dashboard/'+key+'/'+s.id;w.ct=ar=>ar;w.storeCoordinates=()=>null;w.esc=x=>String(x??'');w.gallery=()=>{};w.ShahinI18n={language:'ar'};w.matchMedia=()=>({matches:true});w.HTMLElement.prototype.scrollIntoView=function(){};
+ w.merchantDashboard=()=>{w.document.querySelector('#app').innerHTML='<nav class="merchant-nav"></nav>';};w.merchantEditor=()=>{};w.merchantProducts=()=>{};w.editProduct=(s,p)=>{w.addedTo=s.id;w.editedProduct=p;};
+ w.renderStore=()=>{w.document.querySelector('#app').innerHTML='<section class="store-banner"><div class="store-identity"><h1>سوبر ماركت بيت العائلة</h1></div></section><section class="store-layout"><div><h2>المنتجات</h2><div class="products">'+w.products.filter(p=>p.available).map(p=>'<article class="product" data-product-id="'+p.id+'"><div><h3>'+p.name+'</h3></div></article>').join('')+'</div></div></section>';};
+ for(const file of ['store-sections.js','shop-section-view.js','storefront.js','owner-store-editor.js'])w.eval(fs.readFileSync(file,'utf8'));
+ w.render=()=>w.renderStore('shop');w.render();return {w,$:s=>w.document.querySelector(s),close:()=>dom.window.close()};
+}
+test('empty shop owners and admins can open Products and add the first product on the actual storefront',()=>{
+ for(const role of ['owner','admin']){const a=setup({role});try{const tile=a.$('[data-target="sf-products"]');assert.ok(tile);assert.equal(tile.disabled,false);tile.click();assert.equal(a.w.DarayaShopSectionView(a.$('#app')).active,'sf-products');assert.ok(a.$('#sf-products .owner-edit-controls'));a.$('#sf-products .owner-edit-controls button').click();assert.equal(a.w.addedTo,'shop');}finally{a.close();}}
+});
+test('owners can add products when every existing product is unavailable',()=>{const a=setup({items:[{id:'p',store_id:'shop',name:'منتج',available:false}]});try{assert.equal(a.$('[data-target="sf-products"]').disabled,false);a.$('#sf-products .owner-edit-controls button').click();assert.equal(a.w.addedTo,'shop');}finally{a.close();}});
+test('visitors and other shop owners still see a disabled empty catalog without edit access',()=>{for(const role of ['visitor','other']){const a=setup({role});try{assert.equal(a.$('[data-target="sf-products"]').disabled,true);assert.equal(a.$('.owner-edit-controls'),null);assert.equal(a.$('.store-layout'),null);}finally{a.close();}}});
