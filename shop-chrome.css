@@ -19,3 +19,14 @@ body.compact-shop-chrome>footer{padding:8px 12px!important;gap:6px!important;fon
  body.compact-shop-chrome #mobile-navigation a>span:last-child{font-size:11px!important;line-height:1.2!important;width:auto!important;white-space:nowrap!important}
  body.compact-shop-chrome #mobile-navigation a>span:first-child{font-size:18px!important;width:22px!important;height:23px!important;min-height:0!important;line-height:1.1!important}
 }
+
+/* Keep the shop's existing identity and sections foremost; the platform stays a quiet link. */
+.shop-platform-affiliation{display:none}
+body.store-primary-branding>footer>.shop-platform-affiliation{display:block;flex-basis:100%;max-width:100%;margin:0;text-align:center;font-size:12px;line-height:1.8;font-weight:400}
+.shop-platform-affiliation a{text-decoration:underline;text-underline-offset:3px}
+body.store-primary-branding>footer>strong,body.store-primary-branding>footer>span{display:none}
+html body.store-primary-branding header:has(#android-app-button) .brand-wordmark{width:auto!important;height:28px!important;max-height:28px!important;max-width:104px!important}
+body.store-primary-branding header .brand-localized-name{font-size:13px!important;font-weight:400!important}
+body.store-primary-branding header .brand-localized-name small{display:none}
+body.store-primary-branding header .brand-icon{width:26px!important;height:26px!important;min-width:26px!important}
+body.store-primary-branding header .brand-icon img{width:26px!important;height:26px!important}
