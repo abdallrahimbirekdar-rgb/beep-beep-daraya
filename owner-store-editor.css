@@ -39,3 +39,12 @@
 .owner-single-field .editor-footer{margin-top:8px;padding-top:8px}
 .owner-single-field .owner-scope-field{width:100%;box-sizing:border-box}
 .owner-field-action>button{font-size:12px;min-height:44px;white-space:nowrap}
+
+.owner-edit-mode-notice{flex-basis:100%;margin:4px 0;padding:10px 12px;border:1px solid #b79032;border-radius:10px;background:#fff6d8;color:#173b35;font-size:13px;text-align:start}
+.owner-view-clean .owner-edit-mode-notice{display:none!important}
+.owner-live-store:not(.owner-view-clean) .shop-info-panel:has(>.owner-inline-editor)>:not(.owner-inline-editor){display:none!important}
+.owner-live-store .shop-info-panel>.owner-inline-editor{margin:0}
+
+.owner-view-clean .owner-only-section{display:none!important}
+
+.shop-info-panel>.owner-inline-editor .section-heading{display:none!important}
