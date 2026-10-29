@@ -65,24 +65,15 @@
   fieldAction(hero.querySelector('h1'),s,'name',t('تعديل اسم المتجر','Edit shop name','Geschäftsnamen bearbeiten'));
   fieldAction(hero.querySelector('.sf-cover-button,.store-image'),s,'photo',t('تغيير صورة المتجر','Change shop photo','Geschäftsfoto ändern'),'photos','sf-tools');
   // Information is edited inside the visitor's existing accordion sections.
-  const nav=app.querySelector('#sf-info .sf-info-accordion');
-  const missing=[['about',t('عن المتجر','About the shop','Über das Geschäft')],['contact',t('العنوان وطرق التواصل','Address and contact','Adresse und Kontakt')]];
-  if(!(typeof directoryIsMedical==='function'&&directoryIsMedical(s)))missing.push(['hours',t('أوقات الدوام','Opening hours','Öffnungszeiten')]);
-  for(const [kind,label] of missing){
-   if(!nav||nav.querySelector('.shop-info-panel[data-sf-info-kind="'+kind+'"]'))continue;
-   const item=document.createElement('section');item.className='sf-info-accordion-item owner-only-section';item.dataset.open='false';
-   const trigger=button(label,()=>{});trigger.className='sf-info-row';trigger.dataset.sfInfoRow=kind;trigger.id='owner-info-toggle-'+kind;
-   const panel=document.createElement('section');panel.className='shop-info-panel';panel.id='owner-info-'+kind;panel.dataset.sfInfoKind=kind;panel.hidden=true;panel.setAttribute('role','region');panel.setAttribute('aria-labelledby',trigger.id);trigger.setAttribute('aria-controls',panel.id);trigger.setAttribute('aria-expanded','false');
-   trigger.onclick=()=>{const opening=panel.hidden;for(const sibling of nav.querySelectorAll(':scope>.sf-info-accordion-item')){sibling.querySelector(':scope>.shop-info-panel').hidden=true;sibling.querySelector(':scope>button').setAttribute('aria-expanded','false');sibling.dataset.open='false';}panel.hidden=!opening;trigger.setAttribute('aria-expanded',String(opening));item.dataset.open=String(opening);};item.append(trigger,panel);nav.append(item);
-  }
   for(const trigger of app.querySelectorAll('#sf-info .sf-info-accordion-item>button[aria-controls]')){
    if(trigger.dataset.ownerSectionBound)continue;
    const host=document.getElementById(trigger.getAttribute('aria-controls')),kind=host?.dataset.sfInfoKind;
    const custom=host?.querySelector('[data-page-section-id]')?.dataset.pageSectionId;const key={about:'details',contact:'details',hours:'hours',delivery:'delivery'}[kind]||(custom?'page-'+custom:null);if(!key)continue;
    trigger.dataset.ownerSectionBound='true';const original=trigger.onclick;
    trigger.onclick=function(event){
-    const active=canEdit(currentStore(s.id))&&editingViews.has(user.id+':'+s.id),opening=host.hidden;
+    const active=canEdit(currentStore(s.id))&&editingViews.has(user.id+':'+s.id),opening=host.hidden||active&&!host.querySelector('.owner-inline-editor');
     if(active&&opening){const old=app.querySelector('.owner-inline-editor');if(old&&old.dataset.editorKey!==key&&!closeEditor(old))return;}
+    if(active&&opening)host.hidden=true;
     original?.call(this,event);
     if(active&&!host.hidden){openInline(s.id,key,host.id,key==='details'?'@'+kind:undefined);}
    };
@@ -186,7 +177,7 @@
      if(editingViews.has(editKey)){const editor=app.querySelector('.owner-inline-editor');if(editor&&!closeEditor(editor))return;editingViews.delete(editKey);returnTo=null;}
      else editingViews.add(editKey);
      syncManagement(s);
-     if(editingViews.has(editKey)){fieldControls(s);const host=app.querySelector('#sf-info .shop-info-panel:not([hidden])'),kind=host?.dataset.sfInfoKind,key={about:'details',contact:'details',hours:'hours',delivery:'delivery'}[kind];if(key)openInline(s.id,key,host.id,key==='details'?'@'+kind:undefined);}
+
     });toggle.className='outline owner-manage-toggle';toggle.setAttribute('aria-controls','owner-page-management');
     const panel=document.createElement('div');panel.id='owner-page-management';panel.className='owner-page-management';panel.append(controls);
     const notice=document.createElement('p');notice.className='owner-edit-mode-notice';notice.setAttribute('role','status');notice.textContent=t('أنت الآن في وضع التعديل. افتح أي قسم لتعديل معلوماته. أدوات التعديل لا تظهر للزوار.','You are in edit mode. Open a section to edit its information. Visitors do not see these editing tools.','Du bist im Bearbeitungsmodus. Öffne einen Bereich, um seine Daten zu bearbeiten. Besucher sehen diese Werkzeuge nicht.');bar.append(toggle,panel,notice);
