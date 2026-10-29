@@ -34,6 +34,23 @@
   // The main shop menu now owns these sections, so they never appear under Photos.
   root.dataset.promotedTools='1';topTile(page,share,share.id,t('المنيو وQR والمشاركة','Menu, QR and sharing','Speisekarte, QR und Teilen'),t('تحميل المنيو ورمز المحل ومشاركته','Download the menu, shop QR and sharing','Speisekarte herunterladen, Geschäfts-QR und Teilen'),'▦');topTile(page,orders,orders.id,t('الطلبات والتوصيل','Orders and delivery','Bestellungen und Lieferung'),t('الطلبات والسائقون وإعدادات التوصيل','Orders, drivers and delivery settings','Bestellungen, Fahrer und Liefereinstellungen'),'🚚');topTile(page,other,other.id,t('أدوات المتجر','Shop tools','Geschäftswerkzeuge'),t('التعديل والمخزون والحسابات','Editing, stock and accounts','Bearbeitung, Bestand und Abrechnung'),'🧰');
  }
+ function shareCards(section){
+  const controls=[...section.querySelectorAll(':scope>.sf-share,:scope>.shop-catalog-download,:scope>[data-place-qr],:scope>[data-place-whatsapp-share]')];
+  let grid=section.querySelector(':scope>.sf-share-cards');
+  if(!grid&&controls.length){grid=document.createElement('div');grid.className='sf-share-cards';section.append(grid);}
+  if(!grid)return;
+  for(const control of controls)grid.append(control);
+  const paths={qr:'<path d="M3 3h6v6H3zm12 0h6v6h-6zM3 15h6v6H3zm12 0h3v3h3m-6 3h3m3-9v1M12 3v6m0 3h3m-3 3v6"/>',whatsapp:'<path d="M20 11a8 8 0 0 1-12 7l-5 2 2-5a8 8 0 1 1 15-4Z"/><path d="m9 7 1 3-1 1c1 2 2 3 4 4l1-1 3 1"/>',catalog:'<path d="M12 5v15M3 4c4-1 6 0 9 2 3-2 5-3 9-2v15c-4-1-6 0-9 2-3-2-5-3-9-2Z"/><path d="M6 8h3m-3 4h3m6-4h3m-3 4h3"/>',share:'<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m9 10 6-4m-6 8 6 4"/>'};
+  for(const control of grid.children){
+   if(control.dataset.sfShareCard)continue;
+   const kind=control.hasAttribute('data-place-qr')?'qr':control.hasAttribute('data-place-whatsapp-share')?'whatsapp':control.matches('.shop-catalog-download')?'catalog':'share';
+   const text={qr:[t('رمز QR للمتجر','Shop QR code','Geschäfts-QR-Code'),t('بطاقة المتجر للحفظ والطباعة','Save or print your shop card','Geschäftskarte speichern oder drucken')],whatsapp:[t('المشاركة عبر واتساب','Share on WhatsApp','Über WhatsApp teilen'),t('أرسل رابط المتجر مباشرة','Send the shop link directly','Geschäftslink direkt versenden')],catalog:[t('إنشاء المنيو أو الكتالوج','Create a menu or catalog','Speisekarte oder Katalog erstellen'),t('تصميم وتحميل مع رمز QR','Design and download with QR','Gestalten und mit QR herunterladen')],share:[t('مشاركة رابط المتجر','Share shop link','Geschäftslink teilen'),t('اختر التطبيق الذي تريده','Choose an app to share with','App zum Teilen auswählen')]}[kind];
+   const icon=document.createElement('span');icon.className='sf-share-card-icon';icon.setAttribute('aria-hidden','true');icon.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">'+paths[kind]+'</svg>';
+   const copy=document.createElement('span');copy.className='sf-share-card-copy';const title=document.createElement('strong');title.textContent=text[0];const note=document.createElement('small');note.textContent=text[1];copy.append(title,note);
+   const arrow=document.createElement('span');arrow.className='sf-share-card-arrow';arrow.setAttribute('aria-hidden','true');arrow.textContent='‹';
+   control.dataset.sfShareCard=kind;control.replaceChildren(icon,copy,arrow);
+  }
+ }
  function publicShopTools(){
   const root=app.querySelector('.sf-tools'),banner=app.querySelector('.store-banner[data-storefront]');if(!root||!banner)return;const page=banner.parentElement,view=window.DarayaShopSectionView?.(page);if(!view)return;
   let other=page.querySelector('#sf-other-tools'),orders=page.querySelector('#sf-orders');
@@ -41,6 +58,7 @@
   let share=page.querySelector('#sf-share');
   if(!share){share=document.createElement('section');share.id='sf-share';share.className='panel promoted-shop-section';share.dataset.noTranslate='';const h=document.createElement('h2');h.textContent=t('المنيو وQR والمشاركة','Menu, QR and sharing','Speisekarte, QR und Teilen');share.append(h);page.append(share);}
   for(const node of other.querySelectorAll('.sf-share,.shop-catalog-download,[data-place-qr],[data-place-whatsapp-share]'))share.append(node);
+  shareCards(share);
   if(share.children.length>1)topTile(page,share,share.id,t('المنيو وQR والمشاركة','Menu, QR and sharing','Speisekarte, QR und Teilen'),t('تحميل المنيو ورمز المحل ومشاركته','Download the menu, shop QR and sharing','Speisekarte herunterladen, Geschäfts-QR und Teilen'),'▦');else share.remove();
   topTile(page,other,other.id,t('أدوات المتجر','Shop tools','Geschäftswerkzeuge'),t('المعلومات والأدوات الإضافية','Information and more tools','Informationen und weitere Werkzeuge'),'🧰');
   const s=typeof stores!=='undefined'?stores.find(s=>s.id===banner.dataset.storefront):null;
