@@ -43,7 +43,7 @@ test('phone and address have direct edit buttons that focus their real form fiel
   const phone=a.$('#sf-info .owner-field-action[data-owner-field="contact_phone"] button');assert.ok(phone);phone.click();
   const form=a.$('#merchant-editor');assert.ok(form.elements.contact_phone);assert.equal(a.w.document.activeElement.name,'contact_phone');form.elements.contact_phone.value='+963911111111';
   const address=a.$('#sf-info .owner-field-action[data-owner-field="address"] button');assert.ok(address);address.click();
-  assert.equal(a.$('#merchant-editor'),form);assert.equal(form.elements.contact_phone.value,'+963911111111');assert.equal(a.w.document.activeElement.name,'address');assert.equal(form.elements.address.value,'داريا، شارع السوق');assert.equal(a.w.location.hash,'#store/shop');assert.deepEqual(a.errors,[]);
+  assert.equal(a.$('#merchant-editor'),form);assert.equal(form.elements.contact_phone.value,'+963911111111');assert.deepEqual(a.errors,[]);assert.equal(a.w.document.activeElement.name,'address');assert.equal(form.elements.address.value,'داريا، شارع السوق');assert.equal(a.w.location.hash,'#store/shop');assert.deepEqual(a.errors,[]);
  }finally{a.close();}}
 });
 test('field pencils stay absent for visitors and disappear when leaving editing mode',async()=>{
@@ -57,5 +57,24 @@ test('phone and address changes use the existing revision-checked save handler',
   a.run(`api.from=table=>({update(payload){window.savedPayload=payload;window.savedTable=table;return this;},eq(key,value){window.savedFilters.push([key,value]);return this;},select(){return Promise.resolve({data:[{id:'shop'}],error:null});}});window.DarayaSaveFeedback.complete=async form=>{form.dataset.saveCommitted='true';};const originalFail=window.DarayaSaveFeedback.fail;window.DarayaSaveFeedback.fail=(error,...args)=>{window.saveError=error.stack;return originalFail(error,...args);};`);
   await form.onsubmit({preventDefault(){},target:form,submitter:form.querySelector('[type="submit"]')});
   assert.equal(a.w.savedTable,'stores',a.w.saveError||a.$('#editor-error')?.textContent);assert.equal(a.w.savedPayload.contact_phone,'+963922222222');assert.equal(a.w.savedPayload.address,'داريا، عنوان جديد');assert.ok(a.w.savedFilters.some(([key,value])=>key==='id'&&value==='shop'));assert.ok(a.w.savedFilters.some(([key,value])=>key==='revision'&&value===1));assert.equal(form.dataset.saveCommitted,'true');
+ }finally{a.close();}
+});
+
+test('direct editing shows only the chosen field beside its value and restores the full section editor',async()=>{
+ const a=setup();try{
+  const style=a.w.document.createElement('style');style.textContent=fs.readFileSync('owner-store-editor.css','utf8');a.w.document.head.append(style);
+  a.run("renderDashboard('setup','shop')");a.$('.owner-manage-toggle').click();await new Promise(r=>setTimeout(r,35));
+  a.$('.owner-field-action[data-owner-field="name"] button').click();
+  const panel=a.$('.owner-inline-editor'),form=a.$('#merchant-editor');
+  assert.ok(panel.closest('.store-banner'));assert.ok(panel.classList.contains('owner-single-field'));
+  assert.equal(a.w.getComputedStyle(form.elements.contact_phone.closest('label')).display,'none');
+  assert.notEqual(a.w.getComputedStyle(form.elements.name.closest('label')).display,'none');
+  assert.equal(form.querySelector('[type="submit"]').textContent,'حفظ');
+  form.elements.name.value='اسم جديد';
+  a.$('.owner-field-action[data-owner-field="contact_phone"] button').click();
+  assert.equal(a.$('#merchant-editor'),form);assert.equal(form.elements.name.value,'اسم جديد');
+  assert.equal(a.w.getComputedStyle(form.elements.name.closest('label')).display,'none');
+  assert.notEqual(a.w.getComputedStyle(form.elements.contact_phone.closest('label')).display,'none');
+  a.$('#sf-info .owner-edit-controls button').click();assert.equal(panel.classList.contains('owner-single-field'),false);assert.deepEqual(a.errors,[]);
  }finally{a.close();}
 });
