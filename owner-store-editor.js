@@ -115,7 +115,7 @@
   });
   actions(app.querySelector('#sf-share'),s,'sharing',row=>{
    row.append(button(t('تعديل رابط المتجر','Edit shop link','Geschäftslink bearbeiten'),()=>openInline(s.id,'details','sf-share','@sharing')),
-   button(t('تعديل بيانات المنيو','Edit menu information','Menüdaten bearbeiten'),()=>openInline(s.id,'products','sf-share')));
+   button(t('تعديل بيانات الكتالوج','Edit catalog information','Katalogdaten bearbeiten'),()=>openInline(s.id,'products','sf-share')));
   });
   const other=app.querySelector('#sf-other-tools');other?.querySelectorAll(':scope>.owner-edit-controls[data-owner-controls-key="photos"]').forEach(n=>n.remove());actions(other,s,'tools',row=>{
    if(window.DarayaPageSections)row.append(button(t('+ إضافة قسم للصفحة','+ Add page section','+ Seitenbereich hinzufügen'),()=>openInline(s.id,'new-section','sf-other-tools')));
