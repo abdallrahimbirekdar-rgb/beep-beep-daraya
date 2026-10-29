@@ -70,7 +70,8 @@
       const id = location.hash.split('/')[1], s = stores.find(x => x.id === id);
       if (!s) return;
       const label = t('الإبلاغ عن المحل أو المحتوى', 'Report shop or content', 'Geschäft oder Inhalte melden');
-      if (b.textContent !== label) b.textContent = label;
+      const labelNode = b.querySelector('.sf-utility-copy strong') || b;
+      if (labelNode.textContent !== label) labelNode.textContent = label;
       b.dataset.noTranslate = '';
       b.onclick = () => reportShop(s);
       if (!b.parentElement.querySelector('[data-block-shop]')) {
