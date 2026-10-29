@@ -21,17 +21,17 @@ function setup({role='admin',ordering=false,readable=false}={}){
 }
 test('main administration can open an empty display-only shop and the real add-product form',()=>{
  const a=setup();try{a.run("renderDashboard('setup','shop')");assert.equal(a.w.location.hash,'#store/shop');assert.ok(a.$('.owner-store-bar'));assert.equal(a.$('[data-target="sf-products"]').disabled,false);
-  a.$('[data-target="sf-products"]').click();a.$('#sf-products .owner-edit-controls button').click();assert.equal(a.$('#modal').open,true);assert.ok(a.$('#edit-form [name="name"]'));assert.ok(a.$('#edit-form [name="price"]'));assert.deepEqual(a.errors,[]);
+  a.$('.owner-manage-toggle').click();a.$('[data-target="sf-products"]').click();a.$('#sf-products .owner-edit-controls button').click();assert.equal(a.$('#modal').open,true);assert.ok(a.$('#edit-form [name="name"]'));assert.ok(a.$('#edit-form [name="price"]'));assert.deepEqual(a.errors,[]);
  }finally{a.close();}
 });
 test('main administration opens the real information editor from the storefront',()=>{
- const a=setup();try{a.run("renderDashboard('setup','shop')");a.$('#sf-info .owner-edit-controls button').click();assert.ok(a.$('#merchant-editor [name="name"]'));assert.equal(a.$('#merchant-editor [name="name"]').value,'سوبر ماركت بيت العائلة');assert.equal(a.$('.owner-inline-editor').dataset.editorKey,'details');assert.deepEqual(a.errors,[]);}finally{a.close();}
+ const a=setup();try{a.run("renderDashboard('setup','shop')");a.$('.owner-manage-toggle').click();a.$('#sf-info .owner-edit-controls button').click();assert.ok(a.$('#merchant-editor [name="name"]'));assert.equal(a.$('#merchant-editor [name="name"]').value,'سوبر ماركت بيت العائلة');assert.equal(a.$('.owner-inline-editor').dataset.editorKey,'details');assert.deepEqual(a.errors,[]);}finally{a.close();}
 });
 test('empty shops remain editable with online ordering enabled or disabled',()=>{
  for(const role of ['admin','owner'])for(const ordering of [true,false]){const a=setup({role,ordering});try{a.run("history.replaceState(null,'','#store/shop');renderStore('shop')");assert.equal(a.$('[data-target="sf-products"]').disabled,false);assert.ok(a.$('#sf-products .owner-edit-controls button'),role+' ordering='+ordering+' '+a.w.location.hash);assert.deepEqual(a.errors,[]);}finally{a.close();}}
 });
 test('direct readable shop links retain administrator editing controls',()=>{
- const a=setup({readable:true});try{a.run("renderStore('shop')");assert.equal(a.w.location.hash,'');assert.ok(a.$('.owner-store-bar'));assert.equal(a.$('[data-target="sf-products"]').disabled,false);a.$('#sf-info .owner-edit-controls button').click();assert.ok(a.$('#merchant-editor'));assert.deepEqual(a.errors,[]);}finally{a.close();}
+ const a=setup({readable:true});try{a.run("renderStore('shop')");assert.equal(a.w.location.hash,'');assert.ok(a.$('.owner-store-bar'));assert.equal(a.$('[data-target="sf-products"]').disabled,false);a.$('.owner-manage-toggle').click();a.$('#sf-info .owner-edit-controls button').click();assert.ok(a.$('#merchant-editor'));assert.deepEqual(a.errors,[]);}finally{a.close();}
 });
 test('visitors and unrelated signed-in users never gain editing controls',()=>{
  for(const role of ['visitor','other']){const a=setup({role});try{a.run("history.replaceState(null,'','#store/shop');renderStore('shop')");assert.equal(a.$('.owner-store-bar'),null);assert.equal(a.$('.owner-edit-controls'),null);assert.equal(a.$('[data-target="sf-products"]').disabled,true);assert.deepEqual(a.errors,[]);}finally{a.close();}}
