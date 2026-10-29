@@ -32,14 +32,28 @@
   if(field)panel.dataset.editorField=field;
   window.DarayaRevealSection?.(input);
   for(let parent=input.parentElement;parent&&parent!==panel;parent=parent.parentElement)if(parent.tagName==='DETAILS')parent.open=true;
+  const accordion=input.closest('.shop-info-panel[hidden]');if(accordion){const trigger=document.getElementById(accordion.getAttribute('aria-labelledby'));trigger?.click();}
   input.focus({preventScroll:true});if(input.tagName==='TEXTAREA'||['text','tel','email','search','url','password'].includes(input.type))input.select?.();input.scrollIntoView?.({block:'center',behavior:'auto'});
+ }
+ // Keep the native form and save checks, showing only the chosen field.
+ function scopeEditor(panel,field,anchor){
+  panel.querySelectorAll('.owner-scope-path,.owner-scope-field').forEach(n=>n.classList.remove('owner-scope-path','owner-scope-field'));
+  const form=panel.querySelector('#merchant-editor'),input=field&&form?.elements.namedItem(field);
+  panel.classList.toggle('owner-single-field',!!input&&panel.dataset.editorKey==='details');
+  if(panel.classList.contains('owner-single-field')){
+   const label=(field==='social_website'?input.closest('[data-social-editor]'):input.closest('label'))||input;label.classList.add('owner-scope-field');
+   for(let n=label.parentElement;n&&n!==form;n=n.parentElement)n.classList.add('owner-scope-path');
+   panel.querySelector('.owner-editor-heading strong').textContent=t('تعديل','Edit','Bearbeiten');
+   form.querySelector('[type="submit"]').textContent=t('حفظ','Save','Speichern');
+   if(anchor?.isConnected){panel.querySelector(':focus')?.blur();const row=anchor.closest('.owner-field-pair,p.sf-contact-detail')||anchor;row.after(panel);}
+  }
  }
  function fieldAction(node,s,field,label,key='details',target='sf-info'){
   if(!node||node.closest('.owner-inline-editor,form'))return;
   const existing=node.querySelector(':scope>.owner-field-action')||node.nextElementSibling;
   if(existing?.classList.contains('owner-field-action')&&existing.dataset.ownerField===field){if(node.matches('p.sf-contact-detail')&&existing.parentElement!==node)node.append(existing);return;}
   const action=document.createElement('span');action.className='owner-field-action';action.dataset.ownerField=field;action.dataset.noTranslate='';
-  const edit=button('✎',()=>{if(!canEdit(currentStore(s.id)))return;openInline(s.id,key,target,field);});
+  const edit=button(t('✎ تعديل','✎ Edit','✎ Bearbeiten'),()=>{if(!canEdit(currentStore(s.id)))return;openInline(s.id,key,target,field,action);});
   edit.setAttribute('aria-label',label);edit.title=label;action.append(edit);
   if(node.matches('p.sf-contact-detail'))node.append(action);else if(node.parentElement.matches('.sf-contact-actions')&&node.dataset.sfInfoRow){const pair=document.createElement('div');pair.className='owner-field-pair';node.before(pair);pair.append(node,action);}else node.after(action);
  }
@@ -53,27 +67,34 @@
   for(const visit of info?.querySelectorAll('[data-visit-store]')||[])fieldAction(visit,s,'address',t('تعديل العنوان والموقع','Edit address and location','Adresse und Standort bearbeiten'));
   const hours=hero.querySelector('[data-store-status]')||hero.querySelector('.tag');
   if(!(typeof directoryIsMedical==='function'&&directoryIsMedical(s)))fieldAction(hours,s,'opening_hours',t('تعديل أوقات الدوام','Edit opening hours','Öffnungszeiten bearbeiten'),'hours');
+  const socials=app.querySelector('[data-store-social]');
+  for(const a of socials?.querySelectorAll('a')||[]){
+   const href=a.getAttribute('href')||'',social=href.includes('facebook')?'facebook':href.includes('instagram')?'instagram':href.includes('wa.me')||href.includes('whatsapp')?'whatsapp':href.includes('t.me')?'telegram':href.includes('tiktok')?'tiktok':href.includes('youtu')?'youtube':'website';
+   fieldAction(a,s,'social_'+social,t('تعديل رابط التواصل','Edit social link','Kontaktlink bearbeiten'));
+  }
   if(!info)return;
-  for(const [field,label] of [['contact_phone',t('تعديل رقم الهاتف','Edit phone number','Telefonnummer bearbeiten')],['address',t('تعديل العنوان','Edit address','Adresse bearbeiten')],['description',t('تعديل وصف المتجر','Edit shop description','Geschäftsbeschreibung bearbeiten')]]){
+  for(const [field,label] of [['category',t('تعديل نوع المتجر','Edit shop category','Geschäftstyp bearbeiten')],['social_website',t('تعديل روابط التواصل','Edit social links','Kontaktlinks bearbeiten')],['contact_phone',t('تعديل رقم الهاتف','Edit phone number','Telefonnummer bearbeiten')],['address',t('تعديل العنوان','Edit address','Adresse bearbeiten')],['description',t('تعديل وصف المتجر','Edit shop description','Geschäftsbeschreibung bearbeiten')]]){
    if(info.querySelector('.owner-field-action[data-owner-field="'+field+'"]')){info.querySelector('.owner-field-fallback[data-owner-field="'+field+'"]')?.remove();continue;}
    if(info.querySelector('.owner-field-fallback[data-owner-field="'+field+'"]'))continue;
    const row=document.createElement('div');row.className='owner-field-fallback';row.dataset.ownerField=field;row.dataset.noTranslate='';
-   const edit=button('✎ '+label,()=>openInline(s.id,'details','sf-info',field));row.append(edit);(info.querySelector('.sf-contact-actions')||info).append(row);
+   const edit=button('✎ '+label,()=>openInline(s.id,'details','sf-info',field,row));row.append(edit);(info.querySelector('.sf-contact-actions')||info).append(row);
   }
  }
- function openInline(id,key,target,field){
+ function openInline(id,key,target,field,anchor){
   const s=currentStore(id);if(!canEdit(s))return;
-  const existing=app.querySelector('.owner-inline-editor');if(existing?.dataset.editorKey===key){existing.scrollIntoView?.({block:'start',behavior:'auto'});focusEditor(existing,field);return;}
+  const existing=app.querySelector('.owner-inline-editor');if(existing?.dataset.editorKey===key){scopeEditor(existing,field,anchor);existing.scrollIntoView?.({block:'start',behavior:'auto'});focusEditor(existing,field);return;}
   if(existing&&!closeEditor(existing))return;
   const host=app.querySelector('#'+target);if(!host){location.hash=editHref(s,key);return;}
   remember(s,target);view()?.open(target);
   const panel=document.createElement('section');panel.className='owner-inline-editor';panel.dataset.editorKey=key;panel.dataset.noTranslate='';
   const head=document.createElement('div');head.className='owner-editor-heading';const title=document.createElement('strong');title.textContent=t('تعديل هذا القسم','Edit this section','Diesen Bereich bearbeiten');
-  const close=button(t('إغلاق التعديل','Close editor','Bearbeitung schließen'),()=>{if(closeEditor(panel)){returnTo=null;host.querySelector('h2')?.focus?.();}});head.append(title,close);
+  const close=button(t('إلغاء','Cancel','Abbrechen'),()=>{if(closeEditor(panel)){returnTo=null;host.querySelector('h2')?.focus?.();}});head.append(title,close);
   const content=document.createElement('div');content.id='dashboard-content';content.className='owner-inline-content';panel.append(head,content);
   const controls=host.querySelector(':scope>.owner-edit-controls');if(controls)controls.after(panel);else host.prepend(panel);
   panel.addEventListener('input',()=>panel.dataset.dirty='true');panel.addEventListener('change',()=>panel.dataset.dirty='true');
   try{if(key==='products')merchantProducts(s);else merchantEditor(s,key);}catch(error){panel.remove();returnTo=null;window.DarayaFeedback?.showError?.(error);return;}
+  scopeEditor(panel,field,anchor);
+  panel.addEventListener('invalid',e=>{scopeEditor(panel,e.target.name);focusEditor(panel,e.target.name);},true);
   panel.scrollIntoView?.({block:'start',behavior:'auto'});focusEditor(panel,field);
  }
  function editItem(id,pid){const existing=app.querySelector('.owner-inline-editor');if(existing&&!closeEditor(existing))return;const s=currentStore(id),p=pid&&products.find(p=>p.id===pid&&p.store_id===id);if(!canEdit(s)||pid&&!p)return;remember(s,'sf-products');editProduct(s,p||{});const dialog=document.getElementById('modal');if(dialog)dialog.dataset.ownerLiveEdit=id;}
