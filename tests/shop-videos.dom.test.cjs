@@ -11,3 +11,22 @@ test('each saved video has a separate URL input with its own cover and removal c
 test('duplicate and invalid video rows do not save',async()=>{const a=app();try{let writes=0;a.w.TextEncoder=TextEncoder;a.w.api={from:()=>{writes++;throw Error('unexpected save');}};a.w.merchantEditor(a.w.stores[0],'videos');const f=a.$('#merchant-videos-form');f.querySelector('[data-add-shop-video]').click();const inputs=f.querySelectorAll('[data-shop-video-url]');inputs[1].value=inputs[0].value;await f.onsubmit({preventDefault(){}});assert.equal(writes,0);assert.match(f.querySelector('[role=status]').textContent,/مضاف بالفعل/);inputs[1].value='javascript:alert(1)';inputs[1].dispatchEvent(new a.w.Event('input'));await f.onsubmit({preventDefault(){}});assert.equal(writes,0);}finally{a.dom.window.close();}});
 
 test('removing one row preserves the other video and its own cover',async()=>{const a=app();try{a.w.TextEncoder=TextEncoder;const s=a.w.stores[0],youtube='https://www.youtube.com/watch?v=M7lc1UVf-VE',vimeo='https://vimeo.com/76979871';s.translations._video_urls=[youtube,vimeo];s.translations._video_covers={[youtube]:'https://example.com/one.jpg',[vimeo]:'https://example.com/two.jpg'};let saved;const q={eq(){return this;},async select(){return {data:[{id:'shop'}]};}};a.w.api={from:()=>({update:data=>{saved=data;return q;}})};a.w.reload=async()=>{};a.w.render=()=>{};a.w.toast=()=>{};a.w.merchantEditor(s,'videos');const f=a.$('#merchant-videos-form');f.querySelector('[data-remove-shop-video]').click();await f.onsubmit({preventDefault(){}});assert.deepEqual(Array.from(saved.translations._video_urls),[vimeo]);assert.equal(saved.translations._video_covers[vimeo],'https://example.com/two.jpg');assert.equal(saved.translations._video_covers[youtube],undefined);}finally{a.dom.window.close();}});
+test('editing one video exposes only its fields and preserves other links, covers and store metadata',async()=>{
+ const a=app();try{
+  a.w.TextEncoder=TextEncoder;const s=a.w.stores[0],one='https://www.youtube.com/watch?v=M7lc1UVf-VE',two='https://vimeo.com/76979871',replacement='https://vimeo.com/22439234';
+  s.translations._video_urls=[one,two];s.translations._video_covers={[one]:'https://example.com/one.jpg',[two]:'https://example.com/two.jpg'};
+  let saved;const q={eq(){return this;},async select(){return {data:[{id:'shop'}]};}};a.w.api={from:()=>({update:data=>{saved=data;return q;}})};a.w.reload=async()=>{};a.w.render=()=>{};a.w.toast=()=>{};
+  a.w.DarayaShopVideos.edit(s,one);const form=a.$('#merchant-videos-form');assert.equal(form.querySelectorAll('fieldset:not([hidden])').length,1);assert.equal(form.querySelector('[data-add-shop-video]').hidden,true);
+  form.querySelector('fieldset:not([hidden]) [data-shop-video-url]').value=replacement;await form.onsubmit({preventDefault(){}});
+  assert.deepEqual(Array.from(saved.translations._video_urls),[replacement,two]);assert.equal(saved.translations._video_covers[two],'https://example.com/two.jpg');assert.equal(saved.translations._video_covers[replacement],'https://example.com/one.jpg');assert.equal(saved.translations._social_links.website,'https://example.com');
+ }finally{a.dom.window.close();}
+});
+test('Add new video opens one blank row and saves an addition without changing existing videos',async()=>{
+ const a=app();try{
+  a.w.TextEncoder=TextEncoder;const s=a.w.stores[0],old='https://www.youtube.com/watch?v=M7lc1UVf-VE';let saved;
+  const q={eq(){return this;},async select(){return {data:[{id:'shop'}]};}};a.w.api={from:()=>({update:data=>{saved=data;return q;}})};a.w.reload=async()=>{};a.w.render=()=>{};a.w.toast=()=>{};
+  a.w.DarayaShopVideos.edit(s,'@new');const form=a.$('#merchant-videos-form'),row=form.querySelector('fieldset:not([hidden])');assert.ok(row);assert.equal(row.querySelector('[data-shop-video-url]').value,'');
+  await form.onsubmit({preventDefault(){}});assert.equal(saved,undefined);assert.match(form.querySelector('[role=status]').textContent,/أضف رابط/);
+  row.querySelector('[data-shop-video-url]').value='https://vimeo.com/76979871';await form.onsubmit({preventDefault(){}});assert.deepEqual(Array.from(saved.translations._video_urls),[old,'https://vimeo.com/76979871']);
+ }finally{a.dom.window.close();}
+});
