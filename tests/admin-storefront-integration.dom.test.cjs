@@ -157,3 +157,23 @@ test('failed or stale deletion keeps the product and shows an error instead of f
   assert.match(form.querySelector('#form-error').textContent,/تغيّر|تغير|حدّث|صلاحية/);assert.ok(a.$('.product'));assert.notEqual(form.dataset.saveCommitted,'true');assert.equal(form.querySelector('button').disabled,false);assert.deepEqual(a.errors,[]);
  }finally{a.close();}
 });
+
+test('visitors see all four information accordions with saved data and no editing tools',async()=>{
+ const a=setup({role:'visitor'});try{
+  a.w.mockStore.opening_hours={sat:{closed:false,open:'09:00',close:'21:00'}};
+  a.run("history.replaceState(null,'','#store/shop');renderStore('shop')");await new Promise(r=>setTimeout(r,35));a.$('[data-target="sf-info"]').click();
+  for(const kind of ['about','contact','delivery','hours']){
+   const panel=a.$('.shop-info-panel[data-sf-info-kind="'+kind+'"]');assert.ok(panel,kind);const button=a.w.document.getElementById(panel.getAttribute('aria-labelledby'));assert.ok(button);assert.equal(panel.hidden,false,kind);assert.ok(panel.textContent.trim(),kind+' contains public information');
+  }
+  const contact=a.$('.shop-info-panel[data-sf-info-kind="contact"]');assert.match(contact.textContent,/داريا، شارع السوق/);assert.ok(contact.querySelector('a[href="tel:+963900000000"]'));
+  assert.equal(a.$('.owner-store-bar'),null);assert.equal(a.$('.owner-inline-editor'),null);assert.equal(a.$('.owner-edit-controls'),null);assert.deepEqual(a.errors,[]);
+ }finally{a.close();}
+});
+test('empty information groups stay available to visitors with honest placeholders',async()=>{
+ const a=setup({role:'visitor'});try{
+  a.w.mockStore.description='';a.w.mockStore.address='';a.w.mockStore.contact_phone='';
+  a.run("history.replaceState(null,'','#store/shop');renderStore('shop')");await new Promise(r=>setTimeout(r,35));
+  for(const kind of ['about','contact','delivery','hours']){const panel=a.$('.shop-info-panel[data-sf-info-kind="'+kind+'"]');assert.ok(panel,kind);assert.equal(panel.hidden,false);}
+  assert.match(a.$('.shop-info-panel[data-sf-info-kind="hours"]').textContent,/غير محددة/);assert.equal(a.$('.owner-inline-editor'),null);assert.deepEqual(a.errors,[]);
+ }finally{a.close();}
+});
