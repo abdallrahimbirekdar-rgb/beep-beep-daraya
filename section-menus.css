@@ -13,3 +13,21 @@
 
 .section-menu-bar.section-menu-parent{display:none!important}.demo-hero[data-sf-section-view]:not([data-sf-section-view="sections"]),.store-banner[data-sf-section-view]:not([data-sf-section-view="sections"]){display:none!important}
 .demo-dispatch-workspace:has([data-dispatch-body]>.section-menu-bar:not([hidden]))>.demo-cart-heading,.demo-dispatch-workspace:has([data-dispatch-body]>.section-menu-bar:not([hidden]))>.demo-dispatch-tabs{display:none!important}
+
+/* Shop sharing tools: consistent cards with descriptive icons. */
+#sf-share{background:linear-gradient(150deg,#fffefb,#fcf8ed);border-color:#e2d9be}
+#sf-share>h2{margin:0 0 20px;font-size:clamp(23px,3vw,30px);line-height:1.5;color:#173b35}
+.sf-share-cards{display:grid;grid-template-columns:minmax(0,1fr);gap:12px}
+#sf-share .sf-share-cards>[data-sf-share-card]{display:flex!important;align-items:center;gap:14px;width:100%;min-width:0;min-height:96px;margin:0!important;padding:16px!important;border:1px solid #e2d8b9!important;border-radius:18px;background:#fffefb!important;color:#173b35!important;text-align:start;white-space:normal;box-shadow:0 3px 12px #173b3505;transition:background .15s,border-color .15s,transform .15s}
+#sf-share .sf-share-cards>[data-sf-share-card]:hover{border-color:#b49549!important;background:#fffaeb!important;transform:translateY(-2px)}
+#sf-share .sf-share-cards>[data-sf-share-card]:focus-visible{outline:3px solid #b49549;outline-offset:3px}
+.sf-share-card-icon{display:grid;place-items:center;flex:0 0 52px;height:52px;border-radius:16px;background:#f7efd8;color:#a18336}
+.sf-share-card-icon svg{width:27px;height:27px}
+.sf-share-card-copy{display:grid;gap:5px;flex:1;min-width:0}
+.sf-share-card-copy strong{font-size:16px;font-weight:700;line-height:1.6}
+.sf-share-card-copy small{font-size:12px;line-height:1.7;font-weight:400;color:#787b6e}
+.sf-share-card-arrow{font-size:27px;font-weight:400;color:#aa944f}
+[dir=ltr] .sf-share-card-arrow{transform:rotate(180deg)}
+[data-sf-share-card=qr]{order:1}[data-sf-share-card=whatsapp]{order:2}[data-sf-share-card=catalog]{order:3}[data-sf-share-card=share]{order:4}
+@media(min-width:700px){.sf-share-cards{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(prefers-reduced-motion:reduce){#sf-share .sf-share-cards>[data-sf-share-card]{transition:none}}
