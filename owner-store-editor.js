@@ -26,9 +26,44 @@
  }
  function remember(s,section){returnTo={uid:user.id,id:s.id,section:section||view()?.active||null};}
  function closeEditor(panel,confirmChanges=true){if(panel?.dataset.dirty==='true'&&confirmChanges&&!confirm(t('لديك تعديلات لم تُحفظ. هل تريد إغلاق التعديل؟','You have unsaved changes. Close this editor?','Du hast ungespeicherte Änderungen. Bearbeitung schließen?')))return false;panel?.remove();return true;}
- function openInline(id,key,target){
+ function focusEditor(panel,field){
+  const input=(field&&panel.querySelector('[name="'+field+'"]'))||panel.querySelector('input:not([type=hidden]),textarea,select');
+  if(!input)return;
+  if(field)panel.dataset.editorField=field;
+  window.DarayaRevealSection?.(input);
+  for(let parent=input.parentElement;parent&&parent!==panel;parent=parent.parentElement)if(parent.tagName==='DETAILS')parent.open=true;
+  input.focus({preventScroll:true});if(input.tagName==='TEXTAREA'||['text','tel','email','search','url','password'].includes(input.type))input.select?.();input.scrollIntoView?.({block:'center',behavior:'auto'});
+ }
+ function fieldAction(node,s,field,label,key='details',target='sf-info'){
+  if(!node||node.closest('.owner-inline-editor,form'))return;
+  const existing=node.querySelector(':scope>.owner-field-action')||node.nextElementSibling;
+  if(existing?.classList.contains('owner-field-action')&&existing.dataset.ownerField===field){if(node.matches('p.sf-contact-detail')&&existing.parentElement!==node)node.append(existing);return;}
+  const action=document.createElement('span');action.className='owner-field-action';action.dataset.ownerField=field;action.dataset.noTranslate='';
+  const edit=button('✎',()=>{if(!canEdit(currentStore(s.id)))return;openInline(s.id,key,target,field);});
+  edit.setAttribute('aria-label',label);edit.title=label;action.append(edit);
+  if(node.matches('p.sf-contact-detail'))node.append(action);else if(node.parentElement.matches('.sf-contact-actions')&&node.dataset.sfInfoRow){const pair=document.createElement('div');pair.className='owner-field-pair';node.before(pair);pair.append(node,action);}else node.after(action);
+ }
+ function fieldControls(s){
+  const hero=app.querySelector('.store-banner'),info=app.querySelector('#sf-info');if(!hero)return;
+  fieldAction(hero.querySelector('h1'),s,'name',t('تعديل اسم المتجر','Edit shop name','Geschäftsnamen bearbeiten'));
+  fieldAction(hero.querySelector('.sf-cover-button,.store-image'),s,'photo',t('تغيير صورة المتجر','Change shop photo','Geschäftsfoto ändern'),'photos','sf-tools');
+  fieldAction(hero.querySelector('.sf-subtitle'),s,'description',t('تعديل وصف المتجر','Edit shop description','Geschäftsbeschreibung bearbeiten'));
+  for(const phone of app.querySelectorAll('#sf-info a[href^="tel:"]'))fieldAction(phone,s,'contact_phone',t('تعديل رقم الهاتف','Edit phone number','Telefonnummer bearbeiten'));
+  for(const p of info?.querySelectorAll('p')||[])if(s.address&&p.textContent.includes(s.address)&&!p.closest('.owner-inline-editor,form'))fieldAction(p,s,'address',t('تعديل العنوان','Edit address','Adresse bearbeiten'));
+  for(const visit of info?.querySelectorAll('[data-visit-store]')||[])fieldAction(visit,s,'address',t('تعديل العنوان والموقع','Edit address and location','Adresse und Standort bearbeiten'));
+  const hours=hero.querySelector('[data-store-status]')||hero.querySelector('.tag');
+  if(!(typeof directoryIsMedical==='function'&&directoryIsMedical(s)))fieldAction(hours,s,'opening_hours',t('تعديل أوقات الدوام','Edit opening hours','Öffnungszeiten bearbeiten'),'hours');
+  if(!info)return;
+  for(const [field,label] of [['contact_phone',t('تعديل رقم الهاتف','Edit phone number','Telefonnummer bearbeiten')],['address',t('تعديل العنوان','Edit address','Adresse bearbeiten')],['description',t('تعديل وصف المتجر','Edit shop description','Geschäftsbeschreibung bearbeiten')]]){
+   if(info.querySelector('.owner-field-action[data-owner-field="'+field+'"]')){info.querySelector('.owner-field-fallback[data-owner-field="'+field+'"]')?.remove();continue;}
+   if(info.querySelector('.owner-field-fallback[data-owner-field="'+field+'"]'))continue;
+   const row=document.createElement('div');row.className='owner-field-fallback';row.dataset.ownerField=field;row.dataset.noTranslate='';
+   const edit=button('✎ '+label,()=>openInline(s.id,'details','sf-info',field));row.append(edit);(info.querySelector('.sf-contact-actions')||info).append(row);
+  }
+ }
+ function openInline(id,key,target,field){
   const s=currentStore(id);if(!canEdit(s))return;
-  const existing=app.querySelector('.owner-inline-editor');if(existing?.dataset.editorKey===key){existing.scrollIntoView?.({block:'start',behavior:'auto'});return;}
+  const existing=app.querySelector('.owner-inline-editor');if(existing?.dataset.editorKey===key){existing.scrollIntoView?.({block:'start',behavior:'auto'});focusEditor(existing,field);return;}
   if(existing&&!closeEditor(existing))return;
   const host=app.querySelector('#'+target);if(!host){location.hash=editHref(s,key);return;}
   remember(s,target);view()?.open(target);
@@ -39,14 +74,14 @@
   const controls=host.querySelector(':scope>.owner-edit-controls');if(controls)controls.after(panel);else host.prepend(panel);
   panel.addEventListener('input',()=>panel.dataset.dirty='true');panel.addEventListener('change',()=>panel.dataset.dirty='true');
   try{if(key==='products')merchantProducts(s);else merchantEditor(s,key);}catch(error){panel.remove();returnTo=null;window.DarayaFeedback?.showError?.(error);return;}
-  panel.scrollIntoView?.({block:'start',behavior:'auto'});const input=panel.querySelector('input:not([type=hidden]),textarea,select');input?.focus({preventScroll:true});
+  panel.scrollIntoView?.({block:'start',behavior:'auto'});focusEditor(panel,field);
  }
  function editItem(id,pid){const existing=app.querySelector('.owner-inline-editor');if(existing&&!closeEditor(existing))return;const s=currentStore(id),p=pid&&products.find(p=>p.id===pid&&p.store_id===id);if(!canEdit(s)||pid&&!p)return;remember(s,'sf-products');editProduct(s,p||{});const dialog=document.getElementById('modal');if(dialog)dialog.dataset.ownerLiveEdit=id;}
  function actions(host,s,key,build){if(!host||host.querySelector(':scope>.owner-edit-controls'))return;const row=document.createElement('div');row.className='owner-edit-controls';row.dataset.noTranslate='';row.setAttribute('aria-label',t('تعديل القسم','Edit section','Bereich bearbeiten'));build(row);const heading=host.querySelector(':scope>h2'),bar=host.querySelector(':scope>.owner-store-bar');if(bar)bar.after(row);else if(heading)heading.after(row);else host.prepend(row);}
  function enhance(){
   queued=false;observer.disconnect();if(!app.ownerDocument.defaultView?.document)return;try{
    const s=pageStore(),hero=app.querySelector('.store-banner');
-   if(!canEdit(s)||!hero||hero.dataset.storefront&&hero.dataset.storefront!==s.id){app.classList.remove('owner-live-store','owner-view-clean');app.querySelectorAll('.owner-store-bar,.owner-edit-controls,.owner-product-actions,.owner-inline-editor').forEach(n=>n.remove());return;}
+   if(!canEdit(s)||!hero||hero.dataset.storefront&&hero.dataset.storefront!==s.id){app.classList.remove('owner-live-store','owner-view-clean');app.querySelectorAll('.owner-store-bar,.owner-edit-controls,.owner-product-actions,.owner-inline-editor,.owner-field-action,.owner-field-fallback').forEach(n=>n.remove());app.querySelectorAll('.owner-field-pair').forEach(n=>n.replaceWith(...n.childNodes));return;}
    const medical=typeof directoryIsMedical==='function'&&directoryIsMedical(s);app.classList.add('owner-live-store');const editKey=user.id+':'+s.id;app.classList.toggle('owner-view-clean',!editingViews.has(editKey));
    if(!hero.querySelector('.owner-store-bar')){
     const bar=document.createElement('section');bar.className='owner-store-bar';bar.dataset.noTranslate='';bar.dataset.ownerStoreId=s.id;bar.dataset.ownerUserId=user.id;
@@ -70,7 +105,7 @@
     hero.prepend(bar);
    }
    syncManagement(s);
-   actions(hero,s,'identity',row=>row.append(button(t('✎ تعديل المعلومات','✎ Edit details','✎ Angaben bearbeiten'),()=>openInline(s.id,'details','sf-info')),button(t('✎ تغيير الصورة','✎ Change photo','✎ Foto ändern'),()=>openInline(s.id,'photos','sf-tools'))));
+   fieldControls(s);
    actions(app.querySelector('#sf-products'),s,'products',row=>row.append(button(t('+ إضافة منتج','+ Add product','+ Produkt hinzufügen'),()=>editItem(s.id)),button(t('إدارة المنتجات والأقسام','Manage products and categories','Produkte und Kategorien verwalten'),()=>openInline(s.id,'products','sf-products'))));
    actions(app.querySelector('#sf-info'),s,'details',row=>{row.append(button(t('تعديل معلومات المتجر والتواصل','Edit shop and contact details','Geschäfts- und Kontaktdaten bearbeiten'),()=>openInline(s.id,'details','sf-info')));if(!medical)row.append(button(t('تعديل أوقات الدوام','Edit opening hours','Öffnungszeiten bearbeiten'),()=>openInline(s.id,'hours','sf-info')));});
    actions(app.querySelector('#sf-tools'),s,'photos',row=>row.append(button(t('تعديل صورة المتجر وإضافة صور','Edit shop photo and add photos','Geschäftsfoto bearbeiten und Bilder hinzufügen'),()=>openInline(s.id,'photos','sf-tools'))));
@@ -117,6 +152,6 @@
  document.getElementById('modal')?.addEventListener('close',()=>{const dialog=document.getElementById('modal');const saved=!!dialog.querySelector('[data-save-committed="true"]');if(saved&&returnTo)returnTo.ready=true;if(!dialog.dataset.ownerLiveEdit)return;if(!saved)returnTo=null;delete dialog.dataset.ownerLiveEdit;});
  app.addEventListener('click',event=>{if(!event.target.closest?.('.menu-sections [data-section]'))return;const panel=app.querySelector('.owner-inline-editor');if(!panel)return;if(!closeEditor(panel)){event.preventDefault();event.stopImmediatePropagation();}else returnTo=null;},true);
  window.addEventListener('hashchange',()=>{if(!location.hash.startsWith('#store/'))returnTo=null;enhance();});
- window.addEventListener('languagechange',()=>{app.querySelectorAll('.owner-store-bar,.owner-edit-controls,.owner-product-actions').forEach(n=>n.remove());enhance();});
+ window.addEventListener('languagechange',()=>{app.querySelectorAll('.owner-store-bar,.owner-edit-controls,.owner-product-actions,.owner-field-action,.owner-field-fallback').forEach(n=>n.remove());enhance();});
  enhance();
 })();
