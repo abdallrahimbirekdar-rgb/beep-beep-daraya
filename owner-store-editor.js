@@ -39,7 +39,7 @@
  function scopeEditor(panel,field,anchor){
   panel.querySelectorAll('.owner-scope-path,.owner-scope-field').forEach(n=>n.classList.remove('owner-scope-path','owner-scope-field'));
   const form=panel.querySelector('#merchant-editor');
-  const groups={'@about':['name','category','description','page_mode','directory_kind'],'@contact':['address','contact_phone']};
+  const groups={'@about':['name','category','description','page_mode','directory_kind'],'@contact':['address','contact_phone','directory_region','directory_street','directory_reviewed'],'@sharing':['public_slug']};
   const inputs=(groups[field]||[field]).map(name=>name&&form?.elements.namedItem(name)).filter(Boolean);
   panel.classList.toggle('owner-single-field',!!inputs.length&&panel.dataset.editorKey==='details');
   if(panel.classList.contains('owner-single-field')){
@@ -78,7 +78,7 @@
   for(const trigger of app.querySelectorAll('#sf-info .sf-info-accordion-item>button[aria-controls]')){
    if(trigger.dataset.ownerSectionBound)continue;
    const host=document.getElementById(trigger.getAttribute('aria-controls')),kind=host?.dataset.sfInfoKind;
-   const key={about:'details',contact:'details',hours:'hours',delivery:'delivery'}[kind];if(!key)continue;
+   const custom=host?.querySelector('[data-page-section-id]')?.dataset.pageSectionId;const key={about:'details',contact:'details',hours:'hours',delivery:'delivery'}[kind]||(custom?'page-'+custom:null);if(!key)continue;
    trigger.dataset.ownerSectionBound='true';const original=trigger.onclick;
    trigger.onclick=function(event){
     const active=canEdit(currentStore(s.id))&&editingViews.has(user.id+':'+s.id),opening=host.hidden;
@@ -100,17 +100,50 @@
   const content=document.createElement('div');content.id='dashboard-content';content.className='owner-inline-content';panel.append(head,content);
   const controls=host.querySelector(':scope>.owner-edit-controls');if(controls)controls.after(panel);else host.prepend(panel);
   panel.addEventListener('input',()=>panel.dataset.dirty='true');panel.addEventListener('change',()=>panel.dataset.dirty='true');
-  try{if(key==='products')merchantProducts(s);else merchantEditor(s,key);}catch(error){panel.remove();returnTo=null;window.DarayaFeedback?.showError?.(error);return;}
+  try{if(key==='products')merchantProducts(s);else if(key==='cards')window.DarayaShopCards.settings(s.id,content);else if(key==='new-section'||key.startsWith('page-'))window.DarayaPageSections.edit(s,key,()=>{if(!canEdit(currentStore(s.id)))return;returnTo.ready=true;renderStore(s.id);});else merchantEditor(s,key);}catch(error){panel.remove();returnTo=null;window.DarayaFeedback?.showError?.(error);return;}
   scopeEditor(panel,field,anchor);
   panel.addEventListener('invalid',e=>{scopeEditor(panel,e.target.name);focusEditor(panel,e.target.name);},true);
   panel.scrollIntoView?.({block:'start',behavior:'auto'});focusEditor(panel,field);
  }
+ function openOffer(s){
+  if(!canEdit(currentStore(s.id)))return;
+  const old=app.querySelector('.owner-inline-editor');if(old&&!closeEditor(old))return;
+  remember(s,'sf-offers');window.DarayaOffers?.edit(s);
+ }
+ function sectionTools(s){
+  const offers=app.querySelector('#sf-offers');
+  const cards=managementEntries.some(x=>x.matches('[data-card-settings-link]'));
+  if(window.DarayaOffers?.eligible(s)||cards)actions(offers,s,'offers',row=>{
+   const add=button(t('+ إضافة عرض','+ Add offer','+ Angebot hinzufügen'),()=>openOffer(s));add.dataset.ownerAddOffer='';if(window.DarayaOffers?.eligible(s))row.append(add);if(cards&&window.DarayaShopCards)row.append(button(t('إعدادات المتابعة والبطاقات','Follow and card settings','Follower- und Karteneinstellungen'),()=>openInline(s.id,'cards','sf-offers')));
+   row.append(button(t('إدارة عروض المتجر','Manage shop offers','Geschäftsangebote verwalten'),()=>{
+    if(!canEdit(currentStore(s.id)))return;
+    const box=offers.querySelector('[data-owner-offer-list]')||document.createElement('div');box.dataset.ownerOfferList='';box.className='owner-offer-list';offers.append(box);window.DarayaOffers.manage(s,box);
+   }));
+  });
+  actions(app.querySelector('#sf-share'),s,'sharing',row=>{
+   row.append(button(t('تعديل رابط المتجر','Edit shop link','Geschäftslink bearbeiten'),()=>openInline(s.id,'details','sf-share','@sharing')),
+   button(t('تعديل بيانات المنيو','Edit menu information','Menüdaten bearbeiten'),()=>openInline(s.id,'products','sf-share')));
+  });
+  const other=app.querySelector('#sf-other-tools');other?.querySelectorAll(':scope>.owner-edit-controls[data-owner-controls-key="photos"]').forEach(n=>n.remove());actions(other,s,'tools',row=>{
+   if(window.DarayaPageSections)row.append(button(t('+ إضافة قسم للصفحة','+ Add page section','+ Seitenbereich hinzufügen'),()=>openInline(s.id,'new-section','sf-other-tools')));
+  });
+  // Reuse the original permission/plan-checked links and their event handlers.
+  const tools=other?.querySelector(':scope>.owner-edit-controls'),offerTools=offers?.querySelector(':scope>.owner-edit-controls');
+  for(const entry of managementEntries){
+   if(entry.matches('[data-card-settings-link]')&&window.DarayaShopCards){entry.remove();continue;}const target=entry.matches('[data-card-settings-link]')?offerTools:tools;if(!target||target.contains(entry))continue;target.append(entry);
+  }
+  for(const section of app.querySelectorAll('.public-shop-section[data-page-section-id]')){
+   const key='page-'+section.dataset.pageSectionId;actions(section,s,key,row=>row.append(button(t('تعديل هذا القسم','Edit this section','Diesen Bereich bearbeiten'),()=>{
+    if(!section.id)section.id='owner-page-'+section.dataset.pageSectionId;openInline(s.id,key,section.id);
+   })));
+  }
+ }
  function editItem(id,pid){const existing=app.querySelector('.owner-inline-editor');if(existing&&!closeEditor(existing))return;const s=currentStore(id),p=pid&&products.find(p=>p.id===pid&&p.store_id===id);if(!canEdit(s)||pid&&!p)return;remember(s,'sf-products');editProduct(s,p||{});const dialog=document.getElementById('modal');if(dialog)dialog.dataset.ownerLiveEdit=id;}
- function actions(host,s,key,build){if(!host||host.querySelector(':scope>.owner-edit-controls'))return;const row=document.createElement('div');row.className='owner-edit-controls';row.dataset.noTranslate='';row.setAttribute('aria-label',t('تعديل القسم','Edit section','Bereich bearbeiten'));build(row);const heading=host.querySelector(':scope>h2'),bar=host.querySelector(':scope>.owner-store-bar');if(bar)bar.after(row);else if(heading)heading.after(row);else host.prepend(row);}
+ function actions(host,s,key,build){if(!host||host.querySelector(':scope>.owner-edit-controls[data-owner-controls-key="'+key+'"]'))return;const row=document.createElement('div');row.className='owner-edit-controls';row.dataset.ownerControlsKey=key;row.dataset.noTranslate='';row.setAttribute('aria-label',t('تعديل القسم','Edit section','Bereich bearbeiten'));build(row);const heading=host.querySelector(':scope>h2'),bar=host.querySelector(':scope>.owner-store-bar');if(bar)bar.after(row);else if(heading)heading.after(row);else host.prepend(row);}
  function enhance(){
   queued=false;observer.disconnect();if(!app.ownerDocument.defaultView?.document)return;try{
    const s=pageStore(),hero=app.querySelector('.store-banner');
-   if(!canEdit(s)||!hero||hero.dataset.storefront&&hero.dataset.storefront!==s.id){app.classList.remove('owner-live-store','owner-view-clean');app.querySelectorAll('.owner-store-bar,.owner-edit-controls,.owner-product-actions,.owner-inline-editor,.owner-field-action,.owner-field-fallback,.owner-only-section').forEach(n=>n.remove());app.querySelectorAll('.owner-field-pair').forEach(n=>n.replaceWith(...n.childNodes));return;}
+   if(!canEdit(s)||!hero||hero.dataset.storefront&&hero.dataset.storefront!==s.id){app.classList.remove('owner-live-store','owner-view-clean');app.querySelectorAll('.owner-store-bar,.owner-edit-controls,.owner-product-actions,.owner-inline-editor,.owner-field-action,.owner-field-fallback,.owner-only-section,.owner-offer-list').forEach(n=>n.remove());app.querySelectorAll('.owner-field-pair').forEach(n=>n.replaceWith(...n.childNodes));return;}
    const medical=typeof directoryIsMedical==='function'&&directoryIsMedical(s);app.classList.add('owner-live-store');const editKey=user.id+':'+s.id;app.classList.toggle('owner-view-clean',!editingViews.has(editKey));
    if(!hero.querySelector('.owner-store-bar')){
     const bar=document.createElement('section');bar.className='owner-store-bar';bar.dataset.noTranslate='';bar.dataset.ownerStoreId=s.id;bar.dataset.ownerUserId=user.id;
@@ -135,7 +168,7 @@
     hero.prepend(bar);
    }
    syncManagement(s);
-   fieldControls(s);
+   fieldControls(s);sectionTools(s);
    actions(app.querySelector('#sf-products'),s,'products',row=>row.append(button(t('+ إضافة منتج','+ Add product','+ Produkt hinzufügen'),()=>editItem(s.id)),button(t('إدارة المنتجات والأقسام','Manage products and categories','Produkte und Kategorien verwalten'),()=>openInline(s.id,'products','sf-products'))));
 
    const info=app.querySelector('#sf-info');
@@ -157,7 +190,7 @@
   managementEntries=[];
   if(canEdit(s)){
    previousDashboard.call(this,mine(),s,'overview');
-   const editorRoutes=['overview',...Object.keys(editableSections)].map(key=>editHref(s,key));
+   const editorRoutes=['overview',...Object.keys(editableSections),'new-section',...(s.translations?._page_sections||[]).map(x=>'page-'+x.id)].map(key=>editHref(s,key));
    managementEntries=[...app.querySelectorAll('.merchant-nav a,.merchant-nav [data-store-transfer]')].filter(a=>!a.hidden&&!editorRoutes.includes(a.getAttribute('href')));
    app.classList.remove('professional-home','dashboard-menu-home','dashboard-menu-section','dashboard-menu-layout');
    delete app.dataset.dashboardSection;delete app.dataset.dashboardRoute;
@@ -185,6 +218,6 @@
  document.getElementById('modal')?.addEventListener('close',()=>{const dialog=document.getElementById('modal');const saved=!!dialog.querySelector('[data-save-committed="true"]');if(saved&&returnTo)returnTo.ready=true;if(!dialog.dataset.ownerLiveEdit)return;if(!saved)returnTo=null;delete dialog.dataset.ownerLiveEdit;});
  app.addEventListener('click',event=>{if(!event.target.closest?.('.menu-sections [data-section]'))return;const panel=app.querySelector('.owner-inline-editor');if(!panel)return;if(!closeEditor(panel)){event.preventDefault();event.stopImmediatePropagation();}else returnTo=null;},true);
  window.addEventListener('hashchange',()=>{if(!location.hash.startsWith('#store/'))returnTo=null;enhance();});
- window.addEventListener('languagechange',()=>{app.querySelectorAll('.owner-store-bar,.owner-edit-controls,.owner-product-actions,.owner-field-action,.owner-field-fallback,.owner-only-section').forEach(n=>n.remove());enhance();});
+ window.addEventListener('languagechange',()=>{app.querySelectorAll('.owner-store-bar,.owner-edit-controls,.owner-product-actions,.owner-field-action,.owner-field-fallback,.owner-only-section,.owner-offer-list').forEach(n=>n.remove());enhance();});
  enhance();
 })();
