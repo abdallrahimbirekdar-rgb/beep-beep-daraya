@@ -130,3 +130,30 @@ test('custom section saves preserve page editing and the existing store revision
   assert.equal(a.w.location.hash,'#store/shop');assert.equal(a.$('#app').classList.contains('owner-view-clean'),false);assert.equal(a.w.sectionPayload.translations._page_sections[0].title,'خدماتنا');assert.ok(a.w.sectionFilters.some(([k,v])=>k==='revision'&&v===1));assert.ok(a.$('.public-shop-section'));assert.deepEqual(a.errors,[]);
  }finally{a.close();}
 });
+test('populated product pages add in the selected category through the native product save handler',async()=>{
+ for(const role of ['admin','owner']){const a=setup({role});try{
+  a.run(`products=[{id:'existing',store_id:'shop',name:'قميص',price:1000,available:true,section:'ألبسة',revision:3,translations:{},option_groups:[]}];renderDashboard('setup','shop');`);
+  a.$('.owner-manage-toggle').click();await new Promise(r=>setTimeout(r,35));a.$('[data-target="sf-products"]').click();a.$('.menu-sections [data-section="ألبسة"]').click();await new Promise(r=>setTimeout(r,35));
+  assert.equal(a.$('#app').classList.contains('owner-view-clean'),false);assert.equal(a.$('#sf-products').hasAttribute('inert'),false);a.$('#sf-products .owner-add-product').click();
+  const form=a.$('#edit-form');assert.ok(form);assert.equal(form.elements.section.value,'ألبسة');form.elements.name.value='قميص جديد';form.elements.price.value='2000';
+  a.run(`api.rpc=async(name,args)=>{if(name==='save_market_product')window.productRPC=[name,args];return {data:args.p_data?.id,error:null};};window.DarayaSaveFeedback.complete=async(form)=>{form.dataset.saveCommitted='true';};`);
+  await form.onsubmit({preventDefault(){},submitter:form.querySelector('[type=submit]')});
+  assert.equal(a.w.productRPC?.[0],'save_market_product',a.$('#form-error')?.textContent);assert.equal(a.w.productRPC[1].p_data.store_id,'shop');assert.equal(a.w.productRPC[1].p_data.section,'ألبسة');assert.equal(a.w.productRPC[1].p_revision,0);assert.equal(form.dataset.saveCommitted,'true');assert.deepEqual(a.errors,[]);
+ }finally{a.close();}}
+});
+test('each visible product has a confirmed store- and revision-scoped delete action that returns to Products',async()=>{
+ for(const role of ['admin','owner']){const a=setup({role});try{
+  a.run(`products=[{id:'existing',store_id:'shop',name:'قميص',price:1000,available:true,section:'ألبسة',revision:3,translations:{},option_groups:[]}];renderDashboard('setup','shop');`);a.$('.owner-manage-toggle').click();await new Promise(r=>setTimeout(r,35));a.$('[data-target="sf-products"]').click();
+  const del=a.$('.product .owner-delete-product');assert.ok(del);del.click();const form=a.$('#owner-delete-product-form');assert.ok(form);assert.equal(a.$('#modal').open,true);
+  a.run(`window.deleteFilters=[];window.deleteCount=0;const nativeFrom=api.from;api.from=table=>table!=='products'?nativeFrom(table):({delete(){window.deleteCount++;window.deleteTable=table;return this;},eq(k,v){window.deleteFilters.push([k,v]);return this;},select(){return Promise.resolve({data:[{id:'existing'}],error:null});}});reload=async()=>{products=[];};`);
+  await form.onsubmit({preventDefault(){},submitter:form.querySelector('[type=submit]')});await new Promise(r=>setTimeout(r,35));
+  assert.equal(a.w.deleteTable,'products');for(const [k,v] of [['id','existing'],['store_id','shop'],['revision',3]])assert.ok(a.w.deleteFilters.some(([key,value])=>key===k&&value===v));assert.equal(a.w.deleteCount,1);assert.equal(a.w.location.hash,'#store/shop');assert.equal(a.$('.product'),null);assert.equal(a.$('#sf-products').hasAttribute('inert'),false);assert.equal(a.$('#app').classList.contains('owner-view-clean'),false);assert.deepEqual(a.errors,[]);
+ }finally{a.close();}}
+});
+test('failed or stale deletion keeps the product and shows an error instead of false success',async()=>{
+ const a=setup();try{
+  a.run(`products=[{id:'existing',store_id:'shop',name:'منتج',price:1000,available:true,section:'منتجات',revision:3,translations:{},option_groups:[]}];renderDashboard('setup','shop');`);a.$('.owner-manage-toggle').click();await new Promise(r=>setTimeout(r,35));a.$('.owner-delete-product').click();
+  const form=a.$('#owner-delete-product-form');a.run(`api.from=()=>({delete(){return this;},eq(){return this;},select(){return Promise.resolve({data:[],error:null});}});`);await form.onsubmit({preventDefault(){},submitter:form.querySelector('[type=submit]')});
+  assert.match(form.querySelector('#form-error').textContent,/تغيّر|تغير|حدّث|صلاحية/);assert.ok(a.$('.product'));assert.notEqual(form.dataset.saveCommitted,'true');assert.equal(form.querySelector('button').disabled,false);assert.deepEqual(a.errors,[]);
+ }finally{a.close();}
+});
