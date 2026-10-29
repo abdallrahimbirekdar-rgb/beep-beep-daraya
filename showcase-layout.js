@@ -47,7 +47,7 @@
    const card=document.createElement('button');card.type='button';card.className='sf-section-tile sf-tile-'+kind;card.dataset.target=target.id;card.setAttribute('aria-controls',target.id);
    const visual=document.createElement('span');visual.className='sf-tile-visual';visual.setAttribute('aria-hidden','true');
    if(kind==='products'){
-    visual.classList.add('sf-tile-thumbnails');rows.slice(0,4).forEach(row=>{const img=document.createElement('img');img.src=new URL(row[5],location.href).href;img.alt='';img.width=72;img.height=60;img.decoding='async';visual.append(img);});
+    window.DarayaProductTileSlideshow(visual,rows.filter(row=>row[5]).map(row=>new URL(row[5],location.href).href),'demo:'+key);
    }else visual.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">'+icons[kind]+'</svg>';
    const title=document.createElement('strong');title.className='sf-tile-title';title.textContent=label;
    const hint=document.createElement('span');hint.className='sf-tile-note';hint.textContent=note;card.append(visual,title,hint);

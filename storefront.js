@@ -50,7 +50,8 @@
    if(layout&&offers.previousElementSibling!==layout)layout.after(offers);
   }
   const page=stores.find(s=>s.id===banner.dataset.storefront),service=typeof directoryIsService==='function'&&directoryIsService(page);
-  const images=[...layout?.querySelectorAll('.product img')||[]].slice(0,4).map(img=>img.dataset.lazySrc||img.currentSrc||img.getAttribute('src')).filter(Boolean);
+  const savedImages=(typeof products==='undefined'?[]:products).filter(p=>p.store_id===page?.id&&p.image).map(p=>{const url=typeof safeImage==='function'?safeImage(p.image):p.image;return url&&typeof thumbnailForImage==='function'?thumbnailForImage(url):url;});
+  const images=[...new Set([...savedImages,...[...layout?.querySelectorAll('.product img')||[]].map(img=>img.dataset.lazySrc||img.currentSrc||img.getAttribute('src'))].filter(Boolean))];
   const entries=[
    [layout,service?directoryCatalogTitle(page):t(banner.dataset.service==='1'?'الخدمات':'المنتجات','Products & services','Produkte & Leistungen'),'sf-products','products',t('شاهد الصور والأسعار','See photos and prices','Fotos und Preise ansehen')],
    [info,service?t('التواصل والمعلومات','Contact & information','Kontakt & Informationen'):t('التواصل ومعلومات المحل','Contact & information','Kontakt & Informationen'),'sf-info','contact',t('العنوان، الاتصال وأوقات الدوام','Address, phone and hours','Adresse, Telefon und Öffnungszeiten')],
@@ -64,7 +65,7 @@
   entries.forEach(([node,label,id,kind,note])=>{
    const button=make('button','sf-section-tile sf-tile-'+kind);button.type='button';button.dataset.target=id;
    const visual=make('span','sf-tile-visual');visual.setAttribute('aria-hidden','true');
-   if(kind==='products'&&images.length){visual.classList.add('sf-tile-thumbnails');images.forEach(src=>{const img=make('img');img.src=src;img.alt='';img.width=72;img.height=60;img.decoding='async';img.onerror=()=>img.remove();visual.append(img);});}
+   if(kind==='products'&&images.length)window.DarayaProductTileSlideshow(visual,images,'shop:'+page.id);
    else visual.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">'+icons[kind]+'</svg>';
    button.append(visual,make('strong','sf-tile-title',label),make('span','sf-tile-note',node?note:t('غير متاح حاليًا','Not available yet','Derzeit nicht verfügbar')));
    button.setAttribute('aria-expanded',String(view.active===id));button.disabled=!node;if(node){node.id=id;button.setAttribute('aria-controls',id);button.onclick=()=>view.open(id,button);}nav.append(button);

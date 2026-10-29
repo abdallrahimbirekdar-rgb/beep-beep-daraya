@@ -11,7 +11,7 @@ function app(key='restaurant',language='ar',ordering=false){
  if(ordering)c.eval(fs.readFileSync('demo-ordering.js','utf8'));c.render();return {dom,c,$:c.$};
 }
 test('pizza demo shows four entry cards immediately after its hero, with actual pizza photos',()=>{
- const a=app();assert.match(a.$('h1').textContent,/بيتزا التنور/);const nav=a.$('.showcase-section-cards');assert.equal(nav.children.length,4);assert.equal(nav.previousElementSibling,a.$('.demo-hero'));assert.equal(a.$('.demo-hero .demo-actions'),null);assert.equal(nav.querySelectorAll('img').length,4);assert.match(nav.querySelector('img').src,/images\/showcase\/pizza-/);
+ const a=app();assert.match(a.$('h1').textContent,/بيتزا التنور/);const nav=a.$('.showcase-section-cards');assert.equal(nav.children.length,4);assert.equal(nav.previousElementSibling,a.$('.demo-hero'));assert.equal(a.$('.demo-hero .demo-actions'),null);assert.equal(nav.querySelectorAll('img:not([hidden])').length,1);assert.ok(nav.querySelector('.sf-tile-slideshow'));assert.match(nav.querySelector('img').src,/images\/showcase\/pizza-/);
  for(const card of nav.children){card.click();const target=a.c.document.getElementById(card.getAttribute('aria-controls'));assert.equal(a.c.lastScroll,a.$('.sf-section-return'));assert.equal(a.c.document.activeElement,target);}
  assert.equal(a.$('.showcase-owner-tools').open,true);assert.equal(a.$('.showcase-owner-tools').firstElementChild.tagName,'SUMMARY');a.dom.window.close();
 });
