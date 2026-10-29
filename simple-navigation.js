@@ -121,7 +121,7 @@
   }
  };
  const storeBase=renderStore;
- renderStore=function(){storeBase.apply(this,arguments);const back=document.querySelector('#app > .topline a[href="#home"]');if(back){label(back,['العودة إلى قائمة الأماكن','Back to places','Zurück zur Liste']);back.onclick=e=>{e.preventDefault();location.hash='#home';requestAnimationFrame(()=>requestAnimationFrame(()=>window.scrollTo(0,previousScroll)));};}};
+ renderStore=function(){storeBase.apply(this,arguments);const back=document.querySelector('#app > .topline a[href="#home"]');if(back){label(back,['العودة إلى سوق داريا','Back to Souq Daraya','Zurück zu Souq Daraya']);back.onclick=e=>{e.preventDefault();location.hash='#home';requestAnimationFrame(()=>requestAnimationFrame(()=>window.scrollTo(0,previousScroll)));};}};
  new MutationObserver(menuLabels).observe(menu,{childList:true,subtree:true});
  new MutationObserver(menuLabels).observe(document.documentElement,{attributes:true,attributeFilter:['lang']});
  menuLabels();
