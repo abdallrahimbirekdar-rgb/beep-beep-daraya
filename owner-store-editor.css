@@ -18,3 +18,14 @@
 .owner-edit-controls>*,.owner-product-actions button{flex:0 1 auto;font-size:12px!important;min-height:44px;padding:6px 10px;width:auto}
 .owner-private-notice{flex-basis:100%;font-size:12px}
 @media(max-width:600px){.owner-store-bar{padding:0}.owner-store-navigation{width:auto}.owner-edit-controls>*{flex:0 1 auto}}
+
+.owner-field-action{display:inline-flex;align-items:center;vertical-align:middle;margin-inline-start:6px;flex:0 0 auto}
+.owner-field-action>button{min-width:36px;min-height:36px;padding:4px 8px;font-size:16px;background:#fff6d8;color:#173b35;border:1px solid #b79032}
+.owner-field-fallback{display:inline-flex;align-items:center;margin:4px 0}
+.owner-field-fallback>button{min-height:44px;font-size:12px;padding:6px 10px;background:#fff6d8;color:#173b35;border:1px solid #b79032}
+.owner-view-clean .owner-field-action,.owner-view-clean .owner-field-fallback{display:none!important}
+
+#app .sf-information .sf-contact-actions>.owner-field-action,#app .sf-information .sf-contact-actions>.owner-field-fallback{width:auto;min-height:0;padding:0;border:0;background:transparent}
+#app .sf-information .sf-contact-actions>.owner-field-pair{display:flex;align-items:center;gap:6px;min-height:0;padding:0;border:0;background:transparent}
+.owner-field-pair>.sf-info-row{flex:1;min-width:0}
+.owner-view-clean .owner-field-pair{display:contents!important}
