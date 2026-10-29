@@ -29,3 +29,13 @@
 #app .sf-information .sf-contact-actions>.owner-field-pair{display:flex;align-items:center;gap:6px;min-height:0;padding:0;border:0;background:transparent}
 .owner-field-pair>.sf-info-row{flex:1;min-width:0}
 .owner-view-clean .owner-field-pair{display:contents!important}
+
+/* A direct edit exposes just its own field, beside the displayed value. */
+.owner-single-field{grid-column:1/-1;width:100%;box-sizing:border-box;margin:8px 0;padding:12px;border-width:1px}
+.owner-single-field .section-heading{display:none!important}
+.owner-single-field #merchant-editor>:not(.owner-scope-path):not(.owner-scope-field):not(.editor-footer):not(#editor-error),
+.owner-single-field .owner-scope-path>:not(.owner-scope-path):not(.owner-scope-field){display:none!important}
+.owner-single-field .owner-editor-heading{margin-bottom:6px}
+.owner-single-field .editor-footer{margin-top:8px;padding-top:8px}
+.owner-single-field .owner-scope-field{width:100%;box-sizing:border-box}
+.owner-field-action>button{font-size:12px;min-height:44px;white-space:nowrap}
