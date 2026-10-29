@@ -75,3 +75,58 @@ test('section editors show only relevant fields, protect drafts and disappear in
   a.$('#sf-info [data-sf-info-row="about"]').click();assert.equal(a.$('.owner-inline-editor'),null);assert.deepEqual(a.errors,[]);
  }finally{a.close();}
 });
+
+test('every main shop section exposes its matching owner tools, including offers, cards and sharing',async()=>{
+ for(const role of ['admin','owner']){const a=setup({role});try{
+  a.run("renderDashboard('setup','shop')");a.$('.owner-manage-toggle').click();await new Promise(r=>setTimeout(r,35));
+  for(const id of ['sf-products','sf-offers','sf-videos','sf-tools','sf-orders','sf-share','sf-other-tools']){
+   assert.ok(a.$('#'+id+' .owner-edit-controls'),id+' has editing tools');
+  }
+  assert.ok(a.$('#sf-info .sf-info-accordion-item [data-owner-section-bound]'));
+  a.$('[data-owner-add-offer]').click();const form=a.$('#daily-offer-form');assert.ok(form);assert.equal(form.elements.store.value,'shop');assert.equal(a.w.location.hash,'#store/shop');
+  a.run("window.offerInsert=null;const originalFrom=api.from;api.from=table=>table==='daily_offers'?{insert(row){window.offerInsert=row;return Promise.resolve({error:null});}}:originalFrom(table);");
+  form.elements.kind.value='text';form.elements.title.value='عرض جديد';form.elements.benefit.value='خصم خاص للجميع';form.elements.details.value='عرض بالسعر الموضح لجميع الزبائن';form.elements.agree.checked=true;
+  await form.onsubmit({preventDefault(){},submitter:form.querySelector('[type=submit]')});
+  assert.ok(a.w.offerInsert,form.querySelector('[data-result]')?.textContent);assert.equal(a.w.offerInsert.store_id,'shop');assert.equal(a.w.offerInsert.user_id,role);assert.equal(a.w.offerInsert.status,'pending');assert.match(form.textContent,/وصل العرض للمراجعة/);assert.deepEqual(a.errors,[]);
+ }finally{a.close();}}
+});
+test('photos, video, page sections and public link tools open their real editors on the storefront',async()=>{
+ const a=setup();try{
+  a.w.mockStore.translations._page_sections=[{id:'services',title:'خدمات خاصة',content:'خدمات المتجر الإضافية'}];
+  a.run("renderDashboard('setup','shop')");a.$('.owner-manage-toggle').click();await new Promise(r=>setTimeout(r,35));
+  a.$('#sf-tools .owner-edit-controls button').click();assert.ok(a.$('#merchant-editor'));assert.ok(a.$('#add-place-photo'));a.$('#add-place-photo').click();assert.ok(a.$('#edit-form [name=caption]'));a.$('#modal').close();
+  a.$('#sf-videos .owner-edit-controls button').click();assert.ok(a.$('.owner-inline-editor'));assert.equal(a.$('.owner-inline-editor').dataset.editorKey,'videos');assert.ok(a.$('#dashboard-content form'));
+  a.$('#sf-share .owner-edit-controls button').click();assert.ok(a.$('#merchant-editor [name=public_slug]'));assert.equal(a.$('.owner-inline-editor').dataset.editorField,'@sharing');
+  const custom=a.$('.public-shop-section[data-page-section-id=services]');assert.ok(custom.querySelector('.owner-edit-controls button'));custom.querySelector('.owner-edit-controls button').click();assert.equal(a.$('#page-section-form [name=title]').value,'خدمات خاصة');
+  [...a.$('#sf-other-tools .owner-edit-controls').querySelectorAll('button')].find(b=>b.textContent.includes('إضافة قسم')).click();assert.deepEqual(a.errors,[]);assert.ok(a.$('#page-section-form'));assert.equal(a.$('#page-section-form [name=title]').value,'');assert.equal(a.w.location.hash,'#store/shop');assert.deepEqual(a.errors,[]);
+ }finally{a.close();}
+});
+test('card settings render and save in the offers section without navigating away',async()=>{
+ const a=setup();try{
+  a.run("window.cardCalls=[];api.rpc=async(name,args)=>{window.cardCalls.push([name,args]);window.lastCardRPC=[name,args];return {data:{history_only:true,follow_enabled:true,purchase_enabled:false},error:null};};renderDashboard('setup','shop')");a.$('.owner-manage-toggle').click();await new Promise(r=>setTimeout(r,35));
+  const controls=a.$('#sf-offers .owner-edit-controls');const button=[...controls.querySelectorAll('button')].find(b=>b.textContent.includes('إعدادات المتابعة'));assert.ok(button);button.click();await new Promise(r=>setTimeout(r,35));
+  const form=a.$('#shop-cards-form');assert.ok(form);assert.ok(form.closest('#sf-offers'));form.elements.follow.checked=false;
+  await form.onsubmit({preventDefault(){},submitter:form.querySelector('button')});await new Promise(r=>setTimeout(r,35));
+  assert.ok(a.w.cardCalls.some(([name,args])=>name==='save_shop_purchase_cards'&&args.p_store==='shop'&&args.p_follow===false));assert.equal(a.w.location.hash,'#store/shop');assert.ok(a.$('#shop-cards-form'));assert.deepEqual(a.errors,[]);
+ }finally{a.close();}
+});
+test('offer management is scoped to this shop and stays read-only after an account change',async()=>{
+ const a=setup({role:'owner'});try{
+  a.run("renderDashboard('setup','shop')");a.$('.owner-manage-toggle').click();await new Promise(r=>setTimeout(r,35));
+  a.w.queryFilters=[];a.run(`api.from=table=>{const q={select(){return q;},eq(k,v){window.queryFilters.push([k,v]);return q;},order(){return q;},limit(){return q;},then(resolve){return Promise.resolve({data:[{id:'offer',title:'عرض المتجر',status:'pending',store_id:'shop',user_id:'owner',details:'شروط العرض'}],error:null}).then(resolve);}};return q;};`);
+  [...a.$('#sf-offers .owner-edit-controls').querySelectorAll('button')].find(b=>b.textContent==='إدارة عروض المتجر').click();await new Promise(r=>setTimeout(r,35));
+  assert.ok(a.$('[data-owner-withdraw]'));assert.ok(a.w.queryFilters.some(([k,v])=>k==='store_id'&&v==='shop'));assert.ok(a.w.queryFilters.some(([k,v])=>k==='user_id'&&v==='owner'));
+  a.run('user=null');await new Promise(r=>setTimeout(r,35));a.w.confirm=()=>{throw Error('must not ask or mutate after sign-out');};a.$('[data-owner-withdraw]')?.click();assert.deepEqual(a.errors,[]);
+ }finally{a.close();}
+});
+
+test('custom section saves preserve page editing and the existing store revision check',async()=>{
+ const a=setup();try{
+  a.run("renderDashboard('setup','shop')");a.$('.owner-manage-toggle').click();await new Promise(r=>setTimeout(r,35));
+  [...a.$('#sf-other-tools .owner-edit-controls').querySelectorAll('button')].find(b=>b.textContent.includes('إضافة قسم')).click();
+  const form=a.$('#page-section-form');form.elements.title.value='خدماتنا';form.elements.content.value='خدمات المتجر الإضافية';
+  a.run(`window.sectionFilters=[];api.from=table=>({update(payload){window.sectionPayload=payload;return this;},eq(k,v){window.sectionFilters.push([k,v]);return this;},select(){return this;},single(){return Promise.resolve({data:{translations:window.sectionPayload.translations,revision:2},error:null});}});`);
+  await form.onsubmit({preventDefault(){},submitter:form.querySelector('[type=submit]')});await new Promise(r=>setTimeout(r,35));
+  assert.equal(a.w.location.hash,'#store/shop');assert.equal(a.$('#app').classList.contains('owner-view-clean'),false);assert.equal(a.w.sectionPayload.translations._page_sections[0].title,'خدماتنا');assert.ok(a.w.sectionFilters.some(([k,v])=>k==='revision'&&v===1));assert.ok(a.$('.public-shop-section'));assert.deepEqual(a.errors,[]);
+ }finally{a.close();}
+});

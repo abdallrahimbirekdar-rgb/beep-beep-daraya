@@ -112,7 +112,22 @@
      }
    };
  }
- window.DarayaOffers={edit,meta,eligible,card};
+ async function manage(s,host){
+  const uid=user?.id;if(!uid||!owned().some(x=>x.id===s.id))return;
+  host.textContent=t('جاري تحميل عروض المتجر…','Loading shop offers…','Geschäftsangebote werden geladen…');
+  try{
+   let query=api.from('daily_offers').select('*').eq('store_id',s.id).order('created_at',{ascending:false}).limit(60);
+   if(!admin)query=query.eq('user_id',uid);
+   const r=await query;if(r.error)throw r.error;if(!host.isConnected||user?.id!==uid||!owned().some(x=>x.id===s.id))return;
+   host.innerHTML=(r.data||[]).map(o=>'<article class="panel" data-owner-offer="'+esc(o.id)+'"><h3>'+esc(o.title)+'</h3><p>'+esc(meta(o).benefit)+'</p><p>'+esc({pending:t('بانتظار المراجعة','Awaiting review','Wartet auf Prüfung'),approved:t('منشور','Published','Veröffentlicht'),rejected:t('موقوف أو مرفوض','Stopped or rejected','Beendet oder abgelehnt')}[o.status]||o.status)+'</p><button type="button" class="outline" data-owner-withdraw="'+esc(o.id)+'">'+t('سحب العرض','Withdraw offer','Angebot zurückziehen')+'</button><p role="status"></p></article>').join('')||'<p>'+t('لم تُضف عروضًا لهذا المتجر بعد.','No offers have been added to this shop yet.','Noch keine Angebote für dieses Geschäft.')+'</p>';
+   for(const b of host.querySelectorAll('[data-owner-withdraw]'))b.onclick=async()=>{
+    if(user?.id!==uid||!owned().some(x=>x.id===s.id))return;
+    if(!confirm(t('هل تريد سحب هذا العرض؟','Withdraw this offer?','Dieses Angebot zurückziehen?')))return;
+    b.disabled=true;try{let request=api.from('daily_offers').delete().eq('id',b.dataset.ownerWithdraw).eq('store_id',s.id);if(!admin)request=request.eq('user_id',uid);const result=await request.select('id');if(result.error)throw result.error;if(!result.data?.length)throw Error(error());if(user?.id!==uid||!host.isConnected)return;await manage(s,host);toast(t('تم سحب العرض','Offer withdrawn','Angebot zurückgezogen'));}catch(e){if(b.isConnected){b.disabled=false;b.nextElementSibling.textContent=e.message||error();}}
+   };
+  }catch{if(host.isConnected&&user?.id===uid){host.textContent=error();const retry=document.createElement('button');retry.type='button';retry.textContent=t('إعادة المحاولة','Try again','Erneut versuchen');retry.onclick=()=>manage(s,host);host.append(retry);}}
+ }
+ window.DarayaOffers={edit,manage,meta,eligible,card};
  renderCommunityOffers=()=>list();
  const baseRender=render;render=function(){clearCard();if(api&&!passwordRecovery){const routes={'#offer-review':'review','#followed-offers':'following','#my-shop-offers':'mine','#published-shop-offers':'published','#offers':'all'};if(routes[location.hash])return list(routes[location.hash]);}return baseRender.apply(this,arguments);};
  const baseHome=renderHome;renderHome=function(){baseHome.apply(this,arguments);if(search.trim()||browseFavorites||window.darayaHomeShowsResults?.()||!['','#','#home'].includes(location.hash))return;const input=$('#search');if(!input)return;const section=document.createElement('section');section.dataset.noTranslate='';section.className='daily-offers-preview';section.classList.add('offers-spotlight');section.innerHTML='<a class="offers-spotlight-link" href="#offers"><div class="offers-spotlight-copy"><span class="offers-spotlight-kicker">'+t('من محلات داريا','From Daraya’s shops','Aus Darayas Geschäften')+'</span><h2>'+t('عروض اليوم','Today’s offers','Heutige Angebote')+'</h2><p>'+t('اكتشف الأسعار والخصومات في مكان واحد','Discover prices and discounts in one place','Preise und Rabatte an einem Ort entdecken')+'</p><span class="offers-spotlight-action">'+t('اكتشف العروض ←','Explore offers →','Angebote entdecken →')+'</span></div><span class="offers-spotlight-art" aria-hidden="true"><span class="offers-discount-seal"><span class="offers-discount-symbol">٪</span><span class="offers-discount-label">'+t('خصومات','Discounts','Rabatte')+'</span></span></span><small class="offers-spotlight-note">'+t('عروض المحلات وأمثلة توضيحية','Shop offers and illustrative examples','Geschäftsangebote und anschauliche Beispiele')+'</small></a>';input.closest('.search-box,.search-wrap,.search-field')?.after(section);if(!section.isConnected)input.parentElement.after(section);};
