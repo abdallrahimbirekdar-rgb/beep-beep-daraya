@@ -48,3 +48,7 @@
 .owner-view-clean .owner-only-section{display:none!important}
 
 .shop-info-panel>.owner-inline-editor .section-heading{display:none!important}
+
+.owner-view-clean .owner-offer-list{display:none!important}
+.owner-offer-list{margin:12px 0}
+.owner-edit-controls>a{white-space:normal}
