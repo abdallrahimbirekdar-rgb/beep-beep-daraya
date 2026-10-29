@@ -18,7 +18,12 @@ function refreshLabel(){
 }
 function sync(){
  const parts=location.hash.slice(1).split('/');
- document.body?.classList?.toggle('compact-shop-chrome',['store','example'].includes(parts[0]));
+ const storePage=!!document.querySelector('#app .store-banner');
+ document.body?.classList?.toggle('compact-shop-chrome',storePage||['store','example'].includes(parts[0]));
+ document.body?.classList?.toggle('store-primary-branding',storePage);
+ const language=window.ShahinI18n?.language||'ar';
+ const affiliation={ar:['هذا المتجر موجود على ','سوق داريا الإلكتروني'],en:['This shop is on ','Souq Daraya'],de:['Dieses Geschäft findest du auf ','Souq Daraya']}[language]||['هذا المتجر موجود على ','سوق داريا الإلكتروني'];
+ for(const [selector,value] of [['[data-shop-affiliation-intro]',affiliation[0]],['[data-shop-affiliation-site]',affiliation[1]]]){const node=document.querySelector(selector);if(node&&node.textContent!==value)node.textContent=value;}
  const managing=parts[0]==='dashboard';
  const shopPanel=managing&&(!admin||parts[1]==='setup');
  const s=shopPanel?(mine().find(x=>x.id===parts[2])||mine()[0]):null;
