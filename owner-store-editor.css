@@ -10,3 +10,5 @@
 .owner-management-shortcuts>button,.owner-manage-toggle{min-height:44px;font-size:14px!important}
 @media(max-width:600px){.owner-management-shortcuts>button{flex:1 1 44%}}
 .owner-live-store.owner-view-clean a[href="#data-requests"]{display:none!important}
+
+.owner-store-bar .owner-manage-toggle{background:linear-gradient(135deg,#f7e8b7,#e5c46d)!important;color:#173b35!important;border:1px solid #b79032!important}
