@@ -122,8 +122,11 @@
   });
   // Reuse the original permission/plan-checked links and their event handlers.
   const tools=other?.querySelector(':scope>.owner-edit-controls'),offerTools=offers?.querySelector(':scope>.owner-edit-controls');
+  const orders=app.querySelector('#sf-orders');
+  actions(orders,s,'delivery',row=>row.append(button(t('إعدادات الطلب والتوصيل','Order and delivery settings','Bestell- und Liefereinstellungen'),()=>openInline(s.id,'delivery','sf-orders'))));
+  const orderTools=orders?.querySelector(':scope>.owner-edit-controls');
   for(const entry of managementEntries){
-   if(entry.matches('[data-card-settings-link]')&&window.DarayaShopCards){entry.remove();continue;}const target=entry.matches('[data-card-settings-link]')?offerTools:tools;if(!target||target.contains(entry))continue;target.append(entry);
+   if(entry.matches('[data-card-settings-link]')&&window.DarayaShopCards){entry.remove();continue;}const orderEntry=['orders','drivers'].some(key=>entry.getAttribute('href')===editHref(s,key));const target=orderEntry&&orderTools?orderTools:entry.matches('[data-card-settings-link]')?offerTools:tools;if(!target||target.contains(entry))continue;target.append(entry);
   }
   for(const section of app.querySelectorAll('.public-shop-section[data-page-section-id]')){
    const key='page-'+section.dataset.pageSectionId;actions(section,s,key,row=>row.append(button(t('تعديل هذا القسم','Edit this section','Diesen Bereich bearbeiten'),()=>{
@@ -195,7 +198,18 @@
    else actions(info,s,'details',row=>row.append(button(t('تعديل معلومات المتجر','Edit shop information','Geschäftsdaten bearbeiten'),()=>openInline(s.id,'details','sf-info'))));
    actions(app.querySelector('#sf-tools'),s,'photos',row=>row.append(button(t('تعديل صورة المتجر وإضافة صور','Edit shop photo and add photos','Geschäftsfoto bearbeiten und Bilder hinzufügen'),()=>openInline(s.id,'photos','sf-tools'))));
    if(!medical)actions(app.querySelector('#sf-videos'),s,'videos',row=>row.append(button(t('+ إضافة فيديو جديد','+ Add new video','+ Neues Video hinzufügen'),()=>openInline(s.id,'videos','sf-videos','@new'))));
-   actions(app.querySelector('#sf-orders'),s,'delivery',row=>row.append(button(t('تعديل إعدادات الطلب والتوصيل','Edit order and delivery settings','Bestell- und Liefereinstellungen bearbeiten'),()=>openInline(s.id,'delivery','sf-orders')),link(t('الطلبات الواردة','Incoming orders','Eingehende Bestellungen'),editHref(s,'orders'))));
+   // Management links keep their native handlers and plan restrictions.
+   for(const row of app.querySelectorAll('#sf-other-tools>.owner-edit-controls,#sf-orders>.owner-edit-controls')){
+    row.classList.add('owner-tools-grid');
+    for(const entry of row.children){
+     if(!entry.matches('a,button')||entry.dataset.ownerToolCard)continue;
+     const oldIcon=entry.querySelector('[data-dashboard-icon]');
+     const label=entry.textContent.replace(oldIcon?.textContent||'','').trim();
+     const icon=document.createElement('span');icon.className='owner-tool-icon';icon.setAttribute('aria-hidden','true');icon.textContent=oldIcon?.textContent|| (entry.hasAttribute('data-store-transfer')?'⇄':entry.tagName==='BUTTON'?'+':'⚙');
+     const text=document.createElement('span');text.className='owner-tool-label';text.textContent=label;
+     entry.classList.remove('dashboard-menu-card');entry.dataset.ownerToolCard='';entry.replaceChildren(icon,text);
+    }
+   }
    if(!medical)for(const item of app.querySelectorAll('#sf-videos .shop-video-item[data-shop-video-url]')){
     if(item.querySelector('.owner-video-actions'))continue;
     const row=document.createElement('div');row.className='owner-video-actions';row.dataset.noTranslate='';row.append(button(t('تعديل هذا الفيديو','Edit this video','Dieses Video bearbeiten'),()=>openInline(s.id,'videos','sf-videos',item.dataset.shopVideoUrl)));item.append(row);
