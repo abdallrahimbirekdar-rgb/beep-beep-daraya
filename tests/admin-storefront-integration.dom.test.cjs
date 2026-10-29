@@ -188,3 +188,22 @@ test('storefront videos have Add new video at the top and an independent editor 
   a.$('#sf-videos>.owner-edit-controls button').click();assert.equal(a.$('#merchant-videos-form fieldset:not([hidden]) [data-shop-video-url]').value,'');assert.deepEqual(a.errors,[]);
  }finally{a.close();}
 });
+
+test('orders and couriers are grouped under the main shop orders tile with compact tool cards',async()=>{
+ for(const role of ['admin','owner']){const a=setup({role});try{
+  a.run("history.replaceState(null,'','#store/shop');renderStore('shop')");
+  a.$('.owner-manage-toggle').click();await new Promise(r=>setTimeout(r,35));
+  const href=key=>role==='admin'?'#dashboard/setup/shop/'+key:'#dashboard/'+key+'/shop';
+  const tile=a.$('.sf-section-nav [data-target="sf-orders"]');assert.ok(tile);tile.click();
+  for(const key of ['orders','drivers']){
+   const selector='a[href="'+href(key)+'"]';
+   assert.ok(a.$('#sf-orders .owner-tools-grid '+selector),role+' '+key);
+   assert.equal(a.$('#sf-other-tools '+selector),null);
+   assert.equal(a.w.document.querySelectorAll(selector).length,1);
+  }
+  assert.ok(a.$('#sf-orders .owner-tool-label'));
+  assert.equal(a.$('#sf-orders .dashboard-color-icon'),null);
+  assert.equal(a.$('#sf-orders').classList.contains('sf-section-collapsed'),false);
+  assert.deepEqual(a.errors,[]);
+ }finally{a.close();}}
+});

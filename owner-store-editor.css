@@ -58,3 +58,15 @@
 
 .owner-video-actions{display:flex;gap:8px;margin:8px 0}.owner-video-actions button{min-height:44px;background:#fff6d8;color:#173b35;border:1px solid #b79032}.owner-view-clean .owner-video-actions{display:none!important}
 .shop-video-cover-editor[hidden]{display:none!important}
+
+/* Owner tools share a stable grid, independent of dashboard card styles. */
+#app .owner-tools-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;width:100%;margin:14px 0 20px;align-items:stretch}
+#app .owner-tools-grid>[data-owner-tool-card]{display:flex!important;align-items:center;justify-content:flex-start;gap:10px;box-sizing:border-box;width:100%!important;max-width:none!important;min-width:0;min-height:76px!important;height:auto!important;aspect-ratio:auto!important;margin:0!important;padding:12px!important;border:1px solid #e2d8b9!important;border-radius:14px;background:#fffdf7!important;color:#173b35!important;text-align:start!important;text-decoration:none;white-space:normal;box-shadow:0 2px 8px #173b3505}
+#app .owner-tools-grid .owner-tool-icon{display:grid;place-items:center;width:36px;height:36px;flex:0 0 36px;border-radius:11px;background:#f7efd8;color:#a18336;font-size:23px;line-height:1}
+#app .owner-tools-grid .owner-tool-label{min-width:0;font-size:14px;font-weight:700;line-height:1.7;overflow-wrap:anywhere}
+#app .owner-tools-grid>[data-owner-tool-card]:hover{background:#fff7df!important;border-color:#b49549!important}
+#app .owner-tools-grid>[data-owner-tool-card]:focus-visible{outline:3px solid #b49549;outline-offset:3px}
+#app .owner-tools-grid>[data-owner-tool-card][hidden]{display:none!important}
+#app.owner-view-clean .owner-tools-grid{display:none!important}
+@media(min-width:900px){#app .owner-tools-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:360px){#app .owner-tools-grid{grid-template-columns:minmax(0,1fr)}}
