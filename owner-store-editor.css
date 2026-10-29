@@ -52,3 +52,6 @@
 .owner-view-clean .owner-offer-list{display:none!important}
 .owner-offer-list{margin:12px 0}
 .owner-edit-controls>a{white-space:normal}
+
+.owner-edit-controls>.owner-add-product{background:linear-gradient(135deg,#f7e8b7,#e5c46d)!important;color:#173b35!important;border:1px solid #b79032!important;font-size:14px!important;min-height:48px}
+.owner-product-actions .owner-delete-product{color:#963828!important;background:#fff3ee!important;border-color:#c98170!important}
