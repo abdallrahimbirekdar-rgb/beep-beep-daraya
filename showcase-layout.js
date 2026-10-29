@@ -48,7 +48,7 @@
    const visual=document.createElement('span');visual.className='sf-tile-visual';visual.setAttribute('aria-hidden','true');
    if(kind==='products'){
     window.DarayaProductTileSlideshow(visual,rows.filter(row=>row[5]).map(row=>new URL(row[5],location.href).href),'demo:'+key);
-   }else visual.innerHTML=window.DarayaShopTileIcon(kind)||'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">'+icons[kind]+'</svg>';
+   }else visual.innerHTML=window.DarayaShopTileIcon(kind==='tools'?'photos':kind)||'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">'+icons[kind]+'</svg>';
    const title=document.createElement('strong');title.className='sf-tile-title';title.textContent=label;
    const hint=document.createElement('span');hint.className='sf-tile-note';hint.textContent=note;card.append(visual,title,hint);
    card.setAttribute('aria-expanded','false');card.onclick=()=>view.open(target.id,card);nav.append(card);

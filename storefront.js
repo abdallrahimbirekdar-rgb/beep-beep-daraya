@@ -66,7 +66,7 @@
    const button=make('button','sf-section-tile sf-tile-'+kind);button.type='button';button.dataset.target=id;
    const visual=make('span','sf-tile-visual');visual.setAttribute('aria-hidden','true');
    if(kind==='products'&&images.length)window.DarayaProductTileSlideshow(visual,images,'shop:'+page.id);
-   else visual.innerHTML=window.DarayaShopTileIcon(kind)||'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">'+icons[kind]+'</svg>';
+   else visual.innerHTML=window.DarayaShopTileIcon(kind==='tools'?'photos':kind)||'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">'+icons[kind]+'</svg>';
    button.append(visual,make('strong','sf-tile-title',label),make('span','sf-tile-note',node?note:t('غير متاح حاليًا','Not available yet','Derzeit nicht verfügbar')));
    button.setAttribute('aria-expanded',String(view.active===id));button.disabled=!node;if(node){node.id=id;button.setAttribute('aria-controls',id);button.onclick=()=>view.open(id,button);}nav.append(button);
   });
