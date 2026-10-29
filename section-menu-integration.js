@@ -54,7 +54,7 @@
  function publicShopTools(){
   const root=app.querySelector('.sf-tools'),banner=app.querySelector('.store-banner[data-storefront]');if(!root||!banner)return;const page=banner.parentElement,view=window.DarayaShopSectionView?.(page);if(!view)return;
   let other=page.querySelector('#sf-other-tools'),orders=page.querySelector('#sf-orders');
-  if(!other){other=document.createElement('section');other.id='sf-other-tools';other.className='panel promoted-shop-section';other.dataset.noTranslate='';const h=document.createElement('h2');h.textContent=t('أدوات المتجر والمشاركة','Shop tools and sharing','Geschäftswerkzeuge und Teilen');other.append(h);for(const n of [...root.children])if(!n.matches('h2,.sf-photos')){if(n.matches('.sf-more')&&n.querySelector('.sf-more-items')){while(n.querySelector('.sf-more-items').firstChild)other.append(n.querySelector('.sf-more-items').firstChild);n.remove();}else other.append(n);}page.append(other);if(root.children.length===1){const empty=document.createElement('p');empty.textContent=t('لم تُضف صور إضافية بعد.','No extra photos have been added yet.','Noch keine weiteren Fotos vorhanden.');root.append(empty);}}
+  if(!other){other=document.createElement('section');other.id='sf-other-tools';other.className='panel promoted-shop-section';other.dataset.noTranslate='';const h=document.createElement('h2');h.textContent=t('أدوات المتجر','Shop tools','Geschäftswerkzeuge');other.append(h);for(const n of [...root.children])if(!n.matches('h2,.sf-photos')){if(n.matches('.sf-more')&&n.querySelector('.sf-more-items')){while(n.querySelector('.sf-more-items').firstChild)other.append(n.querySelector('.sf-more-items').firstChild);n.remove();}else other.append(n);}page.append(other);if(root.children.length===1){const empty=document.createElement('p');empty.textContent=t('لم تُضف صور إضافية بعد.','No extra photos have been added yet.','Noch keine weiteren Fotos vorhanden.');root.append(empty);}}
   let share=page.querySelector('#sf-share');
   if(!share){share=document.createElement('section');share.id='sf-share';share.className='panel promoted-shop-section';share.dataset.noTranslate='';const h=document.createElement('h2');h.textContent=t('المنيو وQR والمشاركة','Menu, QR and sharing','Speisekarte, QR und Teilen');share.append(h);page.append(share);}
   for(const node of other.querySelectorAll('.sf-share,.shop-catalog-download,[data-place-qr],[data-place-whatsapp-share]'))share.append(node);
@@ -84,6 +84,26 @@
   const photos=nav?.querySelector('[data-target="'+(banner?'sf-tools':'showcase-tools')+'"]'),videos=nav?.querySelector('[data-target="'+id+'"]');
   if(photos&&videos&&[...nav.children].indexOf(photos)<[...nav.children].indexOf(videos)){const slot=document.createComment('video position');videos.replaceWith(slot);photos.replaceWith(videos);slot.replaceWith(photos);}
  }
+ function polishShopTools(){
+  const banner=app.querySelector('.store-banner[data-storefront]');if(!banner)return;
+  const pin='<path d="M20 10c0 6-8 11-8 11S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/>';
+  const route='<path d="m12 3 9 9-9 9-9-9Z"/><path d="M8 15v-4h8m-3-3 3 3-3 3"/>';
+  const icon=path=>{const n=document.createElement('span');n.className='sf-utility-icon';n.setAttribute('aria-hidden','true');n.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">'+path+'</svg>';return n;};
+  let location=banner.querySelector('.sf-cover-location-actions');
+  const map=app.querySelector('#sf-other-tools .directory-actions a[href*="/maps/search/"]'),directions=app.querySelector('.sf-contact-actions .sf-directions,#sf-other-tools .directory-actions a[href*="/maps/dir/"]');
+  if(!location&&(map||directions)){location=document.createElement('div');location.className='sf-cover-location-actions';location.dataset.noTranslate='';location.setAttribute('aria-label',t('موقع المتجر والاتجاهات','Shop location and directions','Geschäftsstandort und Route'));const cover=banner.querySelector('.sf-cover-button,.store-image');if(cover)cover.after(location);else banner.prepend(location);}
+  for(const [control,kind,title,path] of [[map,'location',t('موقع المحل','Shop location','Standort'),pin],[directions,'directions',t('الاتجاهات','Directions','Route'),route]])if(control&&location){control.dataset.coverLocation=kind;const text=document.createElement('span');text.textContent=title;control.replaceChildren(icon(path),text);location.append(control);}
+  const paths={appointment:'<rect x="3" y="5" width="18" height="16" rx="3"/><path d="M7 3v4m10-4v4M3 11h18m-13 5 3 3 5-5"/>',tool:'<rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/>',report:'<path d="M5 21V3m0 1c5-4 9 4 14 0v11c-5 4-9-4-14 0"/>',block:'<path d="M12 3 3 7v5c0 5 9 9 9 9s9-4 9-9V7Z"/><path d="m8 8 8 8m0-8-8 8"/>',share:'<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m9 10 6-4m-6 8 6 4"/>',order:'<path d="M5 7h14l1 14H4ZM9 7V5a3 3 0 0 1 6 0v2"/>',history:'<circle cx="12" cy="12" r="9"/><path d="M12 6v6l4 2"/>',contact:'<path d="m8 3 2 5-3 2c2 4 3 5 7 7l2-3 5 2-1 4c-8 3-20-9-16-16Z"/>'};
+  for(const section of app.querySelectorAll('#sf-other-tools,#sf-orders')){
+   section.classList.add('sf-polished-tools');
+   for(const control of section.querySelectorAll(':scope>button,:scope>a,.directory-actions>button,.directory-actions>a')){
+    if(control.dataset.utilityCard||control.closest('.owner-edit-controls,.owner-inline-editor'))continue;
+    const title=control.textContent.trim(),kind=control.hasAttribute('data-report-place')?'report':control.hasAttribute('data-block-shop')?'block':/موعد|appointment|Termin/i.test(title)?'appointment':section.id==='sf-other-tools'?(/مشاركة|share|teilen/i.test(title)?'share':'tool'):control.getAttribute('href')==='#my-orders'?'history':/التواصل|Contact|Kontakt/.test(title)?'contact':'order';
+    const note={appointment:t('تواصل مع المتجر لطلب موعد أو خدمة','Contact the shop for an appointment or service','Geschäft für einen Termin oder Service kontaktieren'),tool:t('افتح الأداة للاطلاع على خياراتها','Open this tool to view its options','Werkzeug und seine Optionen öffnen'),report:t('أخبرنا عن خطأ في المعلومات أو المحتوى','Tell us about incorrect information or content','Fehlerhafte Angaben oder Inhalte melden'),block:t('إخفاء محتوى هذا المحل من تصفحك','Hide this shop’s content from your browsing','Inhalte dieses Geschäfts ausblenden'),share:t('أرسل رابط الصفحة لمن تريد','Send the page link to others','Seitenlink an andere senden'),history:t('عرض الطلبات ومتابعة حالتها','View orders and track their status','Bestellungen und ihren Status ansehen'),contact:t('تواصل مباشرة مع المتجر','Contact the shop directly','Geschäft direkt kontaktieren'),order:t('انتقل إلى المنتجات لاختيار طلبك','Browse products to choose your order','Produkte für deine Bestellung auswählen')}[kind];
+    const copy=document.createElement('span');copy.className='sf-utility-copy';const strong=document.createElement('strong');strong.textContent=title;const small=document.createElement('small');small.textContent=note;copy.append(strong,small);control.dataset.utilityCard=kind;control.classList.add('sf-utility-card');control.replaceChildren(icon(paths[kind]),copy);
+   }
+  }
+ }
  const parentBacks=new Map();
  function updateTrail(){
   const bars=[...app.querySelectorAll('.section-menu-bar')].filter(n=>!n.hidden&&!n.closest('[inert],.sf-section-collapsed')&&!n.parentElement.closest('[hidden]'));
@@ -92,7 +112,7 @@
   else {for(const [b,hidden] of parentBacks)if(b.isConnected)b.hidden=hidden;parentBacks.clear();}
  }
  app.addEventListener('daraya-section-state',updateTrail);
- function adapt(){queued=false;observer.disconnect();try{demoTools();publicShopTools();shopVideos();updateTrail();}finally{observer.observe(app,{childList:true,subtree:true});}}
+ function adapt(){queued=false;observer.disconnect();try{demoTools();publicShopTools();shopVideos();polishShopTools();updateTrail();}finally{observer.observe(app,{childList:true,subtree:true});}}
  const observer=new MutationObserver(()=>{if(queued)return;queued=true;queueMicrotask(adapt);});
  window.DarayaRefreshSectionMenus=adapt;adapt();
  window.addEventListener('hashchange',()=>{if(!queued){queued=true;queueMicrotask(adapt);}});
