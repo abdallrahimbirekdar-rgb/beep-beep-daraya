@@ -203,9 +203,9 @@
 
 /* Keep paired section cards equal and give product photos the full card width. */
 #app .sf-section-nav{align-items:stretch;grid-auto-rows:1fr}
-#app .sf-section-nav .sf-section-tile{height:100%;min-height:194px;justify-content:flex-start;gap:8px;padding:10px}
-#app .sf-section-nav .sf-tile-visual{width:100%;max-width:none;height:112px;min-height:112px;flex:0 0 112px}
-#app .sf-section-nav .sf-tile-slideshow img{width:100%;max-width:none;height:112px;object-fit:cover;object-position:center}
-#app .sf-section-nav .sf-tile-title{display:flex;align-items:center;justify-content:center;min-height:3em}
-#app .sf-section-nav .sf-tile-note{margin-top:auto}
-@media(min-width:700px){#app .sf-section-nav .sf-tile-visual{height:128px;min-height:128px;flex-basis:128px}#app .sf-section-nav .sf-tile-slideshow img{height:128px}}
+#app .sf-section-nav .sf-section-tile{height:100%;min-height:0;justify-content:flex-start;gap:5px;padding:8px}
+#app .sf-section-nav .sf-tile-visual{width:100%;max-width:none;height:104px;min-height:104px;flex:0 0 104px}
+#app .sf-section-nav .sf-tile-slideshow img{width:100%;max-width:none;height:104px;object-fit:cover;object-position:center}
+#app .sf-section-nav .sf-tile-title{display:flex;align-items:center;justify-content:center;min-height:0;font-size:14px;line-height:1.4;margin:2px 0}
+#app .sf-section-nav .sf-tile-note{display:none}
+@media(min-width:700px){#app .sf-section-nav .sf-tile-visual{height:112px;min-height:112px;flex-basis:112px}#app .sf-section-nav .sf-tile-slideshow img{height:112px}}

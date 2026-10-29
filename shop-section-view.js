@@ -28,7 +28,7 @@
    if(!visual.isConnected){stop();return;}
    if(document.hidden||visual.closest('[inert],.sf-section-collapsed')||window.matchMedia?.('(prefers-reduced-motion: reduce)').matches)return;
    const next=(current+1)%images.length;load(next);if(images[next].complete&&images[next].naturalWidth>0)show(next);
-  },1000);slides.set(visual,stop);}
+  },2000);slides.set(visual,stop);}
  };
 
  window.DarayaShopSections=({root,hero,nav,sections,backLabel})=>{
