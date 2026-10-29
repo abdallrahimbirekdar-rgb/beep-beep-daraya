@@ -14,7 +14,7 @@
   const view=window.DarayaShopSectionView?.(page);if(!view||!node)return;
   view.registerSection({id,node});let button=view.nav.querySelector('[data-target="'+id+'"]');if(button)return;
   button=document.createElement('button');button.type='button';button.className='sf-section-tile sf-tile-tools';button.dataset.target=id;button.dataset.noTranslate='';button.setAttribute('aria-controls',id);button.setAttribute('aria-expanded','false');
-  const visual=document.createElement('span');visual.className='sf-tile-visual';visual.setAttribute('aria-hidden','true');visual.textContent=icon;visual.style.fontSize='30px';const h=document.createElement('strong');h.className='sf-tile-title';h.textContent=title;const small=document.createElement('span');small.className='sf-tile-note';small.textContent=note;button.append(visual,h,small);button.onclick=()=>view.open(id,button);view.nav.append(button);
+  const visual=document.createElement('span');visual.className='sf-tile-visual';visual.setAttribute('aria-hidden','true');if(id.endsWith('-share'))visual.innerHTML=window.DarayaShopTileIcon('share');else visual.textContent=icon;visual.style.fontSize='30px';const h=document.createElement('strong');h.className='sf-tile-title';h.textContent=title;const small=document.createElement('span');small.className='sf-tile-note';small.textContent=note;button.append(visual,h,small);button.onclick=()=>view.open(id,button);view.nav.append(button);
  }
  function demoTools(){
   const root=app.querySelector('.showcase-owner-tools');if(!root)return;const page=root.parentElement;
