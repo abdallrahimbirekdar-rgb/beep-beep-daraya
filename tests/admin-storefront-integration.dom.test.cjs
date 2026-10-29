@@ -177,3 +177,14 @@ test('empty information groups stay available to visitors with honest placeholde
   assert.match(a.$('.shop-info-panel[data-sf-info-kind="hours"]').textContent,/غير محددة/);assert.equal(a.$('.owner-inline-editor'),null);assert.deepEqual(a.errors,[]);
  }finally{a.close();}
 });
+test('storefront videos have Add new video at the top and an independent editor beside each video',async()=>{
+ const a=setup();try{
+  a.w.mockStore.translations._video_urls=['https://www.youtube.com/watch?v=M7lc1UVf-VE','https://vimeo.com/76979871'];
+  a.run("renderDashboard('setup','shop')");a.$('.owner-manage-toggle').click();await new Promise(r=>setTimeout(r,35));a.$('[data-target=sf-videos]').click();
+  assert.equal(a.w.document.querySelectorAll('#sf-videos .owner-video-actions button').length,2);
+  a.$('#sf-videos .owner-video-actions button').click();let form=a.$('#merchant-videos-form');assert.equal(form.querySelectorAll('fieldset:not([hidden])').length,1);assert.equal(form.querySelector('fieldset:not([hidden]) [data-shop-video-url]').value,'https://www.youtube.com/watch?v=M7lc1UVf-VE');assert.ok(a.$('.owner-inline-editor').previousElementSibling.classList.contains('shop-video-item'));
+  form.querySelector('[data-shop-video-url]').value='https://vimeo.com/22439234';form.dispatchEvent(new a.w.Event('input',{bubbles:true}));a.w.confirm=()=>false;a.w.document.querySelectorAll('#sf-videos .owner-video-actions button')[1].click();assert.equal(a.$('#merchant-videos-form'),form);
+  a.w.confirm=()=>true;a.w.document.querySelectorAll('#sf-videos .owner-video-actions button')[1].click();assert.notEqual(a.$('#merchant-videos-form'),form);assert.equal(a.$('#merchant-videos-form fieldset:not([hidden]) [data-shop-video-url]').value,'https://vimeo.com/76979871');
+  a.$('#sf-videos>.owner-edit-controls button').click();assert.equal(a.$('#merchant-videos-form fieldset:not([hidden]) [data-shop-video-url]').value,'');assert.deepEqual(a.errors,[]);
+ }finally{a.close();}
+});
