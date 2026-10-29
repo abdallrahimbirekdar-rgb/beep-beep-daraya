@@ -27,20 +27,33 @@
   const copy=document.createElement('span');copy.className='sf-info-row-copy';const strong=document.createElement('strong');strong.textContent=title;copy.append(strong);if(note){const small=document.createElement('small');small.textContent=note;copy.append(small);}control.replaceChildren(icon(kind),copy);if(chevron){const arrow=icon('chevron');arrow.className='sf-info-row-chevron';control.append(arrow);}
  }
  function network(href){try{const u=new URL(href,location.href),h=u.hostname.toLowerCase();if(u.protocol==='tel:')return 'phone';if(u.protocol==='mailto:')return 'mail';if(/(^|\.)(wa.me|whatsapp.com)$/.test(h))return 'whatsapp';if(/(^|\.)(facebook.com|fb.com|fb.me)$/.test(h))return 'facebook';if(/(^|\.)instagram.com$/.test(h))return 'instagram';if(/(^|\.)(t.me|telegram.me)$/.test(h))return 'telegram';if(/(^|\.)(youtube.com|youtu.be)$/.test(h))return 'youtube';if(/(^|\.)tiktok.com$/.test(h))return 'tiktok';}catch{}return 'website';}
+ // Keep the visitor's information menu available even before every field is filled.
+ function missingInformation(info){
+  const nav=info.querySelector('.shop-info-tabs');if(!nav)return;
+  const id=app.querySelector('.store-banner[data-storefront]')?.dataset.storefront;
+  const shop=typeof stores!=='undefined'&&stores.find(s=>s.id===id);if(!shop)return;
+  const medical=typeof directoryIsMedical==='function'&&directoryIsMedical(shop);
+  const service=typeof directoryIsService==='function'&&directoryIsService(shop);
+  if(shop._mosqueCatalog)return;
+  const messages={about:t('لم يضف المتجر نبذة بعد.','The shop has not added a description yet.','Das Geschäft hat noch keine Beschreibung hinzugefügt.'),contact:t('لم يضف المتجر معلومات تواصل إضافية بعد.','The shop has not added more contact details yet.','Das Geschäft hat noch keine weiteren Kontaktdaten hinzugefügt.'),delivery:t('تواصل مع المتجر للاستفسار عن التوصيل والاستلام.','Contact the shop to ask about delivery and pickup.','Frage das Geschäft nach Lieferung und Abholung.'),hours:t('أوقات الدوام غير محددة حاليًا. تواصل مع المتجر للتأكد.','Opening hours are not set yet. Contact the shop to check.','Öffnungszeiten sind noch nicht angegeben. Frage beim Geschäft nach.')};
+  for(const kind of medical||service?['about','contact']:['about','contact','delivery','hours']){
+   if(info.querySelector('.shop-info-panel[data-sf-info-kind="'+kind+'"]'))continue;
+   if(kind==='hours'&&typeof storePlan==='function'&&!storePlan(shop).features.hours)continue;
+   const panel=document.createElement('section');panel.id='sf-public-info-'+kind;panel.className='shop-info-panel';panel.dataset.sfInfoKind=kind;panel.hidden=true;
+   const p=document.createElement('p');p.textContent=messages[kind];panel.append(p);
+   const button=document.createElement('button');button.type='button';button.setAttribute('aria-controls',panel.id);button.setAttribute('aria-expanded','false');const label=labels[kind]();row(button,kind,label[0],label[1]);nav.append(button);nav.after(panel);
+  }
+ }
  function accordion(info){
   const nav=info.querySelector('.shop-info-tabs');if(!nav)return;
   nav.classList.add('sf-info-accordion');nav.setAttribute('role','group');
   for(const button of [...nav.children].filter(n=>n.matches('button[aria-controls]'))){
    const panel=document.getElementById(button.getAttribute('aria-controls'));if(!panel||!info.contains(panel))continue;
-   const item=document.createElement('section');item.className='sf-info-accordion-item';item.dataset.open='false';button.before(item);item.append(button,panel);
+   const item=document.createElement('section');item.className='sf-info-accordion-item';item.dataset.open='true';button.before(item);item.append(button,panel);
    if(!button.id)button.id='sf-toggle-'+panel.id;
-   panel.setAttribute('role','region');panel.setAttribute('aria-labelledby',button.id);panel.hidden=true;button.setAttribute('aria-expanded','false');
+   panel.setAttribute('role','region');panel.setAttribute('aria-labelledby',button.id);panel.hidden=false;button.setAttribute('aria-expanded','true');
    button.onclick=()=>{
     const open=panel.hidden;
-    for(const sibling of nav.querySelectorAll(':scope>.sf-info-accordion-item')){
-     const trigger=sibling.querySelector(':scope>button'),content=sibling.querySelector(':scope>.shop-info-panel');
-     if(content)content.hidden=true;if(trigger)trigger.setAttribute('aria-expanded','false');sibling.dataset.open='false';
-    }
     panel.hidden=!open;button.setAttribute('aria-expanded',String(open));item.dataset.open=String(open);
    };
   }
@@ -55,7 +68,7 @@
     if(button.dataset.sfInfoRow)continue;const text=button.textContent;let kind=/العنوان|Address|contact|Adresse|Kontakt/i.test(text)?'contact':/التوصيل|Delivery|Lieferung/i.test(text)?'delivery':/الدوام|hours|Öffnungszeiten/i.test(text)?'hours':/عن المحل|نبذة|About|Über/i.test(text)?'about':'info';
     const panel=document.getElementById(button.getAttribute('aria-controls'));if(panel)panel.dataset.sfInfoKind=kind;const details=labels[kind]?.();row(button,kind,details?.[0]||text,details?.[1]||'');
    }
-   accordion(info);
+   missingInformation(info);accordion(info);
    for(const panel of info.querySelectorAll('.shop-info-panel[data-sf-info-kind="contact"]')){
     for(const p of panel.querySelectorAll(':scope>p')){if(p.hasAttribute('data-sf-contact-detail'))continue;p.dataset.sfContactDetail='';p.classList.add('sf-contact-detail');const a=p.querySelector('a'),kind=a?network(a.getAttribute('href')):'contact';const content=document.createElement('span');content.className='sf-contact-detail-copy';content.append(...p.childNodes);p.append(icon(kind),content);}
     for(const visit of panel.querySelectorAll('[data-visit-store]'))row(visit,'contact',t('عرض موقع المتجر','View shop location','Geschäftsstandort ansehen'),t('العنوان ومكان المتجر على الخريطة','Address and location on the map','Adresse und Standort auf der Karte'),false);
