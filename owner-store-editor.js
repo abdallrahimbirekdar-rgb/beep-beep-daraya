@@ -100,7 +100,7 @@
   const content=document.createElement('div');content.id='dashboard-content';content.className='owner-inline-content';panel.append(head,content);
   const controls=host.querySelector(':scope>.owner-edit-controls');if(controls)controls.after(panel);else host.prepend(panel);
   panel.addEventListener('input',()=>panel.dataset.dirty='true');panel.addEventListener('change',()=>panel.dataset.dirty='true');
-  try{if(key==='products')merchantProducts(s);else if(key==='cards')window.DarayaShopCards.settings(s.id,content);else if(key==='new-section'||key.startsWith('page-'))window.DarayaPageSections.edit(s,key,()=>{if(!canEdit(currentStore(s.id)))return;returnTo.ready=true;renderStore(s.id);});else merchantEditor(s,key);}catch(error){panel.remove();returnTo=null;window.DarayaFeedback?.showError?.(error);return;}
+  try{if(key==='products'){merchantProducts(s);for(const add of content.querySelectorAll('#new-product,#first-product'))add.onclick=()=>editItem(s.id);for(const edit of content.querySelectorAll('[data-edit-product]'))edit.onclick=()=>editItem(s.id,edit.dataset.editProduct);for(const del of content.querySelectorAll('[data-delete-product]'))del.onclick=()=>removeItem(s.id,del.dataset.deleteProduct);}else if(key==='cards')window.DarayaShopCards.settings(s.id,content);else if(key==='new-section'||key.startsWith('page-'))window.DarayaPageSections.edit(s,key,()=>{if(!canEdit(currentStore(s.id)))return;returnTo.ready=true;renderStore(s.id);});else merchantEditor(s,key);}catch(error){panel.remove();returnTo=null;window.DarayaFeedback?.showError?.(error);return;}
   scopeEditor(panel,field,anchor);
   panel.addEventListener('invalid',e=>{scopeEditor(panel,e.target.name);focusEditor(panel,e.target.name);},true);
   panel.scrollIntoView?.({block:'start',behavior:'auto'});focusEditor(panel,field);
@@ -138,7 +138,33 @@
    })));
   }
  }
- function editItem(id,pid){const existing=app.querySelector('.owner-inline-editor');if(existing&&!closeEditor(existing))return;const s=currentStore(id),p=pid&&products.find(p=>p.id===pid&&p.store_id===id);if(!canEdit(s)||pid&&!p)return;remember(s,'sf-products');editProduct(s,p||{});const dialog=document.getElementById('modal');if(dialog)dialog.dataset.ownerLiveEdit=id;}
+ function editItem(id,pid){
+  const s=currentStore(id),p=pid&&products.find(p=>p.id===pid&&p.store_id===id);if(!canEdit(s)||pid&&!p)return;
+  const existing=app.querySelector('.owner-inline-editor');if(existing&&!closeEditor(existing))return;
+  remember(s,'sf-products');
+  try{const section=typeof productSection==='string'&&productSection!=='all'?productSection:undefined;editProduct(s,p||(section?{section}:{}));const dialog=document.getElementById('modal');if(dialog)dialog.dataset.ownerLiveEdit=id;}
+  catch(error){window.DarayaFeedback?.showError(error);}
+ }
+ function removeItem(id,pid){
+  const s=currentStore(id),p=products.find(p=>p.id===pid&&p.store_id===id);if(!canEdit(s)||!p)return;
+  const existing=app.querySelector('.owner-inline-editor');if(existing&&!closeEditor(existing))return;
+  remember(s,'sf-products');
+  modal('<section data-no-translate><h2>'+esc(t('حذف المنتج؟','Delete product?','Produkt löschen?'))+'</h2><p>'+esc(p.name)+'</p><p>'+esc(t('سيختفي المنتج من المتجر. تبقى تفاصيل الطلبات السابقة محفوظة.','The product will disappear from the shop. Previous order details are kept.','Das Produkt verschwindet aus dem Geschäft. Bisherige Bestelldaten bleiben erhalten.'))+'</p><form id="owner-delete-product-form"><button type="submit" class="danger">'+esc(t('تأكيد حذف المنتج','Confirm product deletion','Löschen bestätigen'))+'</button><p id="form-error" role="alert"></p></form></section>');
+  const dialog=document.getElementById('modal'),form=document.getElementById('owner-delete-product-form');dialog.dataset.ownerLiveEdit=id;
+  form.onsubmit=async e=>{
+   e.preventDefault();if(form.dataset.saveCommitted==='true'||form.dataset.saving==='true')return;
+   const actor=user?.id,submit=e.submitter||form.querySelector('[type=submit]');form.dataset.saving='true';submit.disabled=true;window.DarayaSaveFeedback?.start(form);
+   try{
+    if(!canEdit(currentStore(id)))throw Error(t('لم تعد تملك صلاحية تعديل هذا المتجر.','You no longer have permission to edit this shop.','Du darfst dieses Geschäft nicht mehr bearbeiten.'));
+    let request=api.from('products').delete().eq('id',pid).eq('store_id',id);if(p.revision!=null)request=request.eq('revision',p.revision);
+    const r=await request.select('id');if(r.error)throw r.error;if(!r.data?.length)throw Error(t('تغيّر المنتج أو لم تعد تملك صلاحية حذفه. حدّث الصفحة وأعد المحاولة.','The product changed or cannot be deleted. Refresh and try again.','Produkt geändert oder Löschen nicht erlaubt. Aktualisieren und erneut versuchen.'));
+    if(user?.id!==actor||!form.isConnected)return;
+    if(window.DarayaSaveFeedback)await window.DarayaSaveFeedback.complete(form,t('تم حذف المنتج بنجاح.','Product deleted.','Produkt gelöscht.'),{closeModal:true});
+    else{form.dataset.saveCommitted='true';await reload();dialog.close();render();}
+   }catch(error){if(user?.id===actor&&form.isConnected){window.DarayaSaveFeedback?.fail(error,form,'#form-error');submit.disabled=false;}}
+   finally{form.dataset.saving='false';}
+  };
+ }
  function actions(host,s,key,build){if(!host||host.querySelector(':scope>.owner-edit-controls[data-owner-controls-key="'+key+'"]'))return;const row=document.createElement('div');row.className='owner-edit-controls';row.dataset.ownerControlsKey=key;row.dataset.noTranslate='';row.setAttribute('aria-label',t('تعديل القسم','Edit section','Bereich bearbeiten'));build(row);const heading=host.querySelector(':scope>h2'),bar=host.querySelector(':scope>.owner-store-bar');if(bar)bar.after(row);else if(heading)heading.after(row);else host.prepend(row);}
  function enhance(){
   queued=false;observer.disconnect();if(!app.ownerDocument.defaultView?.document)return;try{
@@ -169,7 +195,7 @@
    }
    syncManagement(s);
    fieldControls(s);sectionTools(s);
-   actions(app.querySelector('#sf-products'),s,'products',row=>row.append(button(t('+ إضافة منتج','+ Add product','+ Produkt hinzufügen'),()=>editItem(s.id)),button(t('إدارة المنتجات والأقسام','Manage products and categories','Produkte und Kategorien verwalten'),()=>openInline(s.id,'products','sf-products'))));
+   actions(app.querySelector('#sf-products'),s,'products',row=>row.append(button(t('+ إضافة منتج جديد','+ Add new product','+ Neues Produkt hinzufügen'),()=>editItem(s.id),'owner-add-product'),button(t('إدارة المنتجات والأقسام','Manage products and categories','Produkte und Kategorien verwalten'),()=>openInline(s.id,'products','sf-products'))));
 
    const info=app.querySelector('#sf-info');
    if(info?.querySelector('.shop-info-tabs'))info.querySelector(':scope>.owner-edit-controls')?.remove();
@@ -177,7 +203,7 @@
    actions(app.querySelector('#sf-tools'),s,'photos',row=>row.append(button(t('تعديل صورة المتجر وإضافة صور','Edit shop photo and add photos','Geschäftsfoto bearbeiten und Bilder hinzufügen'),()=>openInline(s.id,'photos','sf-tools'))));
    if(!medical)actions(app.querySelector('#sf-videos'),s,'videos',row=>row.append(button(t('إضافة الفيديوهات وتعديلها','Add and edit videos','Videos hinzufügen und bearbeiten'),()=>openInline(s.id,'videos','sf-videos'))));
    actions(app.querySelector('#sf-orders'),s,'delivery',row=>row.append(button(t('تعديل إعدادات الطلب والتوصيل','Edit order and delivery settings','Bestell- und Liefereinstellungen bearbeiten'),()=>openInline(s.id,'delivery','sf-orders')),link(t('الطلبات الواردة','Incoming orders','Eingehende Bestellungen'),editHref(s,'orders'))));
-   for(const card of app.querySelectorAll('.product')){if(card.querySelector('.owner-product-actions'))continue;const id=card.dataset.productId||card.dataset.promoProductId||card.querySelector('[data-add]')?.dataset.add;const p=products.find(p=>p.id===id&&p.store_id===s.id);if(!p)continue;const row=document.createElement('div');row.className='owner-product-actions';row.dataset.noTranslate='';row.append(button(t('✎ تعديل المنتج والسعر','✎ Edit product and price','✎ Produkt und Preis bearbeiten'),()=>editItem(s.id,p.id)));(card.querySelector(':scope>div')||card).append(row);}
+   for(const card of app.querySelectorAll('.product')){if(card.querySelector('.owner-product-actions'))continue;const id=card.dataset.productId||card.dataset.promoProductId||card.querySelector('[data-add]')?.dataset.add;const p=products.find(p=>p.id===id&&p.store_id===s.id);if(!p)continue;const row=document.createElement('div');row.className='owner-product-actions';row.dataset.noTranslate='';row.append(button(t('✎ تعديل المنتج والسعر','✎ Edit product and price','✎ Produkt und Preis bearbeiten'),()=>editItem(s.id,p.id)),button(t('حذف المنتج','Delete product','Produkt löschen'),()=>removeItem(s.id,p.id),'outline danger owner-delete-product'));(card.querySelector(':scope>div')||card).append(row);}
   }finally{observer.observe(app,{childList:true,subtree:true});}
  }
  const observer=new MutationObserver(()=>{if(!queued){queued=true;queueMicrotask(enhance);}});
