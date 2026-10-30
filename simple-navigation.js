@@ -61,7 +61,7 @@
   if(delivery){
    delivery.onclick=()=>openSection('delivery');
    label(delivery,['التوصيل إلى منزلك','Home delivery','Lieferung nach Hause']);
-   const deliveryStatus=document.createElement('small');deliveryStatus.className='delivery-pending-note';deliveryStatus.dataset.noTranslate='';deliveryStatus.textContent=text('لم يتم تفعيل خدمة التوصيل بعد','Home delivery is not active yet','Die Lieferung ist noch nicht aktiviert');delivery.append(deliveryStatus);
+   const deliveryStatus=document.createElement('small');deliveryStatus.className='delivery-pending-note';deliveryStatus.dataset.noTranslate='';deliveryStatus.textContent=text('متاح الآن','Available now','Jetzt verfügbar');delivery.append(deliveryStatus);
    const action=delivery.closest('.delivery-hero-action'),track=document.querySelector('.browse-category-track');
    if(action&&track){
     action.classList.add('simple-delivery-category');
@@ -70,7 +70,7 @@
     if(info){
      label(info,['؟','?','?']);
      info.setAttribute('aria-label',text('كيف تعمل خدمة التوصيل؟','How does delivery work?','Wie funktioniert die Lieferung?'));
-     info.onclick=e=>{e.preventDefault();e.stopPropagation();modal('<section class="delivery-info-panel" data-no-translate><h2>'+text('التوصيل إلى منزلك','Home delivery','Lieferung nach Hause')+'</h2><p class="delivery-pending-note">'+text('لم يتم تفعيل خدمة التوصيل بعد.','Home delivery is not active yet.','Die Lieferung ist noch nicht aktiviert.')+'</p><p>'+text('عند تفعيل الخدمة، اضغط على زر التوصيل لعرض المحلات التي توفر التوصيل إلى منزلك. اختر المحل ثم شاهد منتجاته وخيارات الطلب ورسوم التوصيل.','When the service becomes active, press home delivery to see shops that deliver. Choose a shop to see its products, order options and delivery fees.','Sobald der Dienst aktiv ist, tippe auf Lieferung, um Läden mit Lieferung nach Hause zu sehen. Wähle einen Laden für Produkte, Bestellmöglichkeiten und Lieferkosten.')+'</p><p>'+text('لباقي المحلات والخدمات، اختر قسمًا من القائمة أو استخدم البحث.','For other places and services, choose a group or use search.','Für andere Orte und Dienste wähle einen Bereich oder nutze die Suche.')+'</p></section>');};
+     info.onclick=e=>{e.preventDefault();e.stopPropagation();modal('<section class="delivery-info-panel" data-no-translate><h2>'+text('التوصيل إلى منزلك','Home delivery','Lieferung nach Hause')+'</h2><p>'+text('اضغط على زر التوصيل لعرض المحلات التي توفر التوصيل إلى منزلك. اختر المحل ثم شاهد منتجاته وخيارات الطلب ورسوم التوصيل.','Press home delivery to see shops that deliver. Choose a shop to see its products, order options and delivery fees.','Tippe auf Lieferung, um Läden mit Lieferung nach Hause zu sehen. Wähle einen Laden für Produkte, Bestellmöglichkeiten und Lieferkosten.')+'</p><p>'+text('لباقي المحلات والخدمات، اختر قسمًا من القائمة أو استخدم البحث.','For other places and services, choose a group or use search.','Für andere Orte und Dienste wähle einen Bereich oder nutze die Suche.')+'</p></section>');};
     }
    }
   }
