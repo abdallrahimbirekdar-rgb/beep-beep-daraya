@@ -1,11 +1,11 @@
 /* Compact identity: the cover stays at the physical top left in every language. */
-#app .store-banner.storefront{display:grid!important;grid-template-columns:minmax(0,1fr) 92px;direction:rtl;align-items:start;gap:8px!important;padding:12px!important}
+#app .store-banner.storefront{display:grid!important;grid-template-columns:minmax(0,1fr) 76px;direction:rtl;align-items:start;gap:6px!important;padding:10px!important}
 #app .store-banner.storefront .store-header-media{display:contents!important}
 #app .store-banner.storefront .store-identity{grid-column:1;grid-row:1;padding:0!important;text-align:start;direction:rtl}
-#app .store-banner.storefront .sf-cover-button{grid-column:2;grid-row:1;width:92px;height:92px;border-radius:13px;align-self:start}
-#app#app .store-banner.storefront img.store-image{display:block;width:92px!important;height:92px!important;max-height:92px!important;aspect-ratio:1!important;object-fit:cover!important;border-radius:13px!important}
-#app .store-banner.storefront .sf-heading h1{font-size:22px!important;margin:2px 0!important;line-height:1.4!important}
-#app .store-banner.storefront .sf-subtitle{display:-webkit-box;font-size:12px!important;margin:5px 0 0;-webkit-line-clamp:2}
+#app .store-banner.storefront .sf-cover-button{grid-column:2;grid-row:1;width:76px;height:76px;border-radius:13px;align-self:start}
+#app#app .store-banner.storefront img.store-image{display:block;width:76px!important;height:76px!important;max-height:76px!important;aspect-ratio:1!important;object-fit:cover!important;border-radius:13px!important}
+#app .store-banner.storefront .sf-heading h1{font-size:18px!important;margin:0!important;line-height:1.35!important}
+#app .store-banner.storefront .sf-subtitle{display:-webkit-box;font-size:11px!important;margin:3px 0 0;-webkit-line-clamp:1}
 #app .store-banner.storefront>.owner-store-bar{grid-column:1/-1;grid-row:1;margin:0}
 #app .store-banner.storefront:has(>.owner-store-bar) .store-identity,#app .store-banner.storefront:has(>.owner-store-bar) .sf-cover-button{grid-row:2}
 #app .store-banner.storefront .sf-cover-location-actions{grid-column:1/-1;padding:5px 0 0;border:0;background:transparent;justify-content:flex-end}
@@ -14,7 +14,7 @@
 [dir=ltr] #app .store-banner.storefront .store-identity{direction:ltr}
 
 /* A portrait Products tile on the right, three compact sections to its left. */
-#app .sf-section-nav.sf-portrait-nav{direction:rtl;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);grid-template-rows:repeat(3,104px);grid-auto-rows:auto;gap:8px;align-items:stretch}
+#app .sf-section-nav.sf-portrait-nav{direction:rtl;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);grid-template-rows:repeat(3,122px);grid-auto-rows:auto;gap:8px;align-items:stretch}
 #app .sf-portrait-nav>.sf-section-tile{min-height:0;height:100%;padding:6px;gap:4px;justify-content:center}
 #app .sf-portrait-nav>.sf-tile-products{grid-column:1;grid-row:1/4;justify-content:flex-start;padding:8px}
 #app .sf-portrait-nav>.sf-tile-products>.sf-tile-visual{height:0;min-height:0;flex:1 1 0;width:100%}
@@ -36,17 +36,21 @@
 #app .sf-section-nav.sf-portrait-nav>:is([data-target="sf-tools"],[data-target="showcase-tools"],[data-target$="-share"],[data-target$="-orders"],[data-target$="-other-tools"]) .sf-tile-visual svg.sf-illustrated-icon{height:76px;width:110px}
 
 /* Demo shops follow the same header and enlarge their cover in the native dialog. */
-#app .rich-showcase>.demo-hero{display:grid;grid-template-columns:minmax(0,1fr) 92px;direction:rtl;gap:10px;padding:12px;align-items:start}
+#app .rich-showcase>.demo-hero{display:grid;grid-template-columns:minmax(0,1fr) 76px;direction:rtl;gap:8px;padding:10px;align-items:start}
 #app .rich-showcase>.demo-hero>div:not(.sf-demo-media){grid-column:1;grid-row:1;min-width:0}
 #app .rich-showcase>.demo-hero>.sf-demo-media{grid-column:2;grid-row:1;min-width:0}
-#app .rich-showcase>.demo-hero .sf-demo-cover{grid-column:2;grid-row:1;display:block;padding:0;width:92px;height:92px;border:0;border-radius:13px;overflow:hidden;background:#f5f1e5;cursor:zoom-in}
-#app#app .rich-showcase>.demo-hero .sf-demo-cover .demo-image{display:block;width:92px!important;height:92px!important;min-height:0!important;max-height:92px!important;aspect-ratio:1!important;object-fit:cover;border-radius:13px}
-#app .rich-showcase>.demo-hero h1{font-size:22px;margin:3px 0}
-#app .rich-showcase>.demo-hero p{font-size:12px;margin:5px 0;line-height:1.7;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+#app .rich-showcase>.demo-hero .sf-demo-cover{grid-column:2;grid-row:1;display:block;padding:0;width:76px;height:76px;border:0;border-radius:13px;overflow:hidden;background:#f5f1e5;cursor:zoom-in}
+#app#app .rich-showcase>.demo-hero .sf-demo-cover .demo-image{display:block;width:76px!important;height:76px!important;min-height:0!important;max-height:76px!important;aspect-ratio:1!important;object-fit:cover;border-radius:13px}
+#app .rich-showcase>.demo-hero h1{font-size:18px;margin:0;line-height:1.35}
+#app .rich-showcase>.demo-hero p{font-size:11px;margin:3px 0;line-height:1.6;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
 #app .rich-showcase>.demo-hero .showcase-kicker{display:none}
 #modal .sf-cover-popout img{display:block;max-width:100%;width:100%;height:auto;max-height:75vh;object-fit:contain;border-radius:12px}
-@media(min-width:900px){#app .sf-section-nav.sf-portrait-nav{grid-template-rows:repeat(3,120px)}}
+@media(min-width:900px){#app .sf-section-nav.sf-portrait-nav{grid-template-rows:repeat(3,130px)}}
 
 #app .store-banner.storefront[data-sf-section-view]:not([data-sf-section-view=sections]),#app .rich-showcase>.demo-hero[data-sf-section-view]:not([data-sf-section-view=sections]){display:none!important}
-#app .store-banner.storefront .store-image.photo-empty{grid-column:2;grid-row:1;display:grid;place-items:center;width:92px!important;height:92px!important;min-height:0!important;max-height:92px!important;border-radius:13px;font-size:13px;overflow:hidden}
+#app .store-banner.storefront .store-image.photo-empty{grid-column:2;grid-row:1;display:grid;place-items:center;width:76px!important;height:76px!important;min-height:0!important;max-height:76px!important;border-radius:13px;font-size:13px;overflow:hidden}
 #app .store-banner.storefront:has(>.owner-store-bar) .store-image.photo-empty{grid-row:2}
+
+#app .store-banner.storefront .sf-heading{gap:6px}
+#app .store-banner.storefront .sf-heading .plan-badge{font-size:10px!important;min-height:20px;padding:2px 4px!important}
+#app .store-banner.storefront .owner-store-bar .owner-manage-toggle{min-height:32px;padding:5px 9px!important;font-size:12px!important;line-height:1.5}
