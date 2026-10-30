@@ -65,3 +65,6 @@
 #app .store-banner.storefront .store-identity>.sf-heading{order:0;flex:1 1 auto;min-width:0}
 #app .store-banner.storefront .store-identity>:not(.sf-heading){order:1}
 #app .store-banner.storefront .store-identity>.sf-subtitle{flex-basis:100%}
+
+/* Keep product previews large while reducing the other section illustrations by 35%. */
+#app .sf-section-nav>.sf-section-tile:not(.sf-tile-products)>.sf-tile-visual>svg{transform:scale(.65);transform-origin:center}
