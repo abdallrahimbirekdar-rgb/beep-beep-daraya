@@ -66,5 +66,5 @@
 #app .store-banner.storefront .store-identity>:not(.sf-heading){order:1}
 #app .store-banner.storefront .store-identity>.sf-subtitle{flex-basis:100%}
 
-/* Reduce non-product illustrations by 35%, then another 20% of that size. */
-#app .sf-section-nav>.sf-section-tile:not(.sf-tile-products)>.sf-tile-visual>svg{transform:scale(.52);transform-origin:center}
+/* Apply the successive 35%, 20% and 30% reductions to non-product illustrations. */
+#app .sf-section-nav>.sf-section-tile:not(.sf-tile-products)>.sf-tile-visual>svg{transform:scale(.364);transform-origin:center}
