@@ -207,3 +207,13 @@ test('orders and couriers are grouped under the main shop orders tile with compa
   assert.deepEqual(a.errors,[]);
  }finally{a.close();}}
 });
+
+test('portrait shop navigation retains cover enlargement and owner section actions',async()=>{
+ const a=setup({role:'owner'});try{
+  a.run("history.replaceState(null,'','#store/shop');renderStore('shop')");await new Promise(r=>setTimeout(r,35));
+  assert.ok(a.$('.sf-section-nav.sf-portrait-nav'));
+  const cover=a.$('.sf-cover-button');assert.ok(cover);cover.click();
+  assert.equal(a.$('#modal').open,true);assert.ok(a.$('#modal-body .sf-shop-gallery img'));assert.equal(a.$('#modal-body .sf-shop-gallery img').getAttribute('src'),a.$('.store-banner img.store-image').getAttribute('data-full-image'));
+  a.$('#modal').close();a.$('.owner-manage-toggle').click();a.$('[data-target="sf-products"]').click();assert.equal(a.$('.store-banner').dataset.sfSectionView,'sf-products');assert.ok(a.$('#sf-products .owner-edit-controls'));a.$('.sf-section-return').click();assert.equal(a.$('.store-banner').dataset.sfSectionView,'sections');assert.deepEqual(a.errors,[]);
+ }finally{a.close();}
+});

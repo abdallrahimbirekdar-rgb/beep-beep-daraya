@@ -64,6 +64,7 @@
   view.sync=()=>{
    // The shared #app also renders home, maps and accounts. Stop at navigation.
    if(!current()){view.dispose();return;}
+   nav.classList.toggle('sf-portrait-nav',!!nav.querySelector('.sf-tile-products:not(:disabled)'));
    const groups=new Map();view.sections.forEach(({id,node,related=[]})=>{[node,...related].filter(Boolean).forEach(n=>{const top=direct(n);if(top)groups.set(top,id);});});
    [...root.children].forEach(node=>{
     if(node===hero||node===nav||node===back||node.matches('.simple-back,.topline,.shop-back-row,.demo-top,.demo-notice'))return;

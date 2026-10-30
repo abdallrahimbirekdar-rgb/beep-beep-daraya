@@ -60,7 +60,7 @@
   ];
   const view=window.DarayaShopSections({root,hero:banner,nav,sections:entries.map(([node,,id])=>({node,id})),backLabel:service?t('‹ العودة إلى أقسام الصفحة','‹ Back to page sections','‹ Zurück zu den Seitenbereichen'):t('‹ العودة إلى أقسام المحل','‹ Back to shop sections','‹ Zurück zu den Geschäftsbereichen')});
   const key=entries.map(x=>x[0]?x[2]:'-').join('|')+'|'+document.documentElement.lang+'|'+JSON.stringify(images);
-  if(nav.dataset.sections===key)return;nav.dataset.sections=key;nav.replaceChildren();sectionObserver?.disconnect();
+  if(nav.dataset.sections===key)return;nav.dataset.sections=key;nav.replaceChildren();nav.classList.toggle('sf-portrait-nav',!!layout);sectionObserver?.disconnect();
   const icons={products:'<rect x="4" y="5" width="16" height="15" rx="3"/><path d="M8 5V3m8 2V3M4 10h16"/>',contact:'<path d="M20 10c0 6-8 11-8 11S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/>',offers:'<path d="m3 12 9-9h8v8l-9 9Z"/><circle cx="16" cy="7" r="1"/><path d="m8 13 5-5m-5 1h.01m4 4h.01"/>',tools:'<rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/>'};
   entries.forEach(([node,label,id,kind,note])=>{
    const button=make('button','sf-section-tile sf-tile-'+kind);button.type='button';button.dataset.target=id;
