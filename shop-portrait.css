@@ -15,7 +15,7 @@
 [dir=ltr] #app .store-banner.storefront .store-identity{direction:ltr}
 
 /* A portrait Products tile on the right, three compact sections to its left. */
-#app .sf-section-nav.sf-portrait-nav{direction:rtl;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);grid-template-rows:repeat(3,122px);grid-auto-rows:auto;gap:8px;align-items:stretch}
+#app .sf-section-nav.sf-portrait-nav{direction:rtl;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);grid-template-rows:repeat(3,122px);grid-auto-rows:auto;gap:8px;align-items:stretch}
 #app .sf-portrait-nav>.sf-section-tile{min-height:0;height:100%;padding:6px;gap:4px;justify-content:center}
 #app .sf-portrait-nav>.sf-tile-products{grid-column:1;grid-row:1/4;justify-content:flex-start;padding:8px}
 #app .sf-portrait-nav>.sf-tile-products>.sf-tile-visual{height:0;min-height:0;flex:1 1 0;width:100%}
@@ -66,5 +66,5 @@
 #app .store-banner.storefront .store-identity>:not(.sf-heading){order:1}
 #app .store-banner.storefront .store-identity>.sf-subtitle{flex-basis:100%}
 
-/* Keep product previews large while reducing the other section illustrations by 35%. */
-#app .sf-section-nav>.sf-section-tile:not(.sf-tile-products)>.sf-tile-visual>svg{transform:scale(.65);transform-origin:center}
+/* Reduce non-product illustrations by 35%, then another 20% of that size. */
+#app .sf-section-nav>.sf-section-tile:not(.sf-tile-products)>.sf-tile-visual>svg{transform:scale(.52);transform-origin:center}
