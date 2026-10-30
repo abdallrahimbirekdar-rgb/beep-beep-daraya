@@ -3,6 +3,8 @@
  window.DarayaShowcase=({key,name,rows,t,language})=>{
   if(!['restaurant','apparel','syrian'].includes(key))return;
   const root=document.querySelector('.demo-page'),hero=root?.querySelector('.demo-hero'),catalog=root?.querySelector('.demo-catalog');if(!root||!hero||!catalog)return;
+  const cover=hero.querySelector('img.demo-image');if(cover?.parentElement.parentElement===hero)cover.parentElement.classList.add('sf-demo-media');
+  if(cover&&!cover.closest('button')){const zoom=document.createElement('button');zoom.type='button';zoom.className='sf-demo-cover';zoom.setAttribute('aria-label',t('تكبير صورة المحل','Enlarge shop photo','Geschäftsfoto vergrößern'));cover.before(zoom);zoom.append(cover);zoom.onclick=()=>{modal('<section class="sf-cover-popout"><h2>'+t('صورة المتجر','Shop photo','Geschäftsfoto')+'</h2></section>');const image=document.createElement('img');image.src=cover.dataset.fullImage||cover.currentSrc||cover.src;image.alt=cover.alt;document.querySelector('#modal-body .sf-cover-popout')?.append(image);};}
   root.classList.add('rich-showcase',key!=='apparel'?'pizza-showcase':'fashion-showcase');
   const menu=key!=='apparel',tagline=key==='syrian'?t('نكهات سورية أصيلة، من الفلافل والحمّص إلى السودة والسلطات.','Authentic Syrian flavours, from falafel to fresh salads.','Syrische Küche, von Falafel bis zu frischen Salaten.'):menu?t('عجينة ذهبية، مكونات مختارة، ونكهة تحب ترجع إلها.','Golden crust, selected ingredients, made to enjoy.','Goldener Teig, ausgewählte Zutaten, voller Genuss.'):t('إطلالات متكاملة، تفاصيل أنيقة، واختيارات لكل يوم.','Complete looks, thoughtful details, everyday style.','Komplette Looks, schöne Details, Stil für jeden Tag.');
   hero.querySelector('p').textContent=tagline;
