@@ -1,10 +1,10 @@
 /* Compact identity: the cover stays at the physical top left in every language. */
-#app .store-banner.storefront{display:grid!important;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);direction:rtl;align-items:start;gap:6px!important;padding:10px!important}
+#app .store-banner.storefront{display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);direction:rtl;align-items:start;gap:6px!important;padding:10px!important}
 #app .store-banner.storefront .store-header-media{display:contents!important}
 #app .store-banner.storefront .store-identity{grid-column:1;grid-row:1;padding:0!important;text-align:start;direction:rtl}
-#app .store-banner.storefront .sf-cover-button{grid-column:2;grid-row:1;width:100%;height:76px;border-radius:13px;align-self:start}
-#app#app .store-banner.storefront img.store-image{display:block;width:100%!important;height:76px!important;max-height:76px!important;aspect-ratio:auto!important;object-fit:contain!important;border-radius:13px!important}
-#app .store-banner.storefront .sf-heading h1{font-size:16px!important;margin:0!important;line-height:1.35!important}
+#app .store-banner.storefront .sf-cover-button{grid-column:2;grid-row:1;width:100%;height:88px;border-radius:13px;align-self:start}
+#app#app .store-banner.storefront img.store-image{display:block;width:100%!important;height:88px!important;max-height:88px!important;aspect-ratio:auto!important;object-fit:contain!important;border-radius:13px!important}
+#app .store-banner.storefront .sf-heading h1{font-size:14px!important;margin:0!important;line-height:1.35!important}
 #app .store-banner.storefront .sf-subtitle{display:-webkit-box;font-size:11px!important;margin:3px 0 0;-webkit-line-clamp:1}
 #app .store-banner.storefront>.owner-store-bar{grid-column:1/-1;grid-row:1;margin:0}
 #app .store-banner.storefront:has(>.owner-store-bar) .store-identity,#app .store-banner.storefront:has(>.owner-store-bar) .sf-cover-button{grid-row:2}
@@ -36,21 +36,26 @@
 #app .sf-section-nav.sf-portrait-nav>:is([data-target="sf-tools"],[data-target="showcase-tools"],[data-target$="-share"],[data-target$="-orders"],[data-target$="-other-tools"]) .sf-tile-visual svg.sf-illustrated-icon{height:76px;width:110px}
 
 /* Demo shops follow the same header and enlarge their cover in the native dialog. */
-#app .rich-showcase>.demo-hero{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);direction:rtl;gap:8px;padding:10px;align-items:start}
+#app .rich-showcase>.demo-hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);direction:rtl;gap:8px;padding:10px;align-items:start}
 #app .rich-showcase>.demo-hero>div:not(.sf-demo-media){grid-column:1;grid-row:1;min-width:0}
 #app .rich-showcase>.demo-hero>.sf-demo-media{grid-column:2;grid-row:1;min-width:0}
-#app .rich-showcase>.demo-hero .sf-demo-cover{grid-column:2;grid-row:1;display:block;padding:0;width:100%;height:76px;border:0;border-radius:13px;overflow:hidden;background:#f5f1e5;cursor:zoom-in}
-#app#app .rich-showcase>.demo-hero .sf-demo-cover .demo-image{display:block;width:100%!important;height:76px!important;min-height:0!important;max-height:76px!important;aspect-ratio:auto!important;object-fit:contain;border-radius:13px}
-#app .rich-showcase>.demo-hero h1{font-size:16px;margin:0;line-height:1.35}
+#app .rich-showcase>.demo-hero .sf-demo-cover{grid-column:2;grid-row:1;display:block;padding:0;width:100%;height:88px;border:0;border-radius:13px;overflow:hidden;background:#f5f1e5;cursor:zoom-in}
+#app#app .rich-showcase>.demo-hero .sf-demo-cover .demo-image{display:block;width:100%!important;height:88px!important;min-height:0!important;max-height:88px!important;aspect-ratio:auto!important;object-fit:contain;border-radius:13px}
+#app .rich-showcase>.demo-hero h1{font-size:14px;margin:0;line-height:1.35}
 #app .rich-showcase>.demo-hero p{font-size:11px;margin:3px 0;line-height:1.6;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
 #app .rich-showcase>.demo-hero .showcase-kicker{display:none}
 #modal .sf-cover-popout img{display:block;max-width:100%;width:100%;height:auto;max-height:75vh;object-fit:contain;border-radius:12px}
 @media(min-width:900px){#app .sf-section-nav.sf-portrait-nav{grid-template-rows:repeat(3,130px)}}
 
 #app .store-banner.storefront[data-sf-section-view]:not([data-sf-section-view=sections]),#app .rich-showcase>.demo-hero[data-sf-section-view]:not([data-sf-section-view=sections]){display:none!important}
-#app .store-banner.storefront .store-image.photo-empty{grid-column:2;grid-row:1;display:grid;place-items:center;width:100%!important;height:76px!important;min-height:0!important;max-height:76px!important;border-radius:13px;font-size:13px;overflow:hidden}
+#app .store-banner.storefront .store-image.photo-empty{grid-column:2;grid-row:1;display:grid;place-items:center;width:100%!important;height:88px!important;min-height:0!important;max-height:88px!important;border-radius:13px;font-size:13px;overflow:hidden}
 #app .store-banner.storefront:has(>.owner-store-bar) .store-image.photo-empty{grid-row:2}
 
 #app .store-banner.storefront .sf-heading{gap:6px}
 #app .store-banner.storefront .sf-heading .plan-badge{font-size:10px!important;min-height:20px;padding:2px 4px!important}
 #app .store-banner.storefront .owner-store-bar .owner-manage-toggle{min-height:32px;padding:5px 9px!important;font-size:12px!important;line-height:1.5}
+
+#app .store-banner.storefront .sf-cover-location-actions{gap:5px;padding-top:3px}
+#app .store-banner.storefront .sf-cover-location-actions>a{min-height:28px!important;padding:3px 7px!important;font-size:11px!important;line-height:1.4!important;gap:4px;border-radius:7px}
+#app .store-banner.storefront .sf-cover-location-actions .sf-utility-icon{width:15px;height:15px;flex-basis:15px}
+#app .store-banner.storefront .sf-cover-location-actions svg{width:15px;height:15px}
