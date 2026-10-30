@@ -14,10 +14,10 @@
 #app .store-banner.storefront>.owner-inline-editor{grid-column:1/-1}
 [dir=ltr] #app .store-banner.storefront .store-identity{direction:ltr}
 
-/* A portrait Products tile on the right, three compact sections to its left. */
-#app .sf-section-nav.sf-portrait-nav{direction:rtl;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);grid-template-rows:repeat(3,122px);grid-auto-rows:auto;gap:8px;align-items:stretch}
+/* A portrait Products tile on the right, five compact cards to its left. */
+#app .sf-section-nav.sf-portrait-nav{direction:rtl;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);grid-template-rows:repeat(5,78px);grid-auto-rows:auto;gap:8px;align-items:stretch}
 #app .sf-portrait-nav>.sf-section-tile{min-height:0;height:100%;padding:6px;gap:4px;justify-content:center}
-#app .sf-portrait-nav>.sf-tile-products{grid-column:1;grid-row:1/4;justify-content:flex-start;padding:8px}
+#app .sf-portrait-nav>.sf-tile-products{grid-column:1;grid-row:1/6;justify-content:flex-start;padding:8px}
 #app .sf-portrait-nav>.sf-tile-products>.sf-tile-visual{height:0;min-height:0;flex:1 1 0;width:100%}
 #app .sf-portrait-nav>.sf-tile-products .sf-tile-slideshow img{height:100%;width:100%;object-fit:cover}
 #app .sf-portrait-nav>.sf-tile-products>.sf-tile-title{flex:0 0 auto;padding:3px 0}
@@ -28,11 +28,11 @@
 #app .sf-section-nav.sf-portrait-nav>:is([data-target$="-info"],[data-target="showcase-contact"],[data-target$="-offers"],[data-target$="-videos"])>.sf-tile-visual{height:52px;min-height:52px;flex:0 0 52px}
 #app .sf-section-nav.sf-portrait-nav>:is([data-target$="-info"],[data-target="showcase-contact"],[data-target$="-offers"],[data-target$="-videos"]) .sf-tile-visual svg.sf-illustrated-icon{height:52px;width:90px}
 #app .sf-portrait-nav>.sf-section-tile>.sf-tile-title{font-size:13px;line-height:1.4;margin:0}
-#app .sf-portrait-nav>[data-target="sf-tools"],#app .sf-portrait-nav>[data-target="showcase-tools"]{grid-column:1;grid-row:4}
-#app .sf-portrait-nav>[data-target$="-share"]{grid-column:2;grid-row:4}
-#app .sf-portrait-nav>[data-target$="-orders"]{grid-column:1;grid-row:5}
-#app .sf-portrait-nav>[data-target$="-other-tools"]{grid-column:2;grid-row:5}
-#app .sf-section-nav.sf-portrait-nav>:is([data-target="sf-tools"],[data-target="showcase-tools"],[data-target$="-share"],[data-target$="-orders"],[data-target$="-other-tools"]){min-height:122px}
+#app .sf-portrait-nav>[data-target="sf-tools"],#app .sf-portrait-nav>[data-target="showcase-tools"]{grid-column:2;grid-row:4}
+#app .sf-portrait-nav>[data-target$="-share"]{grid-column:2;grid-row:5}
+#app .sf-portrait-nav>[data-target$="-orders"]{grid-column:1;grid-row:6}
+#app .sf-portrait-nav>[data-target$="-other-tools"]{grid-column:2;grid-row:6}
+#app .sf-section-nav.sf-portrait-nav>:is([data-target="sf-tools"],[data-target="showcase-tools"],[data-target$="-share"],[data-target$="-orders"],[data-target$="-other-tools"]){min-height:78px}
 #app .sf-section-nav.sf-portrait-nav>:is([data-target="sf-tools"],[data-target="showcase-tools"],[data-target$="-share"],[data-target$="-orders"],[data-target$="-other-tools"])>.sf-tile-visual{height:76px;min-height:76px;flex:0 0 76px}
 #app .sf-section-nav.sf-portrait-nav>:is([data-target="sf-tools"],[data-target="showcase-tools"],[data-target$="-share"],[data-target$="-orders"],[data-target$="-other-tools"]) .sf-tile-visual svg.sf-illustrated-icon{height:76px;width:110px}
 
@@ -46,7 +46,7 @@
 #app .rich-showcase>.demo-hero p{font-size:11px;margin:3px 0;line-height:1.6;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
 #app .rich-showcase>.demo-hero .showcase-kicker{display:none}
 #modal .sf-cover-popout img{display:block;max-width:100%;width:100%;height:auto;max-height:75vh;object-fit:contain;border-radius:12px}
-@media(min-width:900px){#app .sf-section-nav.sf-portrait-nav{grid-template-rows:repeat(3,130px)}}
+@media(min-width:900px){#app .sf-section-nav.sf-portrait-nav{grid-template-rows:repeat(5,82px)}}
 
 #app .store-banner.storefront[data-sf-section-view]:not([data-sf-section-view=sections]),#app .rich-showcase>.demo-hero[data-sf-section-view]:not([data-sf-section-view=sections]){display:none!important}
 #app .store-banner.storefront .store-image.photo-empty{grid-column:1/-1;grid-row:2;display:grid;place-items:center;width:100%!important;height:88px!important;min-height:0!important;max-height:88px!important;border-radius:13px;font-size:13px;overflow:hidden}
@@ -66,5 +66,9 @@
 #app .store-banner.storefront .store-identity>:not(.sf-heading){order:1}
 #app .store-banner.storefront .store-identity>.sf-subtitle{flex-basis:100%}
 
-/* Apply the successive 35%, 20% and 30% reductions to non-product illustrations. */
-#app .sf-section-nav>.sf-section-tile:not(.sf-tile-products)>.sf-tile-visual>svg{transform:scale(.364);transform-origin:center}
+/* Compact the cards themselves; keep their illustrations large and readable. */
+#app .sf-section-nav.sf-portrait-nav{gap:6px}
+#app .sf-section-nav.sf-portrait-nav>.sf-section-tile:not(.sf-tile-products){flex-direction:row;gap:4px;padding:4px;justify-content:flex-start;min-width:0}
+#app .sf-section-nav.sf-portrait-nav>.sf-section-tile:not(.sf-tile-products)>.sf-tile-visual{width:68px;max-width:48%;height:68px;min-height:0;flex:0 0 68px}
+#app .sf-section-nav.sf-portrait-nav>.sf-section-tile:not(.sf-tile-products)>.sf-tile-visual>svg.sf-illustrated-icon{width:100%;height:68px;max-width:100%;transform:none}
+#app .sf-section-nav.sf-portrait-nav>.sf-section-tile:not(.sf-tile-products)>.sf-tile-title{flex:1;min-width:0;font-size:12px;line-height:1.45;text-align:start;overflow-wrap:break-word}
