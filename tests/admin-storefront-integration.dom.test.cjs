@@ -217,3 +217,15 @@ test('portrait shop navigation retains cover enlargement and owner section actio
   a.$('#modal').close();a.$('.owner-manage-toggle').click();a.$('[data-target="sf-products"]').click();assert.equal(a.$('.store-banner').dataset.sfSectionView,'sf-products');assert.ok(a.$('#sf-products .owner-edit-controls'));a.$('.sf-section-return').click();assert.equal(a.$('.store-banner').dataset.sfSectionView,'sections');assert.deepEqual(a.errors,[]);
  }finally{a.close();}
 });
+
+test('admin-owned pizza gives customers the real basket and checkout rather than demo ordering',()=>{
+ const a=setup({role:'other'});try{
+  a.run(`const sid='a87c5210-2cb6-4dd7-b997-d43b9e2d206a';stores=[{...window.mockStore,id:sid,name:'بيتزا التنور',category:'restaurant',text_only:false,is_example:false,translations:{_directory:{kind:'restaurant'}},online_ordering:true,delivery_enabled:true,pickup_enabled:false,delivery_fee:10000,minimum_order:0,areas:['وسط داريا'],auto_hours:false}];products=[{id:'pizza-product',store_id:sid,name:'مارغريتا',description:'بيتزا',price:55000,image:'',available:true,section:'البيتزا',option_groups:[],gallery:[],translations:{}}];subscriptionSystemEnabled=false;history.replaceState(null,'','#store/'+sid);renderStore(sid);`);
+  assert.equal(a.$('.owner-store-bar'),null);
+  assert.equal(a.$('.demo-order-enabled'),null);
+  a.$('[data-target="sf-products"]').click();a.$('[data-add="pizza-product"]').click();
+  assert.equal(a.$('#checkout').disabled,false);assert.equal(a.$('#fulfillment-method').value,'delivery');
+  a.$('#checkout').click();assert.ok(a.$('#order-form'));assert.ok(a.$('#order-form [name="address"]'));
+  assert.equal(a.$('[data-demo-checkout]'),null);assert.deepEqual(a.errors,[]);
+ }finally{a.close();}
+});
