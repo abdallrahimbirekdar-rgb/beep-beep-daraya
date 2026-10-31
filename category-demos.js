@@ -8,7 +8,9 @@
  const sector=key=>sectors().find(s=>s[0]===key);
  const title=s=>s[0]==='syrian'?t('فلافل الدار — نموذج سوري','Falafel Al Dar — Demo','Falafel Al Dar — Beispiel'):s[0]==='restaurant'?t('بيتزا التنور — نموذج','Stone Oven Pizza — Demo','Steinofenpizza — Beispiel'):s[0]==='apparel'?t('أناقة — نموذج الألبسة','Elegance — Fashion Demo','Eleganz — Modebeispiel'):t('نموذج '+s[1],s[2]+' — Demo',s[3]+' — Beispiel');
  const address=t=>t('داريا — شارع النموذج، مبنى ١٢. عنوان افتراضي للتوضيح فقط.','Daraya — Example Street, building 12. Fictional address for this demo.','Daraya — Beispielstraße, Haus 12. Fiktive Adresse für dieses Beispiel.');
- const path=key=>'#example/'+key;
+ const adminPizzaStoreId='a87c5210-2cb6-4dd7-b997-d43b9e2d206a';
+ const adminPizza=()=>typeof stores!=='undefined'&&stores.find(s=>s.id===adminPizzaStoreId&&s.active&&!s.deleted_at&&!s.is_example);
+ const path=key=>key==='restaurant'&&adminPizza()?'#store/'+adminPizzaStoreId:'#example/'+key;
  const image=(src,alt)=>'<img class="demo-image" width="480" height="480" src="'+esc(new URL(src,location.href).href)+'" alt="'+esc(alt)+'" loading="lazy" decoding="async">';
  window.DarayaDemoOfferCatalog=()=>[
   ['restaurant',0,65000,'image'],['restaurant',1,35000,'image'],['restaurant',2,25000,'text'],['apparel',1,140000,'image'],['stationery',2,75000,'image'],['services',0,240000,'text'],['toys',0,50000,'image']
@@ -64,7 +66,7 @@
   window.DarayaDemoExtras?.({key,name,rows,info,t,image,language,qr});window.DarayaShowcase?.({key,name,rows,t,language});
  }
  const baseHome=renderHome;renderHome=function(){baseHome.apply(this,arguments);if(!window.darayaHomeShowsResults?.()||search.trim()||browseFavorites||filter==='mosque')return;const key=filter==='delivery'?'restaurant':window.darayaSectorKey(filter),s=sector(key);if(!s&&key!=='all')return;const grid=$('#browse>.grid');if(!grid)return;const link=document.createElement('a');link.className='demo-category-banner';link.dataset.noTranslate='';link.href=s?path(key):'#examples';link.innerHTML='<span aria-hidden="true">✨</span><span><strong>'+t('انظر كيف يمكن جعل صفحتك — جرّب نموذجًا جاهزًا لمحلك','Own a shop or work from home? Tap here to see how easy your business page can be','Du hast ein Geschäft oder arbeitest von zu Hause? Hier siehst du, wie einfach deine Seite sein kann')+'</strong><small>'+t('اكتشف مثالًا جاهزًا يعرض منتجاتك وصورك وأسعارك وروابطك — وابدأ فكرتك معنا','Explore a ready-made example with products, images, prices and links — and bring your idea to life','Entdecke ein fertiges Beispiel mit Produkten, Bildern, Preisen und Links — und starte deine Idee')+'</small></span><span aria-hidden="true">↗</span>';grid.before(link);};
- const baseRender=render;render=function(){const route=location.hash.slice(1).split('/');if(route[0]==='example'||route[0]==='examples'){if(typeof updateCustomerNav==='function')updateCustomerNav();$('#account').hidden=true;$('#dashboard-link').hidden=true;route[0]==='example'?show(route[1]):index();window.scrollTo(0,0);return;}return baseRender.apply(this,arguments);};
+ const baseRender=render;render=function(){const route=location.hash.slice(1).split('/');if(route[0]==='example'&&route[1]==='restaurant'&&adminPizza()){location.replace(path('restaurant'));return;}if(route[0]==='example'||route[0]==='examples'){if(typeof updateCustomerNav==='function')updateCustomerNav();$('#account').hidden=true;$('#dashboard-link').hidden=true;route[0]==='example'?show(route[1]):index();window.scrollTo(0,0);return;}return baseRender.apply(this,arguments);};
  window.addEventListener('hashchange',()=>{if(/^#examples?(?:\/|$)/.test(location.hash))render();});
  window.DarayaDemos={keys:()=>sectors().map(s=>s[0]),items,keyFor:directoryKind};
 })();

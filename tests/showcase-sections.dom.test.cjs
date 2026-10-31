@@ -57,3 +57,9 @@ test('demo tool shortcuts and help keep working in Arabic, English and German',(
  const copy=a.$('.demo-dispatch-workspace').textContent;assert.equal(/[\u0621-\u064a]/.test(copy),lang==='ar');assert.ok(a.$('.demo-tool-help summary'));
  }finally{a.dom.window.close();}}
 });
+
+ test('admin pizza entry uses the persisted shop route while other examples keep their demos',()=>{
+ const a=app();try{const id='a87c5210-2cb6-4dd7-b997-d43b9e2d206a';a.c.stores=[{id,active:true,is_example:false}];a.c.render();assert.equal(a.c.location.hash,'#store/'+id);
+ a.c.location.hash='#examples';a.c.render();assert.ok(a.$('a[href="#store/'+id+'"]'));assert.ok(a.$('a[href="#example/apparel"]'));
+ }finally{a.dom.window.close();}
+ });
