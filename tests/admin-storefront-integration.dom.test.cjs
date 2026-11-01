@@ -243,3 +243,7 @@ test('administrators can buy from the delivery test restaurant, with editing ret
   assert.ok(a.$('.owner-store-bar'));assert.equal(a.$('[data-add]'),null);assert.equal(a.$('#cart'),null);assert.deepEqual(a.errors,[]);
  }finally{a.close();}
 });
+
+test('recent shops section works through the full administration script chain',()=>{
+ const a=setup();try{a.run(`stores[0].created_at='2026-11-01T10:00:00Z';history.replaceState(null,'','#dashboard/recent-stores');renderDashboard('recent-stores');`);assert.ok(a.$('.admin-recent-stores'));assert.equal(a.$('.admin-recent-store').dataset.storeId,'shop');assert.equal(a.$('.admin-recent-store a').hash,'#store/shop');assert.equal(a.$('#dashboard-content').hidden,false);assert.deepEqual(a.errors,[]);}finally{a.close();}
+});
