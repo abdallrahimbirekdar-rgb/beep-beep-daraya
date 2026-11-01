@@ -274,3 +274,21 @@ test('product categories remain selected and visible through repeated switches',
   }
  }finally{a.close();}}
 });
+
+test('owners and admins create reviewed offers from product data without changing catalog prices',async()=>{
+ for(const role of ['admin','owner']){const a=setup({role});try{
+  a.run(`products=[{id:'offer-product',store_id:'shop',name:'طقم ضيافة',description:'طقم تقديم ذهبي',price:1000,image:'https://damascus-shop.com/images/happy-house/20261101/30021.jpg',available:true,section:'ضيافة',revision:1}];history.replaceState(null,'','#store/shop');renderStore('shop');`);
+  a.$('.owner-manage-toggle').click();a.$('[data-target="sf-products"]').click();a.$('[data-owner-product-offer]').click();
+  const form=a.$('#daily-offer-form');assert.ok(form);assert.equal(form.elements.store.value,'shop');assert.equal(form.elements.title.value,'طقم ضيافة');assert.equal(form.elements.details.value,'طقم تقديم ذهبي');assert.equal(form.elements.original.value,'1000');assert.equal(form.elements.price.value,'');assert.equal(form.elements.agree.checked,false);assert.equal(form.elements.product.value,'offer-product');assert.equal(form.elements.poster_source.value,'product');assert.match(form.querySelector('[data-offer-cover-preview]').src,/30021.jpg$/);
+  form.elements.benefit.value='خصم خاص للجميع';form.elements.price.value='800';form.elements.agree.checked=true;
+  a.run(`window.offerInsert=null;const originalFrom=api.from;api.from=table=>table==='daily_offers'?{insert(row){window.offerInsert=row;return Promise.resolve({error:null});}}:originalFrom(table);`);
+  await form.onsubmit({preventDefault(){},submitter:form.querySelector('[type=submit]')});assert.ok(a.w.offerInsert);assert.equal(a.w.offerInsert.store_id,'shop');assert.equal(a.w.offerInsert.price,800);assert.equal(a.w.offerInsert.status,'pending');const meta=JSON.parse(a.w.offerInsert.details);assert.equal(meta.original,1000);assert.match(meta.image,/30021.jpg$/);assert.equal(a.run("products[0].price"),1000);assert.deepEqual(a.errors,[]);
+ }finally{a.close();}}
+});
+test('product offers preserve missing price and image and deny unrelated users',()=>{
+ for(const role of ['visitor','other','owner']){const a=setup({role});try{
+  a.run(`products=[{id:'no-photo',store_id:'shop',name:'منتج بلا سعر',description:'وصف المنتج',price:null,image:'',available:true,revision:1}];history.replaceState(null,'','#store/shop');renderStore('shop');`);
+  if(role!=='owner'){assert.equal(a.$('[data-owner-product-offer]'),null);continue;}
+  a.$('.owner-manage-toggle').click();a.$('[data-owner-product-offer]').click();const form=a.$('#daily-offer-form');assert.equal(form.elements.original.value,'');assert.equal(form.elements.price.value,'');assert.equal(form.elements.kind.value,'text');assert.equal(form.querySelector('[data-offer-image]').hidden,true);
+ }finally{a.close();}}
+});

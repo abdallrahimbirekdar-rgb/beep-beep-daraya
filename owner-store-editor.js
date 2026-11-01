@@ -98,10 +98,11 @@
   panel.addEventListener('invalid',e=>{scopeEditor(panel,e.target.name);focusEditor(panel,e.target.name);},true);
   panel.scrollIntoView?.({block:'start',behavior:'auto'});focusEditor(panel,field);
  }
- function openOffer(s){
+ function openOffer(s,pid){
   if(!canEdit(currentStore(s.id)))return;
   const old=app.querySelector('.owner-inline-editor');if(old&&!closeEditor(old))return;
-  remember(s,'sf-offers');window.DarayaOffers?.edit(s);
+  const product=pid?products.find(p=>p.id===pid&&p.store_id===s.id&&p.available!==false):null;if(pid&&!product)return;
+  remember(s,pid?'sf-products':'sf-offers');window.DarayaOffers?.edit(s,product);
  }
  function sectionTools(s){
   const offers=app.querySelector('#sf-offers');
@@ -214,7 +215,7 @@
     if(item.querySelector('.owner-video-actions'))continue;
     const row=document.createElement('div');row.className='owner-video-actions';row.dataset.noTranslate='';row.append(button(t('تعديل هذا الفيديو','Edit this video','Dieses Video bearbeiten'),()=>openInline(s.id,'videos','sf-videos',item.dataset.shopVideoUrl)));item.append(row);
    }
-   for(const card of app.querySelectorAll('.product')){if(card.querySelector('.owner-product-actions'))continue;const id=card.dataset.productId||card.dataset.promoProductId||card.querySelector('[data-add]')?.dataset.add;const p=products.find(p=>p.id===id&&p.store_id===s.id);if(!p)continue;const row=document.createElement('div');row.className='owner-product-actions';row.dataset.noTranslate='';row.append(button(t('✎ تعديل المنتج والسعر','✎ Edit product and price','✎ Produkt und Preis bearbeiten'),()=>editItem(s.id,p.id)),button(t('حذف المنتج','Delete product','Produkt löschen'),()=>removeItem(s.id,p.id),'outline danger owner-delete-product'));(card.querySelector(':scope>div')||card).append(row);}
+   for(const card of app.querySelectorAll('.product')){if(card.querySelector('.owner-product-actions'))continue;const id=card.dataset.productId||card.dataset.promoProductId||card.querySelector('[data-add]')?.dataset.add;const p=products.find(p=>p.id===id&&p.store_id===s.id);if(!p)continue;const row=document.createElement('div');row.className='owner-product-actions';row.dataset.noTranslate='';row.append(button(t('✎ تعديل المنتج والسعر','✎ Edit product and price','✎ Produkt und Preis bearbeiten'),()=>editItem(s.id,p.id)),button(t('حذف المنتج','Delete product','Produkt löschen'),()=>removeItem(s.id,p.id),'outline danger owner-delete-product'));if(window.DarayaOffers?.eligible(s)&&p.available!==false){const offer=button(t('🏷 إضافة إلى العروض','🏷 Add to offers','🏷 Zum Angebot hinzufügen'),()=>openOffer(s,p.id));offer.dataset.ownerProductOffer=p.id;row.append(offer);}(card.querySelector(':scope>div')||card).append(row);}
   }finally{observer.observe(app,{childList:true,subtree:true});}
  }
  const observer=new MutationObserver(()=>{if(!queued){queued=true;queueMicrotask(enhance);}});
