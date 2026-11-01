@@ -5,7 +5,7 @@
  const app=document.getElementById('app');
  let lastRoute='';
  const adminHome=()=>!location.hash||['#dashboard','#dashboard/','#dashboard/home'].includes(location.hash);
- const icons={"stores":"🏪","details":"🪪","photos":"📸","videos":"🎬","products":"🛍️","delivery":"🚚","drivers":"🛵","hours":"⏰","reports":"📊","orders":"📋","new-section":"🆕","tools":"🗓️","workspace-tools":"🧰","overview":"🏠","help":"📖","accounts":"👥","statistics":"📈","notebook":"📝","usage":"⚡","plans":"👑","bans":"🛡️","document":"📄","offer-reminders":"🔔","offer-display":"💎","facebook":"📣"};
+ const icons={"recent-stores":"🆕","stores":"🏪","details":"🪪","photos":"📸","videos":"🎬","products":"🛍️","delivery":"🚚","drivers":"🛵","hours":"⏰","reports":"📊","orders":"📋","new-section":"🆕","tools":"🗓️","workspace-tools":"🧰","overview":"🏠","help":"📖","accounts":"👥","statistics":"📈","notebook":"📝","usage":"⚡","plans":"👑","bans":"🛡️","document":"📄","offer-reminders":"🔔","offer-display":"💎","facebook":"📣"};
  const iconMarkup=key=>'<span class="dashboard-color-icon" aria-hidden="true">'+(icons[key]||icons.document)+'</span>';
  window.DarayaDashboardIcon=iconMarkup;
  function link(href,label){const a=document.createElement('a');a.href=href;a.textContent=label;a.dataset.noTranslate='';return a;}
@@ -63,6 +63,7 @@
  ];
  // Each shortcut retains its original anchor and click handlers.
  const adminTools=[
+  ['#dashboard/recent-stores','shops',['أحدث المحلات المضافة','Recently created shops','Neu angelegte Geschäfte'],['آخر المحلات والصفحات حسب تاريخ الإنشاء','Newest shops and pages by creation date','Neueste Geschäfte und Seiten nach Erstellungsdatum'],'recent-stores'],
   ['#admin-notifications','moderation',['إشعارات الإدارة','Admin notifications','Verwaltungsbenachrichtigungen'],['الأحداث الجديدة والبلاغات والطلبات','New events, reports and requests','Neue Ereignisse, Meldungen und Anträge'],'reports'],
   ['#business-reviews','shops',['طلبات إنشاء المحلات والخدمات','Business page requests','Anträge für Geschäftsseiten'],['معاينة الطلبات الجديدة والموافقة عليها','Review and approve new requests','Neue Anträge prüfen und freigeben'],'new-section'],
   ['#dashboard/stores','shops',['المحلات والأماكن','Shops and places','Geschäfte und Orte'],['إضافة الأماكن وتعديل صفحاتها وعناوينها','Add places and edit pages and addresses','Orte hinzufügen und Seiten bearbeiten'],'stores'],
@@ -136,6 +137,30 @@
   if(status)status.textContent=count?(terms.length?say('نتائج البحث: ','Search results: ','Suchergebnisse: '):say('أدوات الإدارة: ','Admin tools: ','Verwaltungswerkzeuge: '))+count:say('لا توجد أداة مطابقة. جرّب كلمة مثل «عرض» أو «حساب».','No matching tool. Try “offer” or “account”.','Kein passendes Werkzeug. Versuche „Angebot“ oder „Konto“.');
  }
 
+ function recentStores(content){
+  if(!admin||!user)return;
+  const owner=user.id,active=()=>content.isConnected&&admin&&user?.id===owner&&location.hash==='#dashboard/recent-stores';
+  const rows=[...stores].filter(s=>!s.deleted_at&&!s.is_example).sort((a,b)=>(Date.parse(b.created_at)||0)-(Date.parse(a.created_at)||0)||String(a.id).localeCompare(String(b.id)));
+  let limit=20;content.replaceChildren();const panel=document.createElement('section');panel.className='panel admin-recent-stores';panel.dataset.noTranslate='';
+  const head=document.createElement('div');head.className='topline';const h=document.createElement('h2');h.textContent=say('أحدث المحلات المضافة','Recently created shops','Neu angelegte Geschäfte');
+  const refresh=document.createElement('button');refresh.type='button';refresh.className='outline';refresh.textContent=say('تحديث القائمة','Refresh list','Liste aktualisieren');head.append(h,refresh);
+  const note=document.createElement('p');note.className='muted';note.textContent=say('مرتبة حسب تاريخ إنشاء المحل، من الأحدث إلى الأقدم.','Ordered by creation date, newest first.','Nach Erstellungsdatum sortiert, neueste zuerst.');
+  const status=document.createElement('p');status.setAttribute('role','status');const list=document.createElement('div');list.className='admin-recent-store-list';
+  const more=document.createElement('button');more.type='button';more.className='outline';more.textContent=say('عرض المزيد','Show more','Mehr anzeigen');panel.append(head,note,status,list,more);content.append(panel);
+  function draw(){
+   if(!active())return;list.replaceChildren();const shown=rows.slice(0,limit);status.textContent=rows.length?say('عرض ','Showing ','Anzeige: ')+shown.length+say(' من ',' of ',' von ')+rows.length:say('لا توجد محلات مضافة بعد.','No shops have been created yet.','Noch keine Geschäfte angelegt.');more.hidden=limit>=rows.length;
+   for(const s of shown){
+    const card=document.createElement('article');card.className='admin-recent-store';card.dataset.storeId=s.id;
+    const details=document.createElement('div');details.className='admin-recent-store-details';const title=document.createElement('h3');title.textContent=s.name;details.append(title);
+    const timestamp=Date.parse(s.created_at);if(Number.isFinite(timestamp)){const time=document.createElement('time');time.dateTime=new Date(timestamp).toISOString();time.textContent=say('أُنشئ في: ','Created: ','Erstellt: ')+new Date(timestamp).toLocaleString(({ar:'ar-SY',en:'en-GB',de:'de-DE'})[window.ShahinI18n?.language||'ar']);details.append(time);}else{const missing=document.createElement('small');missing.textContent=say('تاريخ الإنشاء غير متاح','Creation date unavailable','Erstellungsdatum nicht verfügbar');details.append(missing);}
+    const badge=document.createElement('span');badge.className='tag'+(s.active?'':' closed');badge.textContent=s.active?say('منشور','Published','Veröffentlicht'):say('غير منشور','Not published','Nicht veröffentlicht');details.append(badge);
+    const actions=document.createElement('div');actions.className='form-actions';const view=link('#store/'+encodeURIComponent(s.id),say('عرض الصفحة','View page','Seite ansehen'));view.className='button outline';const manage=link('#dashboard/setup/'+encodeURIComponent(s.id)+'/overview',say('إدارة المحل','Manage shop','Geschäft verwalten'));manage.className='button';if(s.active)actions.append(view);actions.append(manage);card.append(details,actions);list.append(card);
+   }
+  }
+  more.onclick=()=>{if(active()){limit+=20;draw();}};
+  refresh.onclick=async()=>{if(!active())return;refresh.disabled=true;try{await reload();if(active())renderDashboard('recent-stores');}catch{if(active())status.textContent=say('تعذر تحديث القائمة. أعد المحاولة.','Could not refresh. Try again.','Aktualisierung fehlgeschlagen. Erneut versuchen.');}finally{if(refresh.isConnected)refresh.disabled=false;}};
+  draw();
+ }
  const previousDashboard=renderDashboard;
  renderDashboard=function(tab,sid){
   previousDashboard.apply(this,arguments);
@@ -146,7 +171,7 @@
   app.dataset.dashboardSection=home?'home':tab;
   app.dataset.dashboardRoute=location.hash;
   const workspace=app.querySelector('.admin-workspace');workspace?.classList.add('dashboard-single-layout');
-  const extra=[['#data-requests',say('طلبات البيانات والخصوصية','Data and privacy requests','Daten- und Datenschutzanfragen'),'document'],['#offer-review',say('عروض بانتظار الموافقة','Offers awaiting approval','Angebote zur Freigabe'),'products'],['#published-shop-offers',say('إدارة العروض المنشورة','Manage published offers','Veröffentlichte Angebote verwalten'),'products'],['#offer-reports',say('بلاغات عروض اليوم','Offer reports','Meldungen zu Angeboten'),'reports'],['#moderation',say('مركز مراجعة المحتوى','Moderation centre','Moderationszentrale'),'bans'],['#blocked-publishers',say('الناشرون المحظورون','Blocked publishers','Blockierte Verfasser'),'bans'],['#facebook-studio',say('تجهيز منشورات فيسبوك','Facebook post studio','Facebook-Beiträge vorbereiten'),'facebook'],['#dashboard/offer-display',say('ترتيب وتمييز عروض اليوم','Offer order and levels','Angebotsreihenfolge und Stufen'),'offer-display'],['#dashboard/offer-reminders',say('إشعارات عروض اليوم','Offer reminders','Angebotserinnerungen'),'offer-reminders'],['#dashboard/place-reports',say('بلاغات الأماكن','Place reports','Ortsmeldungen'),'place-reports'],['#dashboard/reports',say('التقارير ومراجعة المتاجر','Reports and shop review','Berichte und Geschäftsprüfung'),'reports'],['#dashboard/statistics',say('الزيارات والإحصاءات','Visits and statistics','Besuche und Statistik'),'statistics'],['#dashboard/plans',say('باقات الاشتراك','Subscription plans','Tarife'),'plans'],['#banned-ad-accounts',say('الحسابات المحظورة من الإعلانات','Accounts blocked from ads','Für Anzeigen gesperrte Konten'),'bans'],['#dashboard/tools',say('أدوات الإدارة وتحديث البيانات','Admin tools and refresh','Werkzeuge und Aktualisieren'),'tools']];
+  const extra=[['#dashboard/recent-stores',say('أحدث المحلات المضافة','Recently created shops','Neu angelegte Geschäfte'),'recent-stores'],['#data-requests',say('طلبات البيانات والخصوصية','Data and privacy requests','Daten- und Datenschutzanfragen'),'document'],['#offer-review',say('عروض بانتظار الموافقة','Offers awaiting approval','Angebote zur Freigabe'),'products'],['#published-shop-offers',say('إدارة العروض المنشورة','Manage published offers','Veröffentlichte Angebote verwalten'),'products'],['#offer-reports',say('بلاغات عروض اليوم','Offer reports','Meldungen zu Angeboten'),'reports'],['#moderation',say('مركز مراجعة المحتوى','Moderation centre','Moderationszentrale'),'bans'],['#blocked-publishers',say('الناشرون المحظورون','Blocked publishers','Blockierte Verfasser'),'bans'],['#facebook-studio',say('تجهيز منشورات فيسبوك','Facebook post studio','Facebook-Beiträge vorbereiten'),'facebook'],['#dashboard/offer-display',say('ترتيب وتمييز عروض اليوم','Offer order and levels','Angebotsreihenfolge und Stufen'),'offer-display'],['#dashboard/offer-reminders',say('إشعارات عروض اليوم','Offer reminders','Angebotserinnerungen'),'offer-reminders'],['#dashboard/place-reports',say('بلاغات الأماكن','Place reports','Ortsmeldungen'),'place-reports'],['#dashboard/reports',say('التقارير ومراجعة المتاجر','Reports and shop review','Berichte und Geschäftsprüfung'),'reports'],['#dashboard/statistics',say('الزيارات والإحصاءات','Visits and statistics','Besuche und Statistik'),'statistics'],['#dashboard/plans',say('باقات الاشتراك','Subscription plans','Tarife'),'plans'],['#banned-ad-accounts',say('الحسابات المحظورة من الإعلانات','Accounts blocked from ads','Für Anzeigen gesperrte Konten'),'bans'],['#dashboard/tools',say('أدوات الإدارة وتحديث البيانات','Admin tools and refresh','Werkzeuge und Aktualisieren'),'tools']];
   extra.forEach(([href,title,key])=>{if(![...tabs.querySelectorAll('a')].some(a=>a.getAttribute('href')===href)){const a=link(href,title);a.dataset.dashboardMenuKey=key;tabs.append(a);}});
   const request=heading.querySelector('a[href="#data-requests"]');if(request){tabs.querySelector('a[href="#data-requests"]')?.remove();tabs.append(request);}
   const planButtons=[...heading.querySelectorAll(':scope > button')];const tools=heading.querySelector('.admin-tools');
@@ -157,6 +182,7 @@
   }else{
    content.hidden=false;if(sidebar)sidebar.hidden=true;else tabs.hidden=true;
    heading.after(back('#dashboard'));
+   if(tab==='recent-stores')recentStores(content);
    if(tab==='place-reports'){
     content.innerHTML='<section class="panel" data-no-translate><h2>'+say('بلاغات الأماكن','Place reports','Ortsmeldungen')+'</h2><p>'+say('راجع بلاغات الزوار عن معلومات الأماكن ومحتواها، ثم علّم البلاغ بعد معالجته.','Review visitor reports about place details and content, then mark them reviewed.','Prüfe Besuchermeldungen zu Ortsangaben und Inhalten und markiere sie anschließend als geprüft.')+'</p><button type="button" class="outline" data-refresh-place-reports>'+say('تحديث البلاغات','Refresh reports','Meldungen aktualisieren')+'</button><div data-place-reports-list role="status"></div></section>';
     const box=content.querySelector('[data-place-reports-list]');
