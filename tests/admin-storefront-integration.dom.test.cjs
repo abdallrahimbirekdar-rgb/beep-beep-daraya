@@ -261,3 +261,16 @@ test('admin shop list and recent shops enter edit mode directly for another owne
   await form.onsubmit({preventDefault(){},submitter:form.querySelector('[type=submit]')});assert.equal(a.w.productRPC?.[1].p_data.store_id,a.w.mockStore.id);assert.equal(form.dataset.saveCommitted,'true');assert.deepEqual(a.errors,[]);
  }finally{a.close();}}
 });
+
+test('product categories remain selected and visible through repeated switches',async()=>{
+ for(const role of ['visitor','admin','owner'])for(const suffix of ['', '/product/one', '/one']){const a=setup({role});try{
+  a.run(`products=[{id:'one',store_id:'shop',name:'صينية',price:null,available:true,section:'أدوات ضيافة',revision:1},{id:'two',store_id:'shop',name:'مرطبان',price:null,available:true,section:'منظمات منزلية',revision:1}];history.replaceState(null,'','#store/shop${suffix}');renderStore('shop');`);
+  a.$('[data-target="sf-products"]').click();const originalCard=a.$('[data-product-id="one"]');const originalNav=a.$('.menu-sections');
+  for(const [section,ids] of [['أدوات ضيافة',['one']],['منظمات منزلية',['two']],['all',['one','two']]]){
+   [...a.w.document.querySelectorAll('.menu-sections [data-section]')].find(b=>b.dataset.section===section).click();await new Promise(r=>setTimeout(r,50));
+   assert.deepEqual([...a.w.document.querySelectorAll('.product:not([hidden])')].map(n=>n.dataset.productId),ids,role+' '+section);
+   assert.equal(a.$('#sf-products').hasAttribute('inert'),false,role+' '+section);assert.equal(a.$('#sf-products').classList.contains('sf-section-collapsed'),false,role+' '+section);
+   assert.equal(a.$('.menu-sections .selected').dataset.section,section);assert.equal(a.$('[data-product-id="one"]'),originalCard);assert.equal(a.$('.menu-sections'),originalNav);assert.deepEqual(a.errors,[]);
+  }
+ }finally{a.close();}}
+});
