@@ -34,7 +34,7 @@
    let began=null;list.classList.add('is-auto-scrolling');
    const step=now=>{if(!list.isConnected||document.hidden){cancel();return;}if(began===null)began=now;const progress=Math.min(1,(now-began)/1600),ease=progress*progress*(3-2*progress);list.scrollLeft=start+(target-start)*ease;if(progress<1)frame=requestAnimationFrame(step);else{frame=null;list.classList.remove('is-auto-scrolling');}};
    frame=requestAnimationFrame(step);
-  },6000);
+  },3000);
   stopRotation=()=>{clearInterval(timer);cancel();document.removeEventListener('visibilitychange',hide);list.removeEventListener('pointerenter',enter);list.removeEventListener('pointerleave',leave);list.removeEventListener('focusin',focus);list.removeEventListener('focusout',blur);list.removeEventListener('pointerdown',down);window.removeEventListener('pointerup',up);window.removeEventListener('pointercancel',up);list.removeEventListener('wheel',rest);control.remove();stopRotation=()=>{};};
  }
  function show(section,rows){
