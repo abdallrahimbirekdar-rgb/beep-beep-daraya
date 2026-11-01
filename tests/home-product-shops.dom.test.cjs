@@ -14,7 +14,7 @@ async function rotating(direction='ltr',reduced=false){
 }
 test('shops advance slowly in both directions and return to the first at the end',async()=>{
  for(const direction of ['ltr','rtl']){const a=await rotating(direction);try{
- assert.equal([...a.w.rotationTimers.values()][0].delay,6000);a.advance();a.frame(0);a.frame(800);assert.equal(Math.abs(a.list.scrollLeft),50);a.frame(1600);assert.equal(a.list.scrollLeft,direction==='rtl'?-100:100);assert.equal(a.list.classList.contains('is-auto-scrolling'),false);
+ assert.equal([...a.w.rotationTimers.values()][0].delay,3000);a.advance();a.frame(0);a.frame(800);assert.equal(Math.abs(a.list.scrollLeft),50);a.frame(1600);assert.equal(a.list.scrollLeft,direction==='rtl'?-100:100);assert.equal(a.list.classList.contains('is-auto-scrolling'),false);
  a.list.scrollLeft=direction==='rtl'?-200:200;a.advance();a.frame(2000);a.frame(3600);assert.equal(a.list.scrollLeft,0);
  }finally{a.dom.window.close();}}
 });
