@@ -238,9 +238,9 @@
  const previousDashboard=merchantDashboard;
  const editableSections={details:'sf-info',photos:'sf-tools',hours:'sf-info',videos:'sf-videos',delivery:'sf-orders',products:'sf-products'};
  merchantDashboard=function(ms,s,section){
-  if(canEdit(s)&&(!section||['overview','stores'].includes(section)||editableSections[section])){
+  if(canEdit(s)&&(!section||['overview','stores','edit'].includes(section)||editableSections[section])){
    // Old dashboard links open the same shop surface, never a second edit menu.
-   if(editableSections[section])editingViews.add(user.id+':'+s.id);else editingViews.delete(user.id+':'+s.id);
+   if(section==='edit'||editableSections[section])editingViews.add(user.id+':'+s.id);else editingViews.delete(user.id+':'+s.id);
    history.replaceState(history.state,'','#store/'+s.id);
    app.classList.remove('professional-home','dashboard-menu-home','dashboard-menu-section','dashboard-menu-layout');
    delete app.dataset.dashboardSection;delete app.dataset.dashboardRoute;

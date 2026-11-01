@@ -247,3 +247,17 @@ test('administrators can buy from the delivery test restaurant, with editing ret
 test('recent shops section works through the full administration script chain',()=>{
  const a=setup();try{a.run(`stores[0].created_at='2026-11-01T10:00:00Z';history.replaceState(null,'','#dashboard/recent-stores');renderDashboard('recent-stores');`);assert.ok(a.$('.admin-recent-stores'));assert.equal(a.$('.admin-recent-store').dataset.storeId,'shop');assert.equal(a.$('.admin-recent-store a').hash,'#store/shop');assert.equal(a.$('#dashboard-content').hidden,false);assert.deepEqual(a.errors,[]);}finally{a.close();}
 });
+
+
+test('admin shop list and recent shops enter edit mode directly for another owner',async()=>{
+ for(const route of ['stores','recent-stores']){const a=setup();try{
+  a.w.mockStore.id='c0a627c1-229d-4da9-957c-4aff3ff48a8f';a.w.mockStore.name='عصرونية البيت السعيد';a.w.mockStore.owner_email='another-owner@example.com';a.w.mockStore.created_at='2026-11-01T12:00:00Z';
+  a.run("history.replaceState(null,'','#dashboard/"+route+"');renderDashboard('"+route+"')");
+  const manage=a.$(route==='stores'?'.admin-place-actions a':'.admin-recent-store a[href^="#dashboard/setup/"]');assert.ok(manage);assert.match(manage.hash,/\/edit$/);
+  a.w.history.replaceState(null,'',manage.hash);a.run("renderDashboard('setup','c0a627c1-229d-4da9-957c-4aff3ff48a8f')");
+  assert.equal(a.w.location.hash,'#store/c0a627c1-229d-4da9-957c-4aff3ff48a8f');assert.equal(a.$('.owner-manage-toggle').getAttribute('aria-expanded'),'true');assert.equal(a.$('#app').classList.contains('owner-view-clean'),false);
+  a.$('[data-target="sf-products"]').click();a.$('.owner-add-product').click();assert.equal(a.$('#modal').open,true);const form=a.$('#edit-form');form.elements.name.value='منتج اختبار';
+  a.run(`api.rpc=async(name,args)=>{if(name==='save_market_product')window.productRPC=[name,args];return {data:args.p_data?.id,error:null};};window.DarayaSaveFeedback.complete=async(form)=>{form.dataset.saveCommitted='true';};`);
+  await form.onsubmit({preventDefault(){},submitter:form.querySelector('[type=submit]')});assert.equal(a.w.productRPC?.[1].p_data.store_id,a.w.mockStore.id);assert.equal(form.dataset.saveCommitted,'true');assert.deepEqual(a.errors,[]);
+ }finally{a.close();}}
+});
