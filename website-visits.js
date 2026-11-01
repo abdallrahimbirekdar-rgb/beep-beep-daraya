@@ -3,13 +3,20 @@
 let recording=false;
 async function record(){
  if(!api||!live||admin||document.visibilityState==='hidden'||/^#(?:dashboard|account|my-order|privacy|data-requests|shop-cards|shop-card|purchase-card|redeem-card)/.test(location.hash)||recording)return;
- let saved;try{saved=JSON.parse(sessionStorage.getItem('daraya-visit-session')||'null');}catch{}
- let visitor;try{visitor=localStorage.getItem('daraya-visitor-id');if(!/^[0-9a-f-]{36}$/i.test(visitor||'')){visitor=crypto.randomUUID();localStorage.setItem('daraya-visitor-id',visitor);}}catch{visitor=crypto.randomUUID();}
- const now=Date.now();
- if(saved?.recorded&&now-saved.last<30*60*1000){saved.last=now;try{sessionStorage.setItem('daraya-visit-session',JSON.stringify(saved));}catch{}return;}
- if(!saved||now-saved.last>=30*60*1000)saved={id:crypto.randomUUID(),last:now,recorded:false};
  recording=true;
- try{const r=await api.rpc('record_website_visit',{p_session:saved.id,p_visitor:visitor});if(!r.error){saved.recorded=true;saved.last=now;try{sessionStorage.setItem('daraya-visit-session',JSON.stringify(saved));}catch{}}}finally{recording=false;}
+ const run=async()=>{
+  const key='daraya-visit-session',now=Date.now();let saved;
+  try{saved=JSON.parse(localStorage.getItem(key)||'null');}catch{}
+  if(!saved)try{saved=JSON.parse(sessionStorage.getItem(key)||'null');}catch{}
+  const save=()=>{const value=JSON.stringify(saved);try{localStorage.setItem(key,value);}catch{}try{sessionStorage.setItem(key,value);}catch{}};
+  let visitor;try{visitor=localStorage.getItem('daraya-visitor-id');if(!/^[0-9a-f-]{36}$/i.test(visitor||'')){visitor=crypto.randomUUID();localStorage.setItem('daraya-visitor-id',visitor);}}catch{visitor=crypto.randomUUID();}
+  if(!saved||!/^[0-9a-f-]{36}$/i.test(saved.id||'')||!Number.isFinite(saved.last)||now-saved.last>=30*60*1000||saved.last>now)saved={id:crypto.randomUUID(),last:now,recorded:false};
+  if(saved.recorded){saved.last=now;save();return;}
+  // Share the pending ID before the request; retries and tabs reuse its server key.
+  save();const r=await api.rpc('record_website_visit',{p_session:saved.id,p_visitor:visitor});
+  if(!r.error){saved.recorded=true;saved.last=now;save();}
+ };
+ try{if(navigator.locks?.request)await navigator.locks.request('daraya-visit-session',run);else await run();}finally{recording=false;}
 }
 let requestId=0,selectedDays=7;
 const safeText=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -58,7 +65,7 @@ async function stats(){
   const [totals,report]=await Promise.all([api.rpc('website_visit_stats'),api.rpc('admin_visitor_insights',{p_days:selectedDays})]);
   if(!alive())return;
   if(totals.error){box.querySelector('[data-visit-numbers]').textContent='تعذر تحميل الإجماليات.';}else{
-   const data=totals.data||{};box.querySelector('[data-visit-numbers]').innerHTML=[['visitors','الزوار المختلفون — تقديري'],['total','إجمالي الزيارات'],['today_visitors','زوار اليوم المختلفون'],['today','زيارات اليوم'],['week','زيارات آخر ٧ أيام'],['month','زيارات آخر ٣٠ يومًا']].map(([key,label])=>metric(label,number(data[key]),'')).join('');
+   const data=totals.data||{};box.querySelector('[data-visit-numbers]').innerHTML=[['visitors','الزوار المختلفون — تقديري'],['total','إجمالي الزيارات'],['today_visitors','زوار اليوم المختلفون'],['today','جلسات اليوم'],['week','زيارات آخر ٧ أيام'],['month','زيارات آخر ٣٠ يومًا']].map(([key,label])=>metric(label,number(data[key]),'')).join('');
   }
   if(report.error||!report.data){result.innerHTML='<p class="visitor-data-note">تعذر تحميل التحليل التفصيلي. تبقى الإجماليات المتاحة أعلاه مستقلة عنه. اضغط تحديث الإحصاءات للمحاولة مجددًا.</p>';status.textContent='لم يكتمل تحميل التحليل التفصيلي.';}
   else{result.innerHTML=reportHTML(report.data);status.textContent='آخر تحديث: '+new Date().toLocaleTimeString(document.documentElement.lang||'ar',{hour:'2-digit',minute:'2-digit'})+' · الأيام والساعات حسب توقيت داريا.';}
@@ -70,7 +77,7 @@ function sync(){
  if(!admin||!user||location.hash!=='#dashboard/statistics'||document.querySelector('.merchant-layout'))return;
  if(document.querySelector('#website-visit-stats'))return;
  const app=document.querySelector('#app');if(app.dataset.dashboardRoute!==location.hash||!app.querySelector('#dashboard-content'))return;
- app.querySelector('#dashboard-content').insertAdjacentHTML('beforeend','<section class="panel visitor-dashboard" id="website-visit-stats" data-no-translate><div class="visitor-dashboard-heading"><div><h2>زوار الموقع وتفاعلهم</h2><p>اعرف متى يأتي الزوار وما الذي يجذب اهتمامهم.</p></div><button type="button" class="outline" data-refresh-visits>تحديث الإحصاءات</button></div><details class="visitor-all-time"><summary>إجماليات الزيارات منذ بدء التسجيل</summary><div class="visitor-metrics" data-visit-numbers></div></details><div class="visitor-period-controls"><label>الفترة<select data-visitor-period><option value="7">آخر ٧ أيام</option><option value="30">آخر ٣٠ يومًا</option><option value="90">آخر ٩٠ يومًا</option></select></label><p data-visit-status role="status"></p></div><div data-visitor-report></div><details class="visitor-method"><summary>كيف تُحسب الأرقام؟</summary><p>الزوار تقدير حسب معرّف المتصفح، وليس إثباتًا لهوية الأشخاص. جهاز آخر أو حذف بيانات المتصفح قد يحسب الزائر مرة أخرى. الجدد والعائدون يُحدّدان حسب أول ظهور مسجل، ولا يكشفان هوية الزائر.</p><p>الزيارات جلسات تصفح؛ التنقل وإعادة التحميل خلال الجلسة لا يضيفان زيارة جديدة. السجلات لا تقيس مدة البقاء، وقد تتأثر بحظر التخزين أو الزيارات الآلية. زيارات الإدارة مستبعدة من عداد الموقع، وقد تختلف تواريخ بدء تسجيل المؤشرات المختلفة.</p><p>هذا التقرير يلخّص سجلات الزيارات والتفاعلات الموجودة بالفعل، ولا يعرض معرّفات الزوار أو بيانات تواصلهم.</p></details></section>');
+ app.querySelector('#dashboard-content').insertAdjacentHTML('beforeend','<section class="panel visitor-dashboard" id="website-visit-stats" data-no-translate><div class="visitor-dashboard-heading"><div><h2>زوار الموقع وتفاعلهم</h2><p>اعرف متى يأتي الزوار وما الذي يجذب اهتمامهم.</p></div><button type="button" class="outline" data-refresh-visits>تحديث الإحصاءات</button></div><details class="visitor-all-time"><summary>إجماليات الزيارات منذ بدء التسجيل</summary><div class="visitor-metrics" data-visit-numbers></div></details><div class="visitor-period-controls"><label>الفترة<select data-visitor-period><option value="7">آخر ٧ أيام</option><option value="30">آخر ٣٠ يومًا</option><option value="90">آخر ٩٠ يومًا</option></select></label><p data-visit-status role="status"></p></div><div data-visitor-report></div><details class="visitor-method"><summary>كيف تُحسب الأرقام؟</summary><p>الزوار تقدير حسب معرّف المتصفح، وليس إثباتًا لهوية الأشخاص. جهاز آخر أو حذف بيانات المتصفح قد يحسب الزائر مرة أخرى. الجدد والعائدون يُحدّدان حسب أول ظهور مسجل، ولا يكشفان هوية الزائر.</p><p>الزيارات جلسات تصفح؛ قد يعود المتصفح نفسه عدة مرات. تبدأ جلسة جديدة بعد ٣٠ دقيقة من عدم النشاط المسجل. تبويبات المتصفح تشترك في الجلسة، والتنقل وإعادة التحميل خلالها لا يضيفان زيارة جديدة. السجلات لا تقيس مدة البقاء، وقد تتأثر بحظر التخزين أو الزيارات الآلية. زيارات الإدارة مستبعدة من عداد الموقع، وقد تختلف تواريخ بدء تسجيل المؤشرات المختلفة.</p><p>هذا التقرير يلخّص سجلات الزيارات والتفاعلات الموجودة بالفعل، ولا يعرض معرّفات الزوار أو بيانات تواصلهم.</p></details></section>');
  const period=app.querySelector('[data-visitor-period]');period.value=String(selectedDays);period.onchange=()=>{selectedDays=Number(period.value);stats();};
  app.querySelector('[data-refresh-visits]').onclick=stats;stats();
 }
