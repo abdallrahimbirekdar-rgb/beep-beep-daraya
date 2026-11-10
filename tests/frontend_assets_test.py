@@ -62,6 +62,20 @@ class FrontendAssetsTests(unittest.TestCase):
             code = (root/urls[0]).read_text()
             self.assertLess(code.index('a.js'), code.index('d.js'))
 
+    def test_management_features_are_bundled_without_eager_execution(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root/'a.js').write_text("'use strict';let featureValue=1;")
+            (root/'b.js').write_text("'use strict';featureValue+=2;")
+            html = '<head></head><script type="application/json" data-feature="management" data-src="a.js"></script><script type="application/json" data-feature="management" data-src="b.js"></script>'
+            result = module.bundle_html(root, html)
+            urls = re.findall(r'data-feature="management" data-src="/([^"]+)"', result)
+            self.assertEqual(len(urls), 1)
+            self.assertNotIn('<script defer', result)
+            code = (root/urls[0]).read_text()
+            self.assertLess(code.index('featureValue=1'), code.index('featureValue+=2'))
+            self.assertEqual(result.count('data-feature="management"'), 1)
+
     def test_minification_preserves_global_bindings_and_arabic_text(self):
         sources = {'a.js': "'use strict';const name='سوق داريا';let count=1;function globalAction(){count++;return name;}",
                    'b.js': "'use strict';globalAction();window.answer=[count,name];"}

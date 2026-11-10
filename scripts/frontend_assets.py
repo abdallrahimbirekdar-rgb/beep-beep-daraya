@@ -31,6 +31,26 @@ def emit(root, text, suffix):
 
 def bundle_html(root, html, optimized=None):
     optimized = optimized or {}
+    feature_groups = {}
+    for match in SCRIPT.finditer(html):
+        attrs = attributes(match.group())
+        if not attrs.get('data-feature') or not attrs.get('data-src'):
+            continue
+        asset = local_file(root, attrs['data-src'])
+        if asset is None:
+            raise ValueError('Feature scripts must be local')
+        code = optimized.get(asset.name, asset.read_text(encoding='utf-8'))
+        feature_groups.setdefault(attrs['data-feature'], []).append((match, asset.name, code))
+    replacements = []
+    for feature, entries in feature_groups.items():
+        code = '\n;\n'.join('// ' + name + '\n' + text for _, name, text in entries)
+        name = emit(root, code + '\n', '.js')
+        for i, (match, _, _) in enumerate(entries):
+            tag = (f'<script type="application/json" data-feature="{feature}" data-src="/{name}"></script>'
+                   if i == 0 else '')
+            replacements.append((match.start(), match.end(), tag))
+    for start, end, replacement in sorted(replacements, reverse=True):
+        html = html[:start] + replacement + html[end:]
     # All style sources stay in their original cascade order, including inline rules.
     head_end = html.lower().find('</head>')
     head, tail = html[:head_end], html[head_end:]
