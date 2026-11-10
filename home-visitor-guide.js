@@ -33,7 +33,7 @@
   let hasShown=false,animation=null,position=current+1;
   let timer=null,visible=false,hovered=false,focused=false,paused=false,dead=false,observer=null,start=null,touchInput=false,blockClickUntil=0;
   const stop=()=>{if(timer!==null)clearTimeout(timer);timer=null;};
-  const hydrate=()=>{if(!visible)return;for(const slot of new Set([position,position+1,current+1,(current+1)%slides.length+1])){const img=cards[slot]?.querySelector('img');if(img&&!img.getAttribute('src')){img.loading='eager';img.srcset=img.dataset.srcset;img.src=img.dataset.src;}}};
+  const hydrate=()=>{if(!visible)return;for(const slot of new Set([position,position+1,current+1,(current+1)%slides.length+1])){const img=cards[slot]?.querySelector('img');if(img&&!img.getAttribute('src')){img.fetchPriority=slot===position?'high':'low';img.loading='eager';img.srcset=img.dataset.srcset;img.src=img.dataset.src;}}};
   const transform=slot=>'translateX('+((document.documentElement.dir==='ltr'?-1:1)*slot*(cards[0].getBoundingClientRect().width+10))+'px)';
   function align(animate=false){
    const from=getComputedStyle(track).transform;animation?.cancel();animation=null;const target=transform(position);track.style.transform=target;

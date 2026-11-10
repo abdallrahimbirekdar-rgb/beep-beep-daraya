@@ -1,4 +1,4 @@
-import hashlib, html, json, math, re, shutil, uuid, unicodedata
+import hashlib, html, json, math, re, shutil, subprocess, uuid, unicodedata
 from pathlib import Path
 from urllib.request import Request, urlopen
 from urllib.parse import urlencode, urlsplit
@@ -177,6 +177,17 @@ def publish_supabase_sdk(source, output):
             raise RuntimeError(f'Missing Supabase SDK reference in {name}')
         path.write_text(text.replace(cdn_url, f'/vendor/{filename}'), encoding='utf-8')
 
+def publish_catalog_previews(output):
+    script = Path(__file__).with_name('build_catalog_previews.cjs')
+    previews = subprocess.check_output(['node', str(script), str(output)], text=True).strip()
+    app = output/'app.js'
+    source = app.read_text(encoding='utf-8')
+    marker = 'const localCatalogThumbnails = {};'
+    if marker not in source:
+        raise RuntimeError('Missing catalog preview lookup in app.js')
+    app.write_text(source.replace(marker, f'const localCatalogThumbnails = {previews};', 1), encoding='utf-8')
+
+
 if __name__ == '__main__':
     source = Path('.')
     output = Path('_site')
@@ -192,6 +203,7 @@ if __name__ == '__main__':
         public_assets = source/'assets'/folder
         if public_assets.is_dir():
             shutil.copytree(public_assets,output/'assets'/folder,dirs_exist_ok=True)
+    publish_catalog_previews(output)
     publish_supabase_sdk(source, output)
     count = build(merge_mosques(fetch_stores((source/'config.js').read_text()),source,output),output)
     from frontend_assets import bundle_frontend
