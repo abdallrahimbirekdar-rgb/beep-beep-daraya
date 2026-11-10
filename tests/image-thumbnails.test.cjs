@@ -8,6 +8,19 @@ assert.match(c.photo(original,'Item','gallery-image'),/src="[^"]+original.jpg"/)
 assert.equal(c.thumbnailForImage('https://example.com/old.png'),'https://example.com/old.png');
 assert.equal(c.thumbnailForImage(original.replace('nxnqsudwccjlvyepuxfg.supabase.co','other.example')),original.replace('nxnqsudwccjlvyepuxfg.supabase.co','other.example'));
 });
+test('published previews are used only for same-origin cards and keep the original for zoom',()=>{
+ const code=fs.readFileSync('app.js','utf8'),start=code.indexOf('function safeImage('),end=code.indexOf('\nfunction toast',start);
+ const c={URL,location:{href:'https://damascus-shop.com/'},esc:s=>s,navigator:{}};
+ vm.createContext(c);
+ const preview='/thumbnails/catalog/example.webp';
+ vm.runInContext(code.slice(start,end).replace('const localCatalogThumbnails = {};', 'const localCatalogThumbnails = '+JSON.stringify({'/images/shop/1.jpg':preview})+';'),c);
+ const original='https://damascus-shop.com/images/shop/1.jpg';
+ const card=c.photo(original,'Item','product-image');
+ assert.ok(card.includes('data-lazy-src="https://damascus-shop.com'+preview+'"'));
+ assert.ok(card.includes('data-full-image="'+original+'"'));
+ assert.ok(c.photo(original,'Item','gallery-image').includes('data-lazy-src="'+original+'"'));
+ assert.equal(c.thumbnailForImage('https://elsewhere.example/images/shop/1.jpg'),'https://elsewhere.example/images/shop/1.jpg');
+});
 test('upload keeps original bytes and stores a separate thumbnail; both must succeed',async()=>{
 const code=fs.readFileSync('market-tools.js','utf8'),start=code.indexOf('const marketUploadOriginal'),end=code.indexOf('\nconst marketReload',start);
 const uploads=[],original={type:'image/jpeg',size:100000},thumbnail={type:'image/webp',size:20000};
