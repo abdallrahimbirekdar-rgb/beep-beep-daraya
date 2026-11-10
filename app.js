@@ -35,10 +35,11 @@ async function init(){
     setTimeout(()=>customerAuthChanged(event,session),0);
    }
   });
+  window.DarayaStartup?.show();
   const session=await api.auth.getSession();
   user=session.data.session?.user||null;
   await reload();
-  render();
+  if(window.DarayaStartup)window.DarayaStartup.complete();else render();
  }catch(e){console.error(e);renderUnavailable();}
  finally{clearTimeout(loadingNotice);}
 }
