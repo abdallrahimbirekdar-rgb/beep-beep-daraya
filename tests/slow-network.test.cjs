@@ -14,14 +14,15 @@ c.showStoreAddress({name:'Shop',address:'Street'});assert.doesNotMatch(c.html,/d
 
 test('startup exposes retry after 25 seconds and recovers if loading finishes late',async()=>{
  const code=fs.readFileSync('app.js','utf8');
- let resolveSdk,timeout,cleared=false,unavailable=0,rendered=0;
+ let resolveSdk,scriptsReady,timeout,cleared=false,unavailable=0,rendered=0;
  const sdk=new Promise(resolve=>{resolveSdk=resolve;});
- const c={live:true,cfg:{},window:{},api:null,user:null,console,
+ const c={live:true,cfg:{},window:{addEventListener(event,fn){assert.equal(event,'DOMContentLoaded');scriptsReady=fn;}},api:null,user:null,console,
  setTimeout(fn,ms){assert.equal(ms,25000);timeout=fn;return 17;},clearTimeout(id){assert.equal(id,17);cleared=true;},
  mockSdk:()=>sdk,renderUnavailable(){unavailable++;},reload:async()=>{},render(){rendered++;}};
  vm.createContext(c);
  const source=code.slice(code.indexOf('async function init()'),code.indexOf('\nfunction renderUnavailable')).replace(/import\('[^']+'\)/,'mockSdk()');
  vm.runInContext(source,c);const pending=c.init();timeout();assert.equal(unavailable,1);assert.equal(rendered,0);
  resolveSdk({createClient:()=>({auth:{onAuthStateChange(){},getSession:async()=>({data:{session:null}})}})});
- await pending;assert.equal(rendered,1);assert.equal(cleared,true);
+ await sdk;assert.equal(rendered,0);
+ scriptsReady();await pending;assert.equal(rendered,1);assert.equal(cleared,true);
 });
