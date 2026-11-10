@@ -1,4 +1,4 @@
-import html, json, math, re, shutil, uuid, unicodedata
+import hashlib, html, json, math, re, shutil, uuid, unicodedata
 from pathlib import Path
 from urllib.request import Request, urlopen
 from urllib.parse import urlencode, urlsplit
@@ -159,6 +159,24 @@ def fetch_stores(config):
         if not features.get('gps'): store['latitude'] = store['longitude'] = None
     return rows
 
+def publish_supabase_sdk(source, output):
+    package = source/'node_modules'/'@supabase'/'supabase-js'
+    license_text = (package/'LICENSE').read_text(encoding='utf-8')
+    browser_script = (package/'dist'/'umd'/'supabase.js').read_text(encoding='utf-8')
+    module = f'/*\n{license_text}\n*/\n{browser_script}\nexport const {{ createClient }} = supabase;\n'
+    digest = hashlib.sha256(module.encode()).hexdigest()[:16]
+    vendor = output/'vendor'
+    vendor.mkdir(exist_ok=True)
+    filename = f'supabase-{digest}.js'
+    (vendor/filename).write_text(module, encoding='utf-8')
+    cdn_url = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm'
+    for name in ('index.html', 'app.js'):
+        path = output/name
+        text = path.read_text(encoding='utf-8')
+        if cdn_url not in text:
+            raise RuntimeError(f'Missing Supabase SDK reference in {name}')
+        path.write_text(text.replace(cdn_url, f'/vendor/{filename}'), encoding='utf-8')
+
 if __name__ == '__main__':
     source = Path('.')
     output = Path('_site')
@@ -174,6 +192,7 @@ if __name__ == '__main__':
         public_assets = source/'assets'/folder
         if public_assets.is_dir():
             shutil.copytree(public_assets,output/'assets'/folder,dirs_exist_ok=True)
+    publish_supabase_sdk(source, output)
     count = build(merge_mosques(fetch_stores((source/'config.js').read_text()),source,output),output)
     from frontend_assets import bundle_frontend
     bundled = bundle_frontend(output)
