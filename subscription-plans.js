@@ -7,12 +7,40 @@ const legacyPlan={phone:true,max_photos:1000,caption_length:1000,catalog:true,de
 function storePlan(s){if(!subscriptionSystemEnabled)return {name:"نظام الباقات معطل",features:{...legacyPlan,max_photos:50,delivery:true}};const sub=storeSubscriptions.find(x=>x.store_id===s.id);if(!sub)return {name:'غير مصنف — الميزات الحالية',features:legacyPlan};const id=sub.active?sub.plan_id:'free',p=subscriptionPlans.find(x=>x.id===id)||{name:'المجاني',features:{max_photos:1}};return {name:p.name,features:{...p.features,...(sub.active?sub.overrides:{})}};}
 function placePhotoCount(s){return (s.image?1:0)+storePagePhotos.filter(x=>x.store_id===s.id).length+products.filter(x=>x.store_id===s.id).reduce((n,p)=>n+(p.image?1:0)+(p.gallery||[]).length,0);}
 let subscriptionDataLoaded=false,subscriptionDataPending=null;
-async function loadSubscriptionData(){
-if(subscriptionDataPending)return subscriptionDataPending;
-subscriptionDataPending=(async()=>{if(!api)throw Error('انتظر اكتمال الاتصال ثم أعد المحاولة');const results=await Promise.all([api.from('subscription_plans').select('*').order('id'),api.from('store_subscriptions').select('*'),window.DarayaDemand.management?window.DarayaDemand.pages(()=>api.from('store_page_photos').select('*').order('position').order('id')).then(data=>({data})):window.DarayaDemand.ids().length?window.DarayaDemand.pages(()=>api.from('store_page_photos').select('*').in('store_id',window.DarayaDemand.ids()).order('position').order('id')).then(data=>({data})):Promise.resolve({data:[]})]);for(const r of results)if(r.error)throw r.error;if(!results[0].data?.length)throw Error('لم تصل الباقات. حدّث البيانات وأعد المحاولة');const settings=await api.from('platform_settings').select('subscriptions_enabled').eq('id',true).single();subscriptionSettingsReady=!settings.error;if(subscriptionSettingsReady)subscriptionSystemEnabled=settings.data.subscriptions_enabled;subscriptionPlans=results[0].data;storeSubscriptions=results[1].data||[];storePagePhotos=results[2].data||[];subscriptionDataLoaded=true;})();
-try{return await subscriptionDataPending;}finally{subscriptionDataPending=null;}
+async function loadSubscriptionData(afterCatalog=Promise.resolve()){
+ if(subscriptionDataPending)return subscriptionDataPending;
+ subscriptionDataPending=(async()=>{
+  if(!api)throw Error('انتظر اكتمال الاتصال ثم أعد المحاولة');
+  const photoRequest=afterCatalog.then(async()=>{
+   const demand=window.DarayaDemand;
+   const query=()=>api.from('store_page_photos').select('*').order('position').order('id');
+   if(demand.management)return demand.pages(query);
+   const ids=demand.ids();
+   return ids.length?demand.pages(()=>query().in('store_id',ids)):[];
+  });
+  const [plans,subscriptions,settings,photos]=await Promise.all([
+   api.from('subscription_plans').select('*').order('id'),
+   api.from('store_subscriptions').select('*'),
+   api.from('platform_settings').select('subscriptions_enabled').eq('id',true).single(),
+   photoRequest
+  ]);
+  if(plans.error)throw plans.error;
+  if(subscriptions.error)throw subscriptions.error;
+  if(!plans.data?.length)throw Error('لم تصل الباقات. حدّث البيانات وأعد المحاولة');
+  subscriptionSettingsReady=!settings.error;
+  if(subscriptionSettingsReady)subscriptionSystemEnabled=settings.data.subscriptions_enabled;
+  subscriptionPlans=plans.data;
+  storeSubscriptions=subscriptions.data||[];
+  storePagePhotos=photos;
+  subscriptionDataLoaded=true;
+ })();
+ try{return await subscriptionDataPending;}finally{subscriptionDataPending=null;}
 }
-const subscriptionReload=reload;reload=async function(){await subscriptionReload();await loadSubscriptionData();};
+const subscriptionReload=reload;
+reload=async function(){
+ const catalog=subscriptionReload();
+ await Promise.all([catalog,loadSubscriptionData(catalog)]);
+};
 async function savePlanRequest(request){const r=await request;if(r.error)throw r.error;await reload();}
 function planFields(features,override=false){return '<div class="form-grid">'+planBooleanFields.map(([key,label])=>override?'<label>'+label+'<select name="'+key+'"><option value="">حسب الباقة</option><option value="true" '+(features[key]===true?'selected':'')+'>تفعيل</option><option value="false" '+(features[key]===false?'selected':'')+'>إلغاء</option></select></label>':'<label class="quality-review"><input type="checkbox" name="'+key+'" '+(features[key]?'checked':'')+'>'+label+'</label>').join('')+planNumberFields.map(([key,label,min,max])=>'<label>'+label+'<input name="'+key+'" type="number" min="'+min+'" max="'+max+'" value="'+(features[key]??'')+'" '+(override?'placeholder="حسب الباقة"':'required')+'></label>').join('')+'</div>';}
 function readPlanFields(form,override=false){const f=new FormData(form),out={};for(const [key] of planBooleanFields){if(override){if(f.get(key)!=='')out[key]=f.get(key)==='true';}else out[key]=f.has(key);}for(const [key] of planNumberFields)if(f.get(key)!=='')out[key]=Number(f.get(key));return out;}
