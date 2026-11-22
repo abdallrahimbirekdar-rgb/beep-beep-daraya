@@ -40,3 +40,10 @@ The current demand-loading and feature-loading modules supersede earlier rollbac
 Save-data mode defers images until the viewport, suppresses automatic original-image fallback, pauses catalog slides, limits home product previews to one, debounces product search to 700 ms and reuses store navigation reads for up to three minutes. Normal mode retains existing behavior. Read-only catalog fetches get a deadline (45 seconds in save-data, 25 normally), cancellation where supported and at most one retry for a timeout, thrown network failure or transient server response. Writes are never retried by this helper. Startup reports continued waiting rather than replacing a still-loading home with an error after 25 seconds. Online/offline status is informational, not an offline checkout promise.
 
 Leaflet waits for both its stylesheet and script; failed or expired loads remove assets and permit retry, including when the script loaded but the stylesheet failed. Manual address entry remains available. No field speed percentage is claimed.
+
+
+## Checkout resilience (2026-11-22)
+
+Checkout now captures values before locking controls, blocks a known-offline submission, restores controls and entered data after failure, and ignores completion after an account change. It only clears the submitted cart snapshot. `marketSubmitOrder` sends exactly one `place_order_v4` call with the existing idempotency key, uses a 60-second write deadline and checks `market_attempt` for up to 12 seconds on an uncertain failure. A failed receipt read preserves the key. Only explicit SQL validation/access/integrity failures release it; gateway and uncertain transaction errors keep it. No production orders are created by the DOM tests.
+
+The delivery picker ignores outdated GPS callbacks after a new location request, clearing, manual selection or dialog closure. Delayed map loading cannot create a map after the dialog closes. Structured profile address fields are cleared when restoring an uncertain order so they cannot silently overwrite its address.
