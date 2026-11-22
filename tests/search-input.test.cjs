@@ -13,7 +13,7 @@ function setup(){
   app.querySelector('#results').textContent=stores.filter(s=>s.includes(w.search)).join('|');
  };
  w.scrollTo=()=>{scrolls++;};
- w.setTimeout=(fn,ms)=>{assert.equal(ms,280);tasks.set(++next,fn);return next;};w.clearTimeout=id=>tasks.delete(id);
+ const nativeTimeout=w.setTimeout.bind(w);w.setTimeout=(fn,ms)=>{if(ms===0)return nativeTimeout(fn,ms);assert.equal(ms,280);tasks.set(++next,fn);return next;};w.clearTimeout=id=>tasks.delete(id);
  w.renderHome();w.eval(fs.readFileSync('search-input.js','utf8'));
  const input=w.document.querySelector('#search');input.focus();
  return {w,dom,input,tasks,get renders(){return renders;},get scrolls(){return scrolls;},type(value,options={}){input.value=value;input.setSelectionRange(value.length,value.length);input.dispatchEvent(new w.InputEvent('input',{bubbles:true,isComposing:options.composing||false}));},flush(){for(const [id,fn] of [...tasks]){tasks.delete(id);fn();}},close(){dom.window.close();}};
@@ -37,7 +37,7 @@ test('Enter flushes once and clearing the field removes previous results',()=>{
  a.type('');assert.equal(a.renders,2);a.flush();assert.equal(a.renders,3);assert.match(a.w.document.querySelector('#results').textContent,/متجر 0/);a.close();
 });
 test('navigation cancels pending searches and does not pull a visitor back from another page',()=>{
- const a=setup();a.type('صيدلية');a.w.location.hash='#offers';a.w.dispatchEvent(new a.w.HashChangeEvent('hashchange'));a.flush();assert.equal(a.renders,1);assert.equal(a.tasks.size,0);a.close();
+ const a=setup();a.type('صيدلية');a.w.history.replaceState(null,'','#offers');a.w.dispatchEvent(new a.w.HashChangeEvent('hashchange'));a.flush();assert.equal(a.renders,1);assert.equal(a.tasks.size,0);a.close();
 });
 test('an explicit reset is not postponed or overwritten by an old typing timer',()=>{
  const a=setup();a.type('صيدلية');a.w.search='';a.w.renderHome();assert.equal(a.renders,2);assert.equal(a.w.document.querySelector('#search').value,'');assert.equal(a.tasks.size,0);a.flush();assert.equal(a.renders,2);a.close();
@@ -49,8 +49,9 @@ test('the controller is loaded after all legacy render wrappers',()=>{
 test('the complete production render chain keeps typing focused and returns the right shop',async()=>{
  const path=require('node:path'),root=path.join(__dirname,'..'),html=fs.readFileSync(path.join(root,'index.html'),'utf8');
  const dom=new JSDOM(html,{url:'https://damascus-shop.com/#home',runScripts:'outside-only',pretendToBeVisual:true}),w=dom.window;
- w.matchMedia=()=>({matches:false,addEventListener(){},removeEventListener(){}});w.scrollTo=()=>{};w.HTMLElement.prototype.scrollIntoView=function(){};
+ w.TextEncoder=TextEncoder;w.TextDecoder=TextDecoder;w.matchMedia=()=>({matches:false,addEventListener(){},removeEventListener(){}});w.scrollTo=()=>{};w.HTMLElement.prototype.scrollIntoView=function(){};
  w.fetch=async()=>({ok:true,json:async()=>({})});w.IntersectionObserver=class{observe(){}unobserve(){}disconnect(){}};
+ const observers=[],NativeObserver=w.MutationObserver;w.MutationObserver=class extends NativeObserver{constructor(fn){super(fn);observers.push(this);}};
  const scripts=[...html.matchAll(/<script[^>]*\bsrc="([^"?]+)[^"]*"[^>]*>/g)].map(m=>m[1]).filter(s=>!s.includes('://'));
  const sources=scripts.map(s=>fs.readFileSync(path.join(root,s),'utf8').replace(/\binit\(\);\s*$/,'')).join('\n;\n');
  try{
@@ -84,5 +85,5 @@ test('the complete production render chain keeps typing focused and returns the 
   assert.equal(w.document.querySelectorAll('#browse > .grid .card').length,0);
   assert.equal(w.document.querySelector('.product-search-results'),null);
   assert.match(w.document.querySelector('#browse > .grid').textContent,/لم نجد أماكن مطابقة/);
- }finally{dom.window.close();}
+ }finally{observers.forEach(observer=>observer.disconnect());dom.window.close();}
 });

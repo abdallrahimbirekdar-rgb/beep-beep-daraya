@@ -52,3 +52,8 @@ The delivery picker ignores outdated GPS callbacks after a new location request,
 ## Checkout clarity and language stability (2026-11-22)
 
 Confirmation separates product subtotal, delivery fee and expected total and shows a saved pickup address. A live status distinguishes sending, continued waiting after 20 seconds and receipt lookup. Errors focus the retained form's alert; progress timers clear after completion. Full recovery/map phrases are translated in the central AR/EN/DE dictionary, keeping submitted values unchanged. The network language observer now ignores repeated writes of the same `lang` attribute to prevent a redraw cycle with the translation observer. Integration tests run both modules together and assert that updates settle and form values are preserved.
+
+
+## Catalog and search response ordering (2026-11-22)
+
+Catalog reloads stage store/admin/order data before committing and ignore results or failures from superseded requests or a changed account. Product fetches and store-cache fills also reject stale responses. Search refreshes only the still-active home/browse route, same account and same term; hash navigation invalidates pending UI updates. Repeated renders share the scheduled/in-flight term rather than cancelling its debounce. Search cache is account-scoped and expires after two minutes, including an unchanged query. Pending and failed product search show an inline status/retry and suppress premature empty-store messaging, while available store cards remain usable. Tests cover reversed response ordering, logout during management loading, and late search responses on account/history/privacy pages.
