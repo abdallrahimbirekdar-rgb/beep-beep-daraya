@@ -1,5 +1,5 @@
 'use strict';
-if(typeof navigator!=='undefined'&&(navigator.connection?.saveData||['slow-2g','2g'].includes(navigator.connection?.effectiveType)))document.documentElement.classList.add('low-data');
+if(typeof navigator!=='undefined'&&(window.DarayaNetwork?window.DarayaNetwork.low():navigator.connection?.saveData||['slow-2g','2g'].includes(navigator.connection?.effectiveType)))document.documentElement.classList.add('low-data');
 const $=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const money=n=>n==null||n===''?'':window.ShahinI18n?window.ShahinI18n.money(n):Number(n).toLocaleString('ar-SY')+' ل.س';
 const cfg=window.BEEP_CONFIG||{},live=!!(cfg.supabaseUrl&&cfg.supabaseAnonKey);
@@ -13,7 +13,7 @@ function storeCover(s){if(s.image&&safeImage(s.image))return s.image;const photo
 const legacyThumbnails={"https://nxnqsudwccjlvyepuxfg.supabase.co/storage/v1/object/public/store-images/a5e8abe7-974a-416c-a570-858d6fd03572/8f4fbfd7-a8c9-487a-b341-3c44ae7f1781.png":"thumbnails/sandwich.webp","https://nxnqsudwccjlvyepuxfg.supabase.co/storage/v1/object/public/store-images/a5e8abe7-974a-416c-a570-858d6fd03572/9c54ba22-f1f3-4e81-8d92-285b227fa661.png":"thumbnails/falafel.webp","https://nxnqsudwccjlvyepuxfg.supabase.co/storage/v1/object/public/store-images/a5e8abe7-974a-416c-a570-858d6fd03572/2dfd1e99-a066-424c-b434-0e44c03d1997.png":"thumbnails/fries.webp","https://nxnqsudwccjlvyepuxfg.supabase.co/storage/v1/object/public/store-images/a5e8abe7-974a-416c-a570-858d6fd03572/1816af29-21a4-4531-bc14-3979642bdf5b.png":"thumbnails/hummus.webp","https://nxnqsudwccjlvyepuxfg.supabase.co/storage/v1/object/public/store-images/de55d8a4-e315-4c6d-95c8-1a8b6d731001/chicken.png":"thumbnails/chicken.webp","https://nxnqsudwccjlvyepuxfg.supabase.co/storage/v1/object/public/store-images/de55d8a4-e315-4c6d-95c8-1a8b6d731001/sweets.png":"thumbnails/sweets.webp","https://nxnqsudwccjlvyepuxfg.supabase.co/storage/v1/object/public/store-images/de55d8a4-e315-4c6d-95c8-1a8b6d731001/burger.png":"thumbnails/burger.webp","https://nxnqsudwccjlvyepuxfg.supabase.co/storage/v1/object/public/store-images/de55d8a4-e315-4c6d-95c8-1a8b6d731001/icecream.png":"thumbnails/icecream.webp","https://nxnqsudwccjlvyepuxfg.supabase.co/storage/v1/object/public/store-images/de55d8a4-e315-4c6d-95c8-1a8b6d731001/grill.png":"thumbnails/grill.webp"};
 const localCatalogThumbnails = {};
 function thumbnailForImage(url){if(legacyThumbnails[url])return new URL(legacyThumbnails[url],location.href).href;try{const u=new URL(url);const localThumbnail=localCatalogThumbnails[u.pathname];if(localThumbnail&&u.origin===new URL(location.href).origin)return new URL(localThumbnail,location.href).href;if(u.hostname==='nxnqsudwccjlvyepuxfg.supabase.co'&&/^\/storage\/v1\/object\/public\/store-images\/[0-9a-f-]{36}\/[0-9a-f-]{36}\/original\.(jpg|png|webp)$/.test(u.pathname)){u.pathname=u.pathname.replace(/original\.(jpg|png|webp)$/,'thumbnail.webp');return u.href;}if(['images.pexels.com','images.unsplash.com'].includes(u.hostname)){u.searchParams.set('w','400');u.searchParams.set('auto',u.hostname==='images.pexels.com'?'compress':'format');if(u.hostname==='images.unsplash.com')u.searchParams.set('q','65');return u.href;}}catch{}return url;}
-function photo(url,alt,cls='card-image'){const original=safeImage(url),u=original&&(cls==='gallery-image'||cls==='preview-image'?original:thumbnailForImage(original));return u?`<img width="400" height="400" class="${cls}" data-lazy-src="${esc(u)}" data-full-image="${esc(original)}" alt="${esc(alt)}" loading="lazy" decoding="async" onerror="if(this.src!==this.dataset.fullImage){this.src=this.dataset.fullImage}else{this.hidden=true}">`:`<div class="${cls} photo-empty" aria-label="لا توجد صورة">${esc(alt.slice(0,1))}</div>`;}
+function photo(url,alt,cls='card-image'){const original=safeImage(url),u=original&&(cls==='gallery-image'||cls==='preview-image'?original:thumbnailForImage(original));return u?`<img width="400" height="400" class="${cls}" data-lazy-src="${esc(u)}" data-full-image="${esc(original)}" alt="${esc(alt)}" loading="lazy" decoding="async" onerror="if(window.DarayaNetwork){window.DarayaNetwork.imageError(this)}else if(this.src!==this.dataset.fullImage){this.src=this.dataset.fullImage}else{this.hidden=true}">`:`<div class="${cls} photo-empty" aria-label="لا توجد صورة">${esc(alt.slice(0,1))}</div>`;}
 
 function toast(s){$('#toast').textContent=window.ShahinI18n?.translate(s)||s;$('#toast').hidden=false;clearTimeout(toast.timer);toast.timer=setTimeout(()=>$('#toast').hidden=true,5000);}
 function modal(html){$('#modal-body').innerHTML=html;$('#modal').showModal();}
@@ -22,7 +22,7 @@ const mine=()=>stores.filter(s=>!s._mosqueCatalog&&!s.deleted_at&&(admin||user&&
 async function init(){
  if(!live){renderUnavailable();return;}
  const scriptsReady=new Promise(resolve=>window.addEventListener('DOMContentLoaded',resolve,{once:true}));
- const loadingNotice=setTimeout(()=>renderUnavailable(),25000);
+ const loadingNotice=setTimeout(()=>{if(window.DarayaNetwork)window.DarayaNetwork.showWaiting(true);else renderUnavailable();},25000);
  try{
   const sdk=await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm');
   await scriptsReady;
@@ -41,7 +41,7 @@ async function init(){
   await reload();
   if(window.DarayaStartup)window.DarayaStartup.complete();else render();
  }catch(e){console.error(e);renderUnavailable();}
- finally{clearTimeout(loadingNotice);}
+ finally{clearTimeout(loadingNotice);window.DarayaNetwork?.showWaiting(false);}
 }
 function renderUnavailable(){const t=(ar,en,de)=>({ar,en,de}[window.ShahinI18n?.language||'ar']||ar);$('#app').innerHTML=`<section class="panel customer-auth" data-no-translate><h1>${t('تعذر تحميل سوق داريا الإلكتروني','Could not load Souq Daraya','Souq Daraya konnte nicht geladen werden')}</h1><p>${navigator.onLine?t('قد يكون الاتصال ضعيفًا أو الخدمة غير متاحة مؤقتًا. أعد المحاولة بعد قليل.','The connection may be slow or the service temporarily unavailable. Try again shortly.','Die Verbindung ist möglicherweise langsam oder der Dienst vorübergehend nicht verfügbar. Versuche es gleich erneut.'):t('لا يوجد اتصال بالإنترنت. تحقق من الواي فاي أو بيانات الهاتف ثم أعد المحاولة.','You are offline. Check Wi-Fi or mobile data, then try again.','Keine Internetverbindung. Prüfe WLAN oder mobile Daten und versuche es erneut.')}</p><button onclick="location.reload()">${t('إعادة المحاولة','Try again','Erneut versuchen')}</button><p><a href="mailto:info@damascus-shop.com">info@damascus-shop.com</a></p></section>`;}
 

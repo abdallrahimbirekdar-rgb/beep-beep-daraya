@@ -28,3 +28,5 @@ test('rerender replaces the timer, navigation cleans it up and reduced motion do
  const a=await rotating();try{assert.equal(a.w.rotationTimers.size,1);a.w.renderHome();assert.equal(a.w.rotationTimers.size,1);a.w.location.hash='#store/first';a.w.dispatchEvent(new a.w.Event('hashchange'));assert.equal(a.w.rotationTimers.size,0);assert.equal(a.w.rotationFrames.size,0);}finally{a.dom.window.close();}
  const reduced=await rotating('rtl',true);try{assert.equal(reduced.w.rotationTimers.size,0);assert.equal(reduced.$('.home-catalog-motion'),null);}finally{reduced.dom.window.close();}
 });
+
+test('save-data requests and renders only one product preview per shop',async()=>{const a=app([{id:'real',products:[{name:'one',image:'https://example.com/one.jpg'},{name:'two',image:'https://example.com/two.jpg'}]}]);try{a.w.DarayaNetwork={low:()=>true,read:build=>build()};a.w.renderHome();await tick();assert.ok(a.calls.some(x=>x[0]==='limit'&&x[1]===1));assert.equal(a.$('.home-catalog-products').querySelectorAll('img').length,1);}finally{a.dom.window.close();}});
