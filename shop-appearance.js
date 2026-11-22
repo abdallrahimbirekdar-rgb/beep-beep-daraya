@@ -80,6 +80,6 @@
  const previous=renderStore;
  renderStore=function(id){const result=previous.apply(this,arguments);const s=stores.find(item=>item.id===id);if(s)enhance(s);return result;};
  window.addEventListener('hashchange',()=>{if(!root.querySelector('.store-banner')){delete root.dataset.shopTheme;delete root.dataset.shopLayout;root.style.removeProperty('--shop-accent');root.style.removeProperty('--shop-tint');}});
- window.DarayaShopAppearance={settings};
+ window.DarayaShopAppearance={settings,open:edit};
  refresh();
 })();

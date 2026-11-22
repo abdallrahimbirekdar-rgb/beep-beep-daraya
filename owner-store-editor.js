@@ -191,6 +191,11 @@
     hero.prepend(bar);
    }
    syncManagement(s);
+   const appearanceBar=hero.querySelector('.owner-store-bar');
+   if(appearanceBar&&!appearanceBar.querySelector('.shop-appearance-entry')){
+    const appearanceButton=button(t('تخصيص شكل المحل والشريط','Shop appearance and announcement','Gestaltung und Infoband'),()=>window.DarayaShopAppearance?.open(currentStore(s.id)));
+    appearanceButton.className='outline shop-appearance-entry';appearanceBar.append(appearanceButton);
+   }
    fieldControls(s);sectionTools(s);
    actions(app.querySelector('#sf-products'),s,'products',row=>row.append(button(t('+ إضافة منتج جديد','+ Add new product','+ Neues Produkt hinzufügen'),()=>editItem(s.id),'owner-add-product'),button(t('إدارة المنتجات والأقسام','Manage products and categories','Produkte und Kategorien verwalten'),()=>openInline(s.id,'products','sf-products'))));
 
@@ -237,7 +242,7 @@
   enhance();const restore=returnTo?.ready?returnTo:liveState;if(restore&&restore.uid===user?.id&&restore.id===id){if(returnTo?.ready)returnTo=null;requestAnimationFrame(()=>{if(!app.ownerDocument.defaultView?.document)return;if(pageStore()?.id!==id||user?.id!==restore.uid)return;window.DarayaRefreshSectionMenus?.();enhance();if(restore.section)view()?.open(restore.section);if(restore.group){const group=app.querySelector('.shop-info-panel[data-sf-info-kind="'+restore.group+'"]');if(group?.hidden)document.getElementById(group.getAttribute('aria-labelledby'))?.click();}});}return result;
  };
  const previousDashboard=merchantDashboard;
- const editableSections={details:'sf-info',photos:'sf-tools',hours:'sf-info',videos:'sf-videos',delivery:'sf-orders',products:'sf-products'};
+ const editableSections={details:'sf-info',photos:'sf-tools',hours:'sf-info',videos:'sf-videos',delivery:'sf-orders',products:'sf-products',appearance:'sf-info'};
  merchantDashboard=function(ms,s,section){
   if(canEdit(s)&&(!section||['overview','stores','edit'].includes(section)||editableSections[section])){
    // Old dashboard links open the same shop surface, never a second edit menu.
@@ -246,7 +251,8 @@
    app.classList.remove('professional-home','dashboard-menu-home','dashboard-menu-section','dashboard-menu-layout');
    delete app.dataset.dashboardSection;delete app.dataset.dashboardRoute;
    renderStore(s.id);
-   if(editableSections[section]){window.DarayaRefreshSectionMenus?.();enhance();openInline(s.id,section,editableSections[section]);}
+   if(section==='appearance'){window.DarayaShopAppearance?.open(s);}
+   else if(editableSections[section]){window.DarayaRefreshSectionMenus?.();enhance();openInline(s.id,section,editableSections[section]);}
    return;
   }
   const result=previousDashboard.apply(this,arguments);if(!canEdit(s))return result;
