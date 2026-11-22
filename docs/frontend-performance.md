@@ -47,3 +47,8 @@ Leaflet waits for both its stylesheet and script; failed or expired loads remove
 Checkout now captures values before locking controls, blocks a known-offline submission, restores controls and entered data after failure, and ignores completion after an account change. It only clears the submitted cart snapshot. `marketSubmitOrder` sends exactly one `place_order_v4` call with the existing idempotency key, uses a 60-second write deadline and checks `market_attempt` for up to 12 seconds on an uncertain failure. A failed receipt read preserves the key. Only explicit SQL validation/access/integrity failures release it; gateway and uncertain transaction errors keep it. No production orders are created by the DOM tests.
 
 The delivery picker ignores outdated GPS callbacks after a new location request, clearing, manual selection or dialog closure. Delayed map loading cannot create a map after the dialog closes. Structured profile address fields are cleared when restoring an uncertain order so they cannot silently overwrite its address.
+
+
+## Checkout clarity and language stability (2026-11-22)
+
+Confirmation separates product subtotal, delivery fee and expected total and shows a saved pickup address. A live status distinguishes sending, continued waiting after 20 seconds and receipt lookup. Errors focus the retained form's alert; progress timers clear after completion. Full recovery/map phrases are translated in the central AR/EN/DE dictionary, keeping submitted values unchanged. The network language observer now ignores repeated writes of the same `lang` attribute to prevent a redraw cycle with the translation observer. Integration tests run both modules together and assert that updates settle and form values are preserved.

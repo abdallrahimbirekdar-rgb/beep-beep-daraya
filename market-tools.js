@@ -30,7 +30,7 @@ function marketOrderRequest(form,s){const f=new FormData(form),data={store:s.id,
 function marketOrderCompleted(){try{sessionStorage.removeItem(marketPendingKey());}catch{}marketPending=null;}
 function marketOrderRejected(error){if(/^(?:P0001|22[A-Z0-9]{3}|23[A-Z0-9]{3}|28[A-Z0-9]{3}|42[A-Z0-9]{3})$/.test(String(error?.code||'')))marketOrderCompleted();}
 // Never retry a write. A timeout is uncertain: keep its request identity and check the receipt.
-async function marketSubmitOrder(payload){
+async function marketSubmitOrder(payload,onProgress=()=>{}){
  const controller=new AbortController();let timer;
  try{
   let query=api.rpc('place_order_v4',payload);if(typeof query.abortSignal==='function')query=query.abortSignal(controller.signal);
@@ -38,7 +38,7 @@ async function marketSubmitOrder(payload){
   if(result.error){marketOrderRejected(result.error);throw result.error;}return result;
  }catch(error){
   if(!marketPending||marketPending.id!==payload.p_request||navigator.onLine===false)throw error;
-  let receiptTimer;const readController=new AbortController();
+  onProgress('checking');let receiptTimer;const readController=new AbortController();
   try{
    let query=api.rpc('market_attempt',{p_request:payload.p_request});if(typeof query.abortSignal==='function')query=query.abortSignal(readController.signal);
    const receipt=await Promise.race([query,new Promise((_,reject)=>{receiptTimer=setTimeout(()=>{readController.abort();reject(Error('receipt timeout'));},12000);})]);

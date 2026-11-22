@@ -22,7 +22,8 @@
  }
  window.DarayaNetwork={low,read,showWaiting(value){waiting=value;update();},imageError(img){if(low()){img.onerror=null;img.removeAttribute('src');img.alt=t('الصورة لم تتحمل. افتحها لإعادة المحاولة.','Photo did not load. Open it to try again.','Foto konnte nicht laden. Zum Wiederholen öffnen.');return;}if(img.src!==img.dataset.fullImage)img.src=img.dataset.fullImage;else img.hidden=true;}};
  window.addEventListener('online',update);window.addEventListener('offline',update);connection?.addEventListener?.('change',update);
- function languageChanged(){document.querySelector('.network-mode-control')?.remove();mount();update();}
+ let lastLanguage=document.documentElement.lang;
+ function languageChanged(){const language=document.documentElement.lang;if(language===lastLanguage)return;lastLanguage=language;document.querySelector('.network-mode-control')?.remove();mount();update();}
  window.addEventListener('languagechange',languageChanged);
  new MutationObserver(languageChanged).observe(document.documentElement,{attributes:true,attributeFilter:['lang']});
  new MutationObserver(mount).observe(document.body,{childList:true,subtree:true});mount();update();
