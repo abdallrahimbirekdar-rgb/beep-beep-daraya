@@ -67,6 +67,9 @@
    nav.classList.toggle('sf-portrait-nav',!!nav.querySelector('.sf-tile-products:not(:disabled)'));
    const groups=new Map();view.sections.forEach(({id,node,related=[]})=>{[node,...related].filter(Boolean).forEach(n=>{const top=direct(n);if(top)groups.set(top,id);});});
    [...root.children].forEach(node=>{
+    if(node.matches('.shop-appearance-editor,.shop-announcement,.shop-appearance-entry')){
+     managed.delete(node);node.classList.remove('sf-section-collapsed');node.removeAttribute('inert');delete node.dataset.sfSection;return;
+    }
     if(node===hero||node===nav||node===back||node.matches('.simple-back,.topline,.shop-back-row,.demo-top,.demo-notice'))return;
     const catalogId=view.sections.find(x=>x.id.endsWith('products'))?.id;
     const id=groups.get(node)||(node.matches('.demo-cart-strip,.demo-basket')?catalogId:null)||(node.matches('.public-shop-section')?'sf-info':view.sections.at(-1)?.id);
