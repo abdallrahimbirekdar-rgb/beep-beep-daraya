@@ -52,7 +52,7 @@
    }catch(error){status.textContent=error.message||'تعذر الحفظ. تحقق من الاتصال وأعد المحاولة.';}
    finally{saving=false;if(panel.isConnected)form.querySelectorAll('button,input,textarea,select').forEach(el=>el.disabled=false);}
   };
-  const existing=root.querySelector('.shop-appearance-editor');if(existing?.dataset.dirty==='true'&&!confirm('لديك معاينة لم تحفظها. هل تريد البدء من جديد؟'))return;existing?.remove();root.querySelector('.shop-appearance-entry').after(panel);preview();panel.scrollIntoView({block:'start',behavior:'smooth'});
+  const existing=root.querySelector('.shop-appearance-editor');if(existing?.dataset.dirty==='true'&&!confirm('لديك معاينة لم تحفظها. هل تريد البدء من جديد؟'))return;existing?.remove();root.querySelector('.store-banner').after(panel);preview();panel.scrollIntoView({block:'start',behavior:'smooth'});
  }
  function enhance(s){
   if(!root.querySelector('.store-banner'))return;
@@ -62,8 +62,24 @@
   }
  }
  window.addEventListener('beforeunload',event=>{if(root.querySelector('.shop-appearance-editor[data-dirty="true"]')){event.preventDefault();event.returnValue='';}});
+ let lastBanner=null,lastStore=null,lastActor=null,queued=false;
+ function refresh(){
+  queued=false;
+  const banner=root.querySelector('.store-banner');
+  const id=banner?.dataset.storefront||location.hash.match(/^#store\/([^/]+)/)?.[1];
+  const s=stores.find(item=>item.id===id);
+  if(!banner||!s){lastBanner=null;return;}
+  const changed=banner!==lastBanner||s.id!==lastStore||user?.id!==lastActor;
+  if(changed){lastBanner=banner;lastStore=s.id;lastActor=user?.id;enhance(s);}
+  else if(allowed(s)&&!root.querySelector('.shop-appearance-entry'))enhance(s);
+  const entry=root.querySelector('.shop-appearance-entry'),bar=banner.querySelector('.owner-store-bar');
+  if(entry&&bar&&entry.parentElement!==bar)bar.append(entry);
+  if(entry&&!allowed(s)){entry.remove();root.querySelector('.shop-appearance-editor')?.remove();paint(s,settings(s));}
+ }
+ new MutationObserver(()=>{if(!queued){queued=true;queueMicrotask(refresh);}}).observe(root,{childList:true,subtree:true});
  const previous=renderStore;
  renderStore=function(id){const result=previous.apply(this,arguments);const s=stores.find(item=>item.id===id);if(s)enhance(s);return result;};
  window.addEventListener('hashchange',()=>{if(!root.querySelector('.store-banner')){delete root.dataset.shopTheme;delete root.dataset.shopLayout;root.style.removeProperty('--shop-accent');root.style.removeProperty('--shop-tint');}});
  window.DarayaShopAppearance={settings};
+ refresh();
 })();
