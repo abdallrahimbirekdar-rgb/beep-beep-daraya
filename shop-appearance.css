@@ -18,12 +18,14 @@
 .shop-appearance-editor textarea{width:100%;font:inherit}
 /* A single slim news line, kept within the shop's content width. */
 .shop-announcement{display:block;min-width:0;max-width:100%;padding:4px 10px;border-radius:6px;background:var(--shop-accent);color:white;margin-block:8px;overflow:hidden;font-size:13px;line-height:22px}
-.shop-announcement-viewport{overflow:hidden;min-width:0;direction:rtl}
-.shop-announcement p{margin:0!important;padding:0!important;font-size:inherit!important;line-height:22px!important;white-space:nowrap;width:max-content;max-width:none;animation:shop-news var(--news-duration,25s) linear infinite}
+.shop-announcement-viewport{overflow:hidden;min-width:0;direction:ltr;--news-animation:shop-news-rtl}
+html[dir=ltr] .shop-announcement-viewport{--news-animation:shop-news-ltr}
+.shop-announcement p{margin:0!important;padding:0 0 0 100%!important;box-sizing:content-box;font-size:inherit!important;line-height:22px!important;white-space:nowrap;width:max-content;max-width:none;animation:var(--news-animation,shop-news-rtl) var(--news-duration,25s) linear infinite}
 .shop-announcement:hover p{animation-play-state:paused}
-.shop-announcement[data-motion=static] p{animation:none;white-space:normal;width:auto;overflow-wrap:anywhere}
-@keyframes shop-news{0%,10%{transform:translateX(0)}90%,100%{transform:translateX(100%)}}
-@media(prefers-reduced-motion:reduce){.shop-announcement p{animation:none;white-space:normal;width:auto;overflow-wrap:anywhere}}
+.shop-announcement[data-motion=static] p{animation:none;transform:none;padding:0!important;white-space:normal;width:auto;overflow-wrap:anywhere}
+@keyframes shop-news-rtl{from{transform:translateX(0)}to{transform:translateX(-100%)}}
+@keyframes shop-news-ltr{from{transform:translateX(-100%)}to{transform:translateX(0)}}
+@media(prefers-reduced-motion:reduce){.shop-announcement p{animation:none;transform:none;padding:0!important;white-space:normal;width:auto;overflow-wrap:anywhere}}
 @media(max-width:600px){#app[data-shop-layout=gallery] .products{grid-template-columns:1fr}#app[data-shop-layout=list] .product>img{width:85px;height:85px}.shop-announcement{gap:8px}}
 #app[data-shop-layout=list] .sf-catalog .products{display:flex;flex-direction:column}
 #app[data-shop-layout=list] .sf-catalog .product{flex-direction:row;align-items:center;gap:0}
