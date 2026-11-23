@@ -54,6 +54,28 @@
   const text=strip.querySelector('p');if(text.textContent!==value.text)text.textContent=value.text;
   strip.dataset.motion=value.motion||'moving';strip.style.setProperty('--news-duration',Math.max(16,value.text.length*(value.speed==='slow'?0.55:0.35))+'s');
  }
+ const appearanceSignature=value=>JSON.stringify(settings({translations:{_appearance:value}}));
+ async function saveAppearance(s,draft,original,uid,approval){
+  const authorized=()=>user?.id===uid&&allowed(s);
+  for(let attempt=0;attempt<2;attempt++){
+   if(!authorized())throw Error('انتهت جلسة الدخول أو تغيّرت صلاحية إدارة المحل. سجّل الدخول مجددًا؛ اختياراتك ما زالت في المعاينة.');
+   const build=()=>api.from('stores').select('id,revision,translations').eq('id',s.id).maybeSingle();
+   const latest=window.DarayaNetwork?await window.DarayaNetwork.read(build):await build();
+   if(!authorized())throw Error('تغيّر الحساب أثناء الحفظ. لم نرسل تغييرات من الحساب الجديد.');
+   if(latest.error)throw latest.error;
+   if(!latest.data)throw Error('تعذر الوصول إلى المحل. تحقق من الحساب وصلاحية إدارة هذا المحل.');
+   const current=latest.data,currentSignature=appearanceSignature(current.translations?._appearance),draftSignature=appearanceSignature(draft);
+   // A previous write may have succeeded even if its response never arrived.
+   if(currentSignature===draftSignature)return {translations:current.translations,revision:current.revision,appearance:settings({translations:current.translations})};
+   if(currentSignature!==appearanceSignature(original)&&currentSignature!==approval){const error=Error('تغيّر شكل المحل منذ فتح المعاينة. اختياراتك لم تضِع. يمكنك حفظها بدل الشكل الأحدث بعد التأكد.');error.appearanceApproval=currentSignature;throw error;}
+   const translations={...(current.translations||{}),_appearance:draft};
+   const response=await api.from('stores').update({translations}).eq('id',s.id).eq('revision',current.revision).select('id,revision');
+   if(response.error)throw response.error;
+   if(response.data?.length)return {translations,revision:response.data[0].revision,appearance:draft};
+   // Zero updated rows means the revision changed between the read and write.
+  }
+  throw Error('تغيّرت بيانات المحل أثناء الحفظ. اختياراتك باقية؛ اضغط الحفظ مجددًا.');
+ }
  function help(title,text){return '<details class="appearance-help"><summary aria-label="شرح '+title+'">؟</summary><p>'+text+'</p></details>';}
  function organizeStudio(panel){
   const form=panel.querySelector('form'),fields=[...form.children].filter(el=>el.tagName==='FIELDSET'),spacing=[...form.children].find(el=>el.classList.contains('appearance-settings-grid')),preview=panel.querySelector('.appearance-preview-box');
@@ -79,10 +101,10 @@
  function edit(s){
   if(!allowed(s))return;
   if(root.querySelector('.shop-appearance-editor form[aria-busy=true]')){toast('انتظر اكتمال حفظ شكل المحل');return;}
-  const uid=user.id,original=settings(s),revision=s.revision;
+  const uid=user.id,original=settings(s);let approvedAppearance=null;
   let saving=false,sectionOrder=[...original.sectionOrder];
   const panel=document.createElement('section');panel.className='shop-appearance-editor panel appearance-studio-workspace';panel.dataset.noTranslate='';panel.setAttribute('role','dialog');panel.setAttribute('aria-modal','true');panel.setAttribute('aria-labelledby','appearance-studio-title');const opener=document.activeElement;
-  panel.innerHTML=`<div class="appearance-heading"><h2 id="appearance-studio-title">استوديو مظهر المحل</h2>${help('المعاينة والحفظ','غيّر الخيارات وشاهدها على صفحة محلك فورًا. الحفظ ينشر اختياراتك للزوار، وإلغاء المعاينة يعيد الشكل المحفوظ. يمكنك تجربة أكثر من شكل قبل الحفظ.')}</div><p class="appearance-intro">اختر تبويبًا وعدّل؛ المعاينة أمامك تركز على الجزء الذي تغيّره. التغييرات لا تظهر للزبائن حتى تحفظ.</p><form id="shop-appearance-form">
+  panel.innerHTML=`<div class="appearance-heading"><h2 id="appearance-studio-title">استوديو مظهر المحل</h2>${help('المعاينة والحفظ','غيّر الخيارات وشاهدها على صفحة محلك فورًا. الحفظ ينشر اختياراتك للزوار، وإلغاء المعاينة يعيد الشكل المحفوظ. يمكنك تجربة أكثر من شكل قبل الحفظ.')}</div><p class="appearance-intro">اختر تبويبًا وعدّل؛ المعاينة أمامك تركز على الجزء الذي تغيّره. التغييرات لا تظهر للزبائن حتى تحفظ.</p><form id="shop-appearance-form" novalidate>
   <fieldset><legend>ابدأ بقالب جاهز</legend><p>اختصار للبداية؛ يمكنك تعديل كل خيار بعده. نص الشريط وإعداد تفعيله يبقيان كما اخترتهما.</p><div class="appearance-presets">${[['balanced','متوازن','بطاقات مريحة ورموز واضحة'],['boutique','واجهة صور','للأزياء والأثاث والقطع المصوّرة'],['menu','قائمة سريعة','للأطعمة أو المنتجات الكثيرة'],['service','تعريف وخدمات','التواصل والمعلومات أولًا']].map(([id,label,note])=>`<button type="button" class="outline" data-preset="${id}"><span class="preset-dots preset-${id}" aria-hidden="true"><i></i><i></i><i></i></span><strong>${label}</strong><small>${note}</small></button>`).join('')}</div></fieldset>
   <section class="appearance-preview-box" aria-label="معاينة شكل المحل"><div class="appearance-preview-toolbar"><strong>معاينة توضيحية</strong><div><button type="button" data-preview-size="mobile" aria-pressed="true">هاتف</button><button type="button" data-preview-size="desktop" aria-pressed="false">شاشة واسعة</button></div></div><p>الأقسام هنا أمثلة للشكل؛ الأقسام المتاحة في محلك تبقى كما هي. الصور والأسعار الفعلية تُعرض عند وجود منتجات.</p><div class="appearance-preview-stage"><div class="appearance-page-preview" data-size="mobile"></div></div><p data-preview-summary role="status"></p></section>
   <fieldset><legend>شكل رأس المحل</legend>${help('رأس المحل','اختر صورة غلاف عريضة، أو هوية في المنتصف، أو رأسًا مختصرًا ليصل الزبون للأقسام بسرعة. تبقى معلومات التواصل والأزرار متاحة.')}${optionCards('heroStyle',original.heroStyle)}</fieldset>
@@ -109,18 +131,20 @@
   panel.querySelectorAll('[data-preset]').forEach(button=>button.onclick=()=>{for(const [key,val] of Object.entries(presets[button.dataset.preset]))form.elements[key].value=val;sectionOrder=button.dataset.preset==='service'?cleanOrder(['sf-info','sf-products']):cleanOrder([]);drawOrder();form.oninput();});
   form.onsubmit=async event=>{
    event.preventDefault();if(saving||user?.id!==uid||!allowed(s))return;
-   const draft=value();if(draft.enabled&&!draft.text){ui.activate('announcement');form.elements.text.focus();return;}
+   const draft=value();if(draft.enabled&&!draft.text){const status=panel.querySelector('[data-result]');status.setAttribute('role','alert');status.textContent='اكتب نص الشريط أو عطّل إظهاره، ثم احفظ.';ui.activate('announcement');form.elements.text.focus();return;}
    saving=true;form.setAttribute('aria-busy','true');const controls=[...panel.querySelectorAll('button,input,textarea,select')].map(el=>({el,disabled:el.disabled}));controls.forEach(({el})=>el.disabled=true);
    const status=panel.querySelector('[data-result]');status.textContent='جاري حفظ شكل المحل…';
    try{
-    const translations={...(s.translations||{}),_appearance:draft};
-    const response=await api.from('stores').update({translations}).eq('id',s.id).eq('revision',revision).select('id,revision');
-    if(response.error)throw response.error;
-    if(!response.data?.length)throw Error('تغيّرت بيانات المحل. انسخ نصك ثم حدّث الصفحة وأعد المحاولة.');
+    const saved=await saveAppearance(s,draft,original,uid,approvedAppearance);
     if(user?.id!==uid)return;
-    s.translations=translations;s.revision=response.data[0].revision;if(typeof marketCleanForm==='function')marketCleanForm(form);ui.dispose();activeDraft=null;
-    window.DarayaHomeCatalog?.invalidate();panel.remove();document.body.classList.remove('appearance-studio-open');if(opener?.isConnected)opener.focus?.({preventScroll:true});paint(s,draft);toast('تم حفظ شكل المحل وشريط المعلومات');
-   }catch(error){status.textContent=error.message||'تعذر الحفظ. تحقق من الاتصال وأعد المحاولة.';}
+    s.translations=saved.translations;s.revision=saved.revision;if(typeof marketCleanForm==='function')marketCleanForm(form);ui.dispose();activeDraft=null;
+    window.DarayaHomeCatalog?.invalidate();panel.remove();document.body.classList.remove('appearance-studio-open');if(opener?.isConnected)opener.focus?.({preventScroll:true});paint(s,saved.appearance);toast('تم حفظ شكل المحل وشريط المعلومات');
+   }catch(error){
+    if(user?.id!==uid||!panel.isConnected)return;
+    status.setAttribute('role','alert');status.tabIndex=-1;status.textContent=typeof marketError==='function'?marketError(error):error.message||'تعذر الحفظ. تحقق من الاتصال وأعد المحاولة.';
+    if(error.appearanceApproval){const button=document.createElement('button');button.type='button';button.className='outline';button.textContent='حفظ اختياراتي بدل الشكل الأحدث';button.onclick=()=>{approvedAppearance=error.appearanceApproval;form.requestSubmit();};status.append(document.createElement('br'),button);}
+    status.focus({preventScroll:true});
+   }
    finally{saving=false;form.removeAttribute('aria-busy');if(panel.isConnected)controls.forEach(({el,disabled})=>el.disabled=disabled);}
   };
   panel.addEventListener('keydown',event=>{if(event.key==='Escape'){event.preventDefault();event.stopImmediatePropagation();panel.querySelector('[data-cancel]').click();return;}if(event.key!=='Tab')return;const items=[...panel.querySelectorAll('button,input,select,textarea,summary,a[href]')].filter(el=>!el.disabled&&!el.closest('[hidden]')&&el.type!=='hidden'&&el.tabIndex!==-1),first=items[0],last=items.at(-1);if(event.shiftKey&&document.activeElement===first){event.preventDefault();last?.focus();}else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first?.focus();}});
