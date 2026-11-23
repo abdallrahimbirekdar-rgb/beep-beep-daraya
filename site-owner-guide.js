@@ -2,7 +2,7 @@
 (() => {
  const root=document.getElementById('app');
  let pending=null,generation=0;
- const dataUrl=new URL('site-owner-guide-data.js?v=20261123-3',document.currentScript?.src||document.baseURI).href;
+ const dataUrl=new URL('site-owner-guide-data.js?v=20261123-4',document.currentScript?.src||document.baseURI).href;
  const sourceBase='https://github.com/abdallrahimbirekdar-rgb/beep-beep-daraya/blob/main/';
  const normalize=value=>String(value).normalize('NFKD').replace(/[\u0300-\u036f\u064b-\u065f\u0670ـ]/g,'').replace(/[أإآ]/g,'ا').replace(/ى/g,'ي').toLowerCase();
  const node=(tag,text,cls)=>{const el=document.createElement(tag);if(text!==undefined)el.textContent=text;if(cls)el.className=cls;return el;};
