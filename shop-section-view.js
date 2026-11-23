@@ -41,7 +41,7 @@
   show(0);
   if(images.length>1){timer=setInterval(()=>{
    if(!visual.isConnected){stop();return;}
-   if(window.DarayaNetwork?.low()||document.hidden||visual.closest('[inert],.sf-section-collapsed')||window.matchMedia?.('(prefers-reduced-motion: reduce)').matches)return;
+   if(visual.dataset.appearanceIcon&&visual.dataset.appearanceIcon!=='illustrated'||window.DarayaNetwork?.low()||document.hidden||visual.closest('[inert],.sf-section-collapsed')||window.matchMedia?.('(prefers-reduced-motion: reduce)').matches)return;
    const next=(current+1)%images.length;load(next);if(images[next].complete&&images[next].naturalWidth>0)show(next);
   },2000);slides.set(visual,stop);}
  };

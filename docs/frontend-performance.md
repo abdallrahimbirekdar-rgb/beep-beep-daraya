@@ -57,3 +57,10 @@ Confirmation separates product subtotal, delivery fee and expected total and sho
 ## Catalog and search response ordering (2026-11-22)
 
 Catalog reloads stage store/admin/order data before committing and ignore results or failures from superseded requests or a changed account. Product fetches and store-cache fills also reject stale responses. Search refreshes only the still-active home/browse route, same account and same term; hash navigation invalidates pending UI updates. Repeated renders share the scheduled/in-flight term rather than cancelling its debounce. Search cache is account-scoped and expires after two minutes, including an unchanged query. Pending and failed product search show an inline status/retry and suppress premature empty-store messaging, while available store cards remain usable. Tests cover reversed response ordering, logout during management loading, and late search responses on account/history/privacy pages.
+
+
+## Shop appearance studio (2026-11-23)
+
+The existing `_appearance` JSON now supports validated icon, section, hero, card and section-order choices; older settings retain the illustrated/tile/standard/soft defaults. Four presets preserve announcement content and are editable. Phone/wide illustrative previews use current shop names and available product thumbnails, with placeholder products otherwise. Visitors receive saved design only; edit/open/submit checks use the existing store-management authorization, and the production `stores_update` RLS policy was verified to use `manages_store(id)` for both USING and WITH CHECK. No grants or schema were changed.
+
+Navigation reorders existing buttons without replacing their click handlers. Alternative icons retain original visual nodes for cancel/restore, and product tile slides pause while another icon style is selected. Save keeps revision checking and existing translations, and failed writes restore each control's previous disabled state. Dirty appearance forms join the existing unsaved-change guard. Tests cover customer denial, sign-out, presets, reordering, cancel, error recovery and safe rendering.
