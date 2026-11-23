@@ -82,7 +82,7 @@
   topTile(page,section,id,t('فيديوهات المتجر','Shop videos','Geschäftsvideos'),t('شاهد فيديوهات المتجر','Watch shop videos','Geschäftsvideos ansehen'),'▶');
   const nav=window.DarayaShopSectionView?.(page)?.nav;
   const photos=nav?.querySelector('[data-target="'+(banner?'sf-tools':'showcase-tools')+'"]'),videos=nav?.querySelector('[data-target="'+id+'"]');
-  if(photos&&videos&&[...nav.children].indexOf(photos)<[...nav.children].indexOf(videos)){const slot=document.createComment('video position');videos.replaceWith(slot);photos.replaceWith(videos);slot.replaceWith(photos);}
+  if(nav?.dataset.appearanceOrder!=='managed'&&photos&&videos&&[...nav.children].indexOf(photos)<[...nav.children].indexOf(videos)){const slot=document.createComment('video position');videos.replaceWith(slot);photos.replaceWith(videos);slot.replaceWith(photos);}
  }
  function polishShopTools(){
   const banner=app.querySelector('.store-banner[data-storefront]');if(!banner)return;

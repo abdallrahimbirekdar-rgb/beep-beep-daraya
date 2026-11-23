@@ -15,6 +15,8 @@
  }
  function decorateNav(value){
   const nav=root.querySelector('.sf-section-nav');if(!nav)return;
+  // Saved shop ordering is the sole ordering authority for this navigation.
+  nav.dataset.appearanceOrder='managed';
   const cards=[...nav.children];const order=cleanOrder(value.sectionOrder),sorted=[...cards].sort((a,b)=>{const index=n=>order.includes(n.dataset.target)?order.indexOf(n.dataset.target):100+cards.indexOf(n);return index(a)-index(b);});
   sorted.forEach((card,i)=>{if(nav.children[i]!==card)nav.insertBefore(card,nav.children[i]||null);});
   for(const card of sorted){const visual=card.querySelector('.sf-tile-visual');if(!visual)continue;const style=value.iconStyle||'illustrated';if(visual.dataset.appearanceIcon===style)continue;
