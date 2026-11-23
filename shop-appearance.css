@@ -197,3 +197,19 @@ html[dir=ltr] .appearance-studio-workspace .appearance-fit-canvas>.appearance-pa
 .appearance-demo-actions{display:flex;gap:5px;margin:8px 10px 0;flex-wrap:wrap}
 .appearance-demo-actions span{background:var(--shop-accent);color:white;border:1px solid var(--shop-accent);padding:4px 7px;border-radius:6px;font-size:11px;line-height:1.5}
 .appearance-demo-actions span+span{background:white;color:var(--shop-accent)}
+/* Template artwork has its own silhouettes, not tinted copies of the base icons. */
+#app .sf-section-nav .sf-tile-visual svg.appearance-template-illustration{width:136px!important;height:102px!important;max-width:100%;padding:0!important;flex:none;background:none;border-radius:0}
+#app[data-section-style=compact]>.sf-section-nav .sf-tile-visual svg.appearance-template-illustration{width:42px!important;height:32px!important}
+#app[data-section-style=rows]>.sf-section-nav .sf-tile-visual svg.appearance-template-illustration{width:64px!important;height:54px!important}
+#app[data-section-style=circles]>.sf-section-nav .sf-tile-visual svg.appearance-template-illustration{width:98px!important;height:78px!important}
+.appearance-demo-nav span:has(svg.appearance-template-illustration){height:58px}
+.appearance-demo-nav svg.appearance-template-illustration{width:76px;height:57px}
+.appearance-page-preview[data-section-style=compact] .appearance-demo-nav span:has(svg.appearance-template-illustration){width:37px;height:30px}
+.appearance-page-preview[data-section-style=compact] .appearance-demo-nav svg.appearance-template-illustration{width:37px;height:30px}
+.appearance-page-preview[data-section-style=rows] .appearance-demo-nav span:has(svg.appearance-template-illustration){width:53px;height:42px}
+.appearance-page-preview[data-section-style=rows] .appearance-demo-nav svg.appearance-template-illustration{width:53px;height:42px}
+.appearance-demo-image svg.appearance-template-illustration{width:70px;height:53px}
+.preset-scene .preset-scene-cover{height:35px;background:var(--preset-light)}
+.preset-scene-cover svg.appearance-template-illustration{width:50px;height:37px}
+.appearance-options-pane .appearance-choice-grid:has([name=iconStyle]){grid-template-columns:repeat(2,minmax(0,1fr))}
+.preset-scene-cover>svg{width:50px!important;height:37px!important;max-width:100%;flex:none}
