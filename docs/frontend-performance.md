@@ -69,3 +69,8 @@ Navigation reorders existing buttons without replacing their click handlers. Alt
 ## Focused appearance workspace (2026-11-23)
 
 Appearance controls are grouped into five accessible tabs in a bounded dialog workspace. The preview stays above the independently scrolling controls on phones and beside them on larger screens. Preview focus follows the edited setting; full-page preview is an optional toggle with no page scrolling. Save and close remain in persistent workspace chrome. Moving existing fields preserves their handlers and drafts; switching tabs does not mark data dirty. Invalid hidden fields reveal their tab. The dialog guards unsaved close, traps keyboard focus and releases body scroll lock when closed, saved or removed. No visitor settings or database permissions change.
+
+
+## Larger fit-to-space preview (2026-11-23)
+
+Full illustrative preview is now the default. The result receives more workspace area than compact controls, and a measured canvas fits the entire model to both available width and height instead of creating inner scrolling. An expanded mode temporarily hides options and preserves all form values; switching tabs restores options. Context-only preview remains optional. Measurement is frame-coalesced and observes stage/model size, image loading and font loading, with window resize fallback. Listeners/observers are disposed on close, save, account change or removal. Preview magnification is editor-only and is not saved in `_appearance`.
